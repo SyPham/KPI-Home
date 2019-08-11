@@ -1,0 +1,208 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{95452EBE-A871-423D-9CD9-A8BF1D9467A2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>KPI.Model</RootNamespace>
+    <AssemblyName>KPI.Model</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelDataReader, Version=3.6.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelDataReader.3.6.0\lib\net45\ExcelDataReader.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelDataReader.DataSet, Version=3.6.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelDataReader.DataSet.3.6.0\lib\net35\ExcelDataReader.DataSet.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Abstract\IInheritance .cs" />
+    <Compile Include="Abstract\ILink.cs" />
+    <Compile Include="Abstract\Inheritance .cs" />
+    <Compile Include="Abstract\Link.cs" />
+    <Compile Include="DAO\FavouriteDAO.cs" />
+    <Compile Include="DAO\DataChartDAO.cs" />
+    <Compile Include="DAO\AdminCategoryDAO.cs" />
+    <Compile Include="DAO\KPIDAO.cs" />
+    <Compile Include="DAO\LevelDAO.cs" />
+    <Compile Include="DAO\UploadDAO.cs" />
+    <Compile Include="DAO\UserAdminDAO.cs" />
+    <Compile Include="DAO\KPIAdminDAO.cs" />
+    <Compile Include="DAO\KPILevelDAO.cs" />
+    <Compile Include="DAO\UserLoginDAO.cs" />
+    <Compile Include="EF\Menu.cs" />
+    <Compile Include="EF\Permission.cs" />
+    <Compile Include="EF\Resource.cs" />
+    <Compile Include="EF\Role.cs" />
+    <Compile Include="EF\Category.cs" />
+    <Compile Include="EF\Comment.cs" />
+    <Compile Include="EF\Favourite.cs" />
+    <Compile Include="EF\Data.cs" />
+    <Compile Include="EF\KPI.cs" />
+    <Compile Include="EF\KPIKind.cs" />
+    <Compile Include="EF\KPILevel.cs" />
+    <Compile Include="EF\Level.cs" />
+    <Compile Include="EF\SeenComment.cs" />
+    <Compile Include="EF\User.cs" />
+    <Compile Include="helpers\CodeUtility.cs" />
+    <Compile Include="helpers\CookieUtility.cs" />
+    <Compile Include="helpers\LevelHelper.cs" />
+    <Compile Include="helpers\PagedData.cs" />
+    <Compile Include="helpers\Pagination.cs" />
+    <Compile Include="KPIDbContext.cs" />
+    <Compile Include="Migrations\201908021439441_version.cs" />
+    <Compile Include="Migrations\201908021439441_version.Designer.cs">
+      <DependentUpon>201908021439441_version.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908080425517_addRoleandCredential.cs" />
+    <Compile Include="Migrations\201908080425517_addRoleandCredential.Designer.cs">
+      <DependentUpon>201908080425517_addRoleandCredential.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908080435334_addRoleandCredential1.cs" />
+    <Compile Include="Migrations\201908080435334_addRoleandCredential1.Designer.cs">
+      <DependentUpon>201908080435334_addRoleandCredential1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908090046525_removecredential.cs" />
+    <Compile Include="Migrations\201908090046525_removecredential.Designer.cs">
+      <DependentUpon>201908090046525_removecredential.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908090649368_updatedb.cs" />
+    <Compile Include="Migrations\201908090649368_updatedb.Designer.cs">
+      <DependentUpon>201908090649368_updatedb.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908090802005_updatedb1.cs" />
+    <Compile Include="Migrations\201908090802005_updatedb1.Designer.cs">
+      <DependentUpon>201908090802005_updatedb1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908090857288_updatedb2.cs" />
+    <Compile Include="Migrations\201908090857288_updatedb2.Designer.cs">
+      <DependentUpon>201908090857288_updatedb2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908100057467_update.cs" />
+    <Compile Include="Migrations\201908100057467_update.Designer.cs">
+      <DependentUpon>201908100057467_update.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908100312349_update1.cs" />
+    <Compile Include="Migrations\201908100312349_update1.Designer.cs">
+      <DependentUpon>201908100312349_update1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908100316254_update2.cs" />
+    <Compile Include="Migrations\201908100316254_update2.Designer.cs">
+      <DependentUpon>201908100316254_update2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908110927536_updatemenu.cs" />
+    <Compile Include="Migrations\201908110927536_updatemenu.Designer.cs">
+      <DependentUpon>201908110927536_updatemenu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908111304119_updatemenu1.cs" />
+    <Compile Include="Migrations\201908111304119_updatemenu1.Designer.cs">
+      <DependentUpon>201908111304119_updatemenu1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModel\DataCompareVM.cs" />
+    <Compile Include="ViewModel\CompareVM.cs" />
+    <Compile Include="ViewModel\ChartVM.cs" />
+    <Compile Include="ViewModel\CommentVM.cs" />
+    <Compile Include="ViewModel\DataVM.cs" />
+    <Compile Include="ViewModel\FavouriteVM.cs" />
+    <Compile Include="ViewModel\KPIVM.cs" />
+    <Compile Include="ViewModel\KPILevelViewModel.cs" />
+    <Compile Include="ViewModel\KPILevelVM.cs" />
+    <Compile Include="ViewModel\KPITreeViewModel.cs" />
+    <Compile Include="ViewModel\KPIViewModel.cs" />
+    <Compile Include="ViewModel\LevelVM.cs" />
+    <Compile Include="ViewModel\MenuVM.cs" />
+    <Compile Include="ViewModel\UploadDataVM.cs" />
+    <Compile Include="ViewModel\UserProfileVM.cs" />
+    <Compile Include="ViewModel\UserSession.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201908021439441_version.resx">
+      <DependentUpon>201908021439441_version.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908080425517_addRoleandCredential.resx">
+      <DependentUpon>201908080425517_addRoleandCredential.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908080435334_addRoleandCredential1.resx">
+      <DependentUpon>201908080435334_addRoleandCredential1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908090046525_removecredential.resx">
+      <DependentUpon>201908090046525_removecredential.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908090649368_updatedb.resx">
+      <DependentUpon>201908090649368_updatedb.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908090802005_updatedb1.resx">
+      <DependentUpon>201908090802005_updatedb1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908090857288_updatedb2.resx">
+      <DependentUpon>201908090857288_updatedb2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908100057467_update.resx">
+      <DependentUpon>201908100057467_update.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908100312349_update1.resx">
+      <DependentUpon>201908100312349_update1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908100316254_update2.resx">
+      <DependentUpon>201908100316254_update2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908110927536_updatemenu.resx">
+      <DependentUpon>201908110927536_updatemenu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908111304119_updatemenu1.resx">
+      <DependentUpon>201908111304119_updatemenu1.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

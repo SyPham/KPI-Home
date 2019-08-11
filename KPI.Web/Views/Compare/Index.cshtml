@@ -1,0 +1,310 @@
+﻿@using MvcBreadCrumbs;
+@model KPI.Model.ViewModel.DataCompareVM
+@{
+
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var list1 = (KPI.Model.ViewModel.ChartVM)ViewBag.List1;
+
+    var list2 = (KPI.Model.ViewModel.ChartVM)ViewBag.List2;
+    var list3 = (KPI.Model.ViewModel.ChartVM)ViewBag.List3;
+    var list4 = (KPI.Model.ViewModel.ChartVM)ViewBag.List4;
+    var period = list1.period;
+    var kpiname = list1.kpiname;
+}
+
+@Html.Raw(BreadCrumb.Display())
+@section Scripts{
+    <script>
+
+
+
+        $(function () {
+
+             var labelString;
+        if ("@period" === "W"){
+            labelString = " Weeks in year ";
+            if (@Html.Raw(Json.Encode(@list1.datasets.Length)) !== 0) {
+                $("#tblkpi tr:first-child").append("<th>Week</th>");
+                $.each(@Html.Raw(Json.Encode(@list1.labels)), function (key, item) {
+                    $("#tblkpi tr:first-child").append("<th >" + item + "</th>");
+                });
+
+                $("#tblkpi tr:nth-child(2)").append("<th >"+@Html.Raw(Json.Encode(@list1.label))+"</th>");
+                $.each(@Html.Raw(Json.Encode(@list1.datasets)), function (key, item) {
+                    $("#tblkpi tr:nth-child(2)").append("<td>" + item + "</td>");
+                });
+            }
+            if (@Html.Raw(Json.Encode(@list2.datasets.Length)) !== 0) {
+                 $("#tblkpi tr:nth-child(3)").append("<th >"+@Html.Raw(Json.Encode(@list2.label))+"</th>");
+                $.each(@Html.Raw(Json.Encode(@list2.datasets)), function (key, item) {
+                    $("#tblkpi tr:nth-child(3)").append("<td>" + item + "</td>");
+                });
+            }
+            if (@Html.Raw(Json.Encode(@list3.datasets.Length)) !== 0) {
+                    $("#tblkpi tr:nth-child(4)").append("<th >"+@Html.Raw(Json.Encode(@list3.label))+"</th>");
+                $.each(@Html.Raw(Json.Encode(@list3.datasets)), function (key, item) {
+                    $("#tblkpi tr:nth-child(4)").append("<td>" + item + "</td>");
+                });
+            }
+            if (@Html.Raw(Json.Encode(@list4.datasets.Length)) !== 0) {
+                    $("#tblkpi tr:nth-child(5)").append("<th >"+@Html.Raw(Json.Encode(@list4.label))+"</th>");
+                $.each(@Html.Raw(Json.Encode(@list4.datasets)), function (key, item) {
+                    $("#tblkpi tr:nth-child(5)").append("<td>" + item + "</td>");
+                });
+            }
+
+        console.log(@Html.Raw(Json.Encode(@list3.datasets.Length)))
+        }
+
+        if ("@period" === "M") {
+            labelString = "Months in year";
+                $("#tblkpi tr:first-child").append("<th >Month</th>");
+            $.each(@Html.Raw(Json.Encode(@list1.labels)), function (key, item) {
+                $("#tblkpi tr:first-child").append("<th >" + item + "</th>");
+            });
+            $("#tblkpi tr:nth-child(2)").append("<th >"+@Html.Raw(Json.Encode(@list1.label))+"</th>");
+            $.each(@Html.Raw(Json.Encode(@list1.datasets)), function (key, item) {
+                $("#tblkpi tr:nth-child(2)").append("<td>" + item + "</td>");
+            });
+        }
+        if ("@period" === "Q") {
+            labelString = "Quarters in year";
+                $("#tblkpi tr:first-child").append("<th >Quarter</th>");
+            $.each(@Html.Raw(Json.Encode(@list1.labels)), function (key, item) {
+                $("#tblkpi tr:first-child").append("<th >" + item + "</th>");
+            });
+            $("#tblkpi tr:nth-child(2)").append("<th >"+@Html.Raw(Json.Encode(@list1.label))+"</th>");
+            $.each(@Html.Raw(Json.Encode(@list1.datasets)), function (key, item) {
+                $("#tblkpi tr:nth-child(2)").append("<td>" + item + "</td>");
+            });
+        }
+
+        if ("@period" === "Y") {
+            labelString = "Year";
+                $("#tblkpi tr:first-child").append("<th >Year</th>");
+            $.each(@Html.Raw(Json.Encode(@list1.labels)), function (key, item) {
+                $("#tblkpi tr:first-child").append("<th >" + item + "</th>");
+            });
+            $("#tblkpi tr:nth-child(2)").append("<th >"+@Html.Raw(Json.Encode(@list1.label))+"</th>");
+            $.each(@Html.Raw(Json.Encode(@list1.datasets)), function (key, item) {
+                $("#tblkpi tr:nth-child(2)").append("<td>" + item + "</td>");
+            });
+
+        }
+            var densityCanvas = document.getElementById("lineChart");
+
+            Chart.defaults.global.defaultFontFamily = "Lato";
+            Chart.defaults.global.defaultFontSize = 18;
+
+            var list1 = {
+                label:  "@Html.Raw(@list1.label)",
+                data:  @Html.Raw(Json.Encode(@list1.datasets)),
+                fill: "#ffffff",
+                borderWidth: 2,
+                borderColor: "#d81b60",
+                backgroundColor: "#d81b60",
+                pointBackgroundColor: "#d81b60"
+            };
+
+            var list2= {
+                label:   "@Html.Raw(@list2.label)",
+                data:  @Html.Raw(Json.Encode(@list2.datasets)),
+                fill: "#ffffff",
+                borderWidth: 2,
+                borderColor: "#00acd6",
+                backgroundColor: "#00acd6",
+                pointBackgroundColor: "#00acd6"
+            };
+
+            var list3 = {
+                label:  "@Html.Raw(@list3.label)",
+                data:  @Html.Raw(Json.Encode(@list3.datasets)),
+                  fill: "#ffffff",
+                borderWidth: 2,
+                borderColor: " #398439",
+                backgroundColor: " #398439",
+                pointBackgroundColor: " #398439"
+            };
+
+            var list4= {
+                label:   "@Html.Raw(@list4.label)",
+                data:  @Html.Raw(Json.Encode(@list4.datasets)),
+                   fill: "#ffffff",
+                borderWidth: 2,
+                borderColor: " #d58512",
+                backgroundColor: " #d58512",
+                pointBackgroundColor: " #d58512"
+            };
+            console.log(list1.data.length);
+            console.log(list2.data.length);
+            console.log(list3.data.length);
+            console.log(list4.data.length);
+            var compareData;
+             if (list4.data.length === 0) {
+
+                  compareData = {
+                    labels: @Html.Raw(Json.Encode(@list1.labels)),
+                    datasets: [list1, list2, list3]
+
+                    };
+             }
+            else if (list3.data.length=== 0) {
+
+                   compareData = {
+                    labels: @Html.Raw(Json.Encode(@list1.labels)),
+                    datasets: [list1, list2,list4]
+                    };
+            }
+            else if (list1.data.length!== 0&&list2.data.length!== 0) {
+
+                   compareData = {
+                    labels: @Html.Raw(Json.Encode(@list1.labels)),
+                    datasets: [list1, list2]
+                    };
+            }
+             else {
+
+                   compareData = {
+                    labels: @Html.Raw(Json.Encode(@list1.labels)),
+                    datasets: [list1, list2,list3, list4]
+                    };
+            }
+            var chartOptions = {
+                 plugins: {
+                datalabels: {
+                    display: false
+                }
+            },
+            elements: {
+                line: {
+                    tension: 0.1
+                }
+
+            },
+                scales: {
+                    yAxes: [{
+
+                    ticks: {
+                        beginAtZero: true,
+                        padding: 10,
+                        fontSize: 14,
+                        max: 100
+                    },
+                        scaleLabel: {
+                             display: true,
+                             labelString: 'Percentage',
+                             fontSize: 20
+                          }
+                    }],
+                    xAxes: [{
+                    gridLines: {
+                        display: true,
+                        tickMarkLength: 8
+                    },
+                    ticks: {
+                        fontSize: 14,
+                    }
+                    ,
+                     scaleLabel: {
+                        display: true,
+                        labelString: labelString
+                      }
+                    }]
+
+                },
+
+            animation: {
+                onComplete() {
+                    var chartInstance = this.chart,
+                        ctx = chartInstance.ctx;
+
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'bottom';
+
+                    this.data.datasets.forEach(function (dataset, i) {
+                        var meta = chartInstance.controller.getDatasetMeta(i);
+                        meta.data.forEach(function (bar, index) {
+                            var data = dataset.data[index];
+                            ctx.fillText(data, bar._model.x, bar._model.y-5);
+                        });
+                    });
+                }
+            }
+            };
+
+            var barChart = new Chart(densityCanvas, {
+                type: 'line',
+                data: compareData,
+                options: chartOptions
+            });
+        });
+    </script>
+}
+<section id="chartperiod">
+    <div class="row">
+        <div class="col-md-12">
+            <!-- LINE CHART -->
+            <div class="box box-widget">
+                <div class="box-header with-border">
+                    <h3 class="box-title" style="font-weight:bold">KPI Chart</h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool"><i class="fa fa-times"></i></button>
+
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="chart">
+                        <canvas id="lineChart" style="height:250px"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-12">
+                <div class="box box-widget">
+                    <div class="box-header with-border">
+                        @if (period == "W")
+                        {
+                            <h3 class="box-title" style="font-weight:bold">Data  - @kpiname - Weekly</h3>
+                        }
+                        else if (period == "M")
+                        {
+                            <h3 class="box-title" style="font-weight:bold">Data - @kpiname - Monthly</h3>
+
+                        }
+                        else if (period == "Q")
+                        {
+                            <h3 class="box-title" style="font-weight:bold">Data - @kpiname - Quarterly</h3>
+
+                        }
+                        else if (period == "Y")
+                        {
+                            <h3 class="box-title" style="font-weight:bold">Data - @kpiname - Yearly</h3>
+
+                        }
+
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" style="margin-bottom:20px;" id="tblkpi">
+                                <tbody>
+                                    <tr></tr>
+                                    <tr></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>

@@ -1,0 +1,83 @@
+﻿<div class="modal fade" id="modal-group" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title">Compare KPILevel </h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <div class="box-body" id="comparechart">
+                        <table class="table table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" style="width:3%">#</th>
+                                    <th class="text-center" style="width:5%">Checkbox</th>
+                                    <th class="text-center">Level Number</th>
+                                    <th class="text-center">Area</th>
+                                    <th class="text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblcomparechart">
+                                <tr>
+                                    <td>
+                                        <div class="pretty p-image p-plain">
+                                            <input type="checkbox" />
+                                            <div class="state">
+                                                <img class="image" src="/Content/icon/004.png">
+                                                <label></label>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>John Doe</td>
+                                    <td>11-7-2014</td>
+                                    <td><span class="label label-success">Approved</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <script id='tblcomparechart-template' type="text/template">
+                            <tr>
+                                <td class="text-center">{{No}}</td>
+                                <td class="text-center">
+                                    <div class="pretty p-image p-plain">
+                                        <input type="checkbox" value="{{KPILevelCode}}" class="compare" />
+                                        <div class="state">
+                                            <img class="image" src="/Content/icon/004.png">
+                                            <label class="comparelabel" ></label>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center">{{LevelNumber}}</td>
+                                <td class="text-center">{{Area}}</td>
+                                <td class="text-center">{{{Status}}}</td>
+                            </tr>
+
+                        </script>
+                    </div>
+                    <!-- /.box-body -->
+
+                    <div class="box-footer">
+                        <ul id="paginationKPILevel" class="pagination pagination-sm no-margin pull-right">
+                            <li><a href="#">«</a></li>
+                            <li><a href="#">1</a></li>
+                            <li><a href="#">2</a></li>
+                            <li><a href="#">3</a></li>
+                            <li><a href="#">»</a></li>
+                        </ul>
+                        
+                    </div>
+                    <div class="box-footer">
+                        <span style="display:none" class="arrcompare"></span>
+                        <button id="btnCompare-kpilevel" data-compare="" class="btn btn-primary">Compare</button>
+                        <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>

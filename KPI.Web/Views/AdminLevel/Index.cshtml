@@ -1,0 +1,496 @@
+﻿@using MvcBreadCrumbs
+@{
+    ViewBag.Title = "Admin Level";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Html.Raw(BreadCrumb.Display())
+
+@section Scripts{
+    <script>
+        var CLIPBOARD = null;
+        var glyph_opts = {
+            preset: "bootstrap3",
+            map: {
+            }
+        };
+        $.ui.fancytree.debugLevel = 3; // silence debug output
+
+        function logEvent(event, data, msg) {
+            //        var args = $.isArray(args) ? args.join(", ") :
+            msg = msg ? ": " + msg : "";
+            $.ui.fancytree.info("Event('" + event.type + "', node=" + data.node + ")" + msg);
+        }
+
+        $(function () {
+            var treetable = $("#treetable").fancytree({
+                extensions: ["dnd5", "edit", "glyph", "table"],
+                //checkbox: true,
+                dnd5: {
+                    preventVoidMoves: true,
+                    preventRecursion: true,
+                    autoExpandMS: 400,
+                    dragStart: function (node, data) {
+                        return true;
+                    },
+                    dragEnter: function (node, data) {
+                        // return ["before", "after"];
+                        return true;
+                    },
+                    dragDrop: function (node, data) {
+                        //data.otherNode.moveTo(node, data.hitMode);
+                        if (node.parent !== data.otherNode.parent)
+                            return false;
+                        return ["before", "after"];
+                    }
+                },
+                edit: {
+                    triggerStart: ["f2", "shift+click", "mac+enter"],
+                    close: function (event, data) {
+                        if (data.save && data.isNew) {
+                            // Quick-enter: add new nodes until we hit [enter] on an empty title
+                            $("#treetable").trigger("nodeCommand", { cmd: "addSibling" });
+                        }
+                    }
+                },
+
+                glyph: glyph_opts,
+                source: { url: "/KPI/GetListTree", debugDelay: 1000 },
+                table: {
+                    nodeColumnIdx: 1
+                },
+                gridnav: {
+                    autofocusInput: false,
+                    handleCursorKeys: true
+                },
+                focus: function (event, data) {
+                    //logEvent(event, data, ", targetType=" + data.targetType);
+                    $('#box .kpi-name .code').text(data.node.key);
+                    levelAdminController.loadDetail(data.node.key);
+
+                },
+                blur: function (event, data) {
+                    //alert(data.node)
+                   
+                },
+                activate: function (event, data) {
+                    var node = data.node;
+                    // acces node attributes
+                    $("#echoActive").text(node.title);
+                    if (!$.isEmptyObject(node.data)) {
+                        //          alert("custom node data: " + JSON.stringify(node.data));
+                    }
+                },
+                lazyLoad: function (event, data) {
+                    data.result = { url: "/GetListTree", debugDelay: 1000 };
+                },
+                createNode: function (event, data) {
+                    var node = data.node,
+                        $tdList = $(node.tr).find(">td");
+                    if (node.isFolder()) {
+                        $tdList.eq(2)
+                            .prop("colspan", 6)
+                            .nextAll().remove();
+                    }
+                },
+                renderColumns: function (event, data) {
+                    var node = data.node,
+                        $tdList = $(node.tr).find(">td");
+                    $tdList.eq(2).find("input").attr("style", "width:100%; border: none;background-color:transparent").addClass("text-center").val(node.data.code);
+                    $tdList.eq(0).find("input").attr("style", "width:100%; border: none;background-color:transparent").addClass("text-bold text-center").val(node.data.levelnumber);
+                    $tdList.eq(3).find("input").attr("style", "width:100%; border: none;background-color:transparent").addClass("text-center").val(node.data.parentid);
+                    $tdList.eq(4).find("input").attr("style", "width:100%; border: none;background-color:transparent").addClass("text-center").val(data.node.key);
+
+                }
+               ,
+                modifyChild: function (event, data) {
+                    //alert(data)
+                    data.tree.info(event.type, data);
+                }
+            }).on("nodeCommand", function (event, data) {
+
+                // Custom event handler that is triggered by keydown-handler and
+                // context menu:
+                var refNode, moveMode,
+                    tree = $(this).fancytree("getTree"),
+                    node = tree.getActiveNode();
+
+                switch (data.cmd) {
+                    case "moveUp":
+                        refNode = node.getPrevSibling();
+                        if (refNode) {
+                            node.moveTo(refNode, "before");
+                            node.setActive();
+                        }
+                        break;
+                    case "moveDown":
+                        refNode = node.getNextSibling();
+                        if (refNode) {
+                            node.moveTo(refNode, "after");
+                            node.setActive();
+                        }
+                        break;
+                    case "indent":
+                        refNode = node.getPrevSibling();
+                        if (refNode) {
+                            node.moveTo(refNode, "child");
+                            refNode.setExpanded();
+                            node.setActive();
+                        }
+                        break;
+                    case "outdent":
+                        if (!node.isTopLevel()) {
+                            node.moveTo(node.getParent(), "after");
+                            node.setActive();
+                        }
+                        break;
+                    case "rename":
+                        node.editStart();
+                        break;
+                    case "remove":
+                        refNode = node.getNextSibling() || node.getPrevSibling() || node.getParent();
+                        node.remove();
+                        if (refNode) {
+                            refNode.setActive();
+                        }
+                        break;
+                    case "addChild":
+                        node.editCreateNode("child", "");
+                        break;
+                    case "addSibling":
+                        node.editCreateNode("after", "");
+                        break;
+                    case "cut":
+                        CLIPBOARD = { mode: data.cmd, data: node };
+                        break;
+                    case "copy":
+                        CLIPBOARD = {
+                            mode: data.cmd,
+                            data: node.toDict(function (n) {
+                                delete n.key;
+                            })
+                        };
+                        break;
+                    case "clear":
+                        CLIPBOARD = null;
+                        break;
+                    case "paste":
+                        if (CLIPBOARD.mode === "cut") {
+                            // refNode = node.getPrevSibling();
+                            CLIPBOARD.data.moveTo(node, "child");
+                            CLIPBOARD.data.setActive();
+                        } else if (CLIPBOARD.mode === "copy") {
+                            node.addChildren(CLIPBOARD.data).setActive();
+                        }
+                        break;
+                    default:
+                        alert("Unhandled command: " + data.cmd);
+                        return;
+                }
+            }).on("keydown", function (e) {
+                var cmd = null;
+                switch ($.ui.fancytree.eventToString(e)) {
+                    case "ctrl+shift+n":
+                    case "meta+shift+n": // mac: cmd+shift+n
+                        cmd = "addChild";
+                        break;
+                    case "ctrl+c":
+                    case "meta+c": // mac
+                        cmd = "copy";
+                        break;
+                    case "ctrl+v":
+                    case "meta+v": // mac
+                        cmd = "paste";
+                        break;
+                    case "ctrl+x":
+                    case "meta+x": // mac
+                        cmd = "cut";
+                        break;
+                    case "ctrl+n":
+                    case "meta+n": // mac
+                        cmd = "addSibling";
+                        break;
+                    case "del":
+                    case "meta+backspace": // mac
+                        cmd = "remove";
+                        break;
+                    // case "f2":  // already triggered by ext-edit pluging
+                    //   cmd = "rename";
+                    //   break;
+                    case "ctrl+up":
+                        cmd = "moveUp";
+                        break;
+                    case "ctrl+down":
+                        cmd = "moveDown";
+                        break;
+                    case "ctrl+right":
+                    case "ctrl+shift+right": // mac
+                        cmd = "indent";
+                        break;
+                    case "ctrl+left":
+                    case "ctrl+shift+left": // mac
+                        cmd = "outdent";
+                }
+                if (cmd) {
+                    $(this).trigger("nodeCommand", { cmd: cmd });
+                    return false;
+                }
+            });
+
+            //treetable
+            $("#treetable").contextmenu({
+                delegate: "span.fancytree-node",
+                menu: [
+                    { title: "Edit <kbd>[F2]</kbd>", cmd: "rename", uiIcon: "ui-icon-pencil" },
+                    { title: "Delete <kbd>[Del]</kbd>", cmd: "remove", uiIcon: "ui-icon-trash" },
+                    { title: "----" },
+                    { title: "New sibling <kbd>[Ctrl+N]</kbd>", cmd: "addSibling", uiIcon: "ui-icon-plus" },
+                    { title: "New child <kbd>[Ctrl+Shift+N]</kbd>", cmd: "addChild", uiIcon: "ui-icon-arrowreturn-1-e" },
+                    { title: "----" },
+                    { title: "Cut <kbd>Ctrl+X</kbd>", cmd: "cut", uiIcon: "ui-icon-scissors" },
+                    { title: "Copy <kbd>Ctrl-C</kbd>", cmd: "copy", uiIcon: "ui-icon-copy" },
+                    { title: "Paste as child<kbd>Ctrl+V</kbd>", cmd: "paste", uiIcon: "ui-icon-clipboard", disabled: true }
+                ],
+                beforeOpen: function (event, ui) {
+                    var node = $.ui.fancytree.getNode(ui.target);
+                    $("#tree").contextmenu("enableEntry", "paste", !!CLIPBOARD);
+                    node.setActive();
+                },
+                select: function (event, ui) {
+                    var that = this;
+                    setTimeout(function () {
+                        $(that).trigger("nodeCommand", { cmd: ui.cmd });
+                    }, 100);
+                }
+            });
+            $(".fancytree-container").addClass("fancytree-connectors");
+            $('.fancy-collapse').off('click').on('click', function () {
+                $("#treetable").fancytree("getTree").expandAll(false);
+            });
+            $('.fancy-expand').off('click').on('click', function () {
+                $("#treetable").fancytree("getTree").expandAll();
+            });
+
+            levelAdminController.init();
+        });
+
+        var levelAdminController = {
+            init() {
+                levelAdminController.registerEvent();
+            },
+            registerEvent() {
+                $('#btnSave').off('click').on('click', function () {
+                    levelAdminController.addOrUpdateData();
+                });
+                $('.btnAddLevel').off('click').on('click', function () {
+                    levelAdminController.resetForm();
+                })
+            },
+            addOrUpdateData() {
+                var res = levelAdminController.validate();
+                if (res === false) {
+                    return false;
+                };
+                var mObj = {
+                    ID: $('#addKPI .ID').val(),
+                    Code: $('#addKPI .Code').val(),
+                    Name: $('#addKPI .Name').val(),
+                    LevelNumber: $('#addKPI .LevelID').val(),
+                    ParentID: $('#addKPI .ParentID').val()
+                };
+                $.ajax({
+                    url: "/AdminLevel/AddOrUpdate",
+                    data: JSON.stringify(mObj),
+                    type: "POST",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        if (result) {
+                            Swal.fire({
+                                title: 'Success!',
+                                text: 'Add successfully!',
+                                type: 'success'
+                            });
+                            levelAdminController.loadData(true);
+                            levelAdminController.resetForm();
+                        }
+                        else {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'This code has already existed!',
+                                type: 'error'
+                            });
+                        }
+                    },
+                    error: function (errormessage) {
+                        console.log(errormessage.responseText);
+                    }
+                });
+            },
+            loadData(changePageSize) {
+                $.ui.fancytree.getTree("#treetable").reload().done();
+            },
+            loadDetail(id) {
+                var value = id;
+                $.ajax({
+                    url: '/AdminLevel/GetByID',
+                    data: {
+                        id: value
+                    },
+                    type: "GET",
+                    contentType: "application/json;charset=UTF-8",
+                    dataType: "json",
+                    success: function (result) {
+                        console.log(result);
+                        $('#addKPI .Name').val(result.Name);
+                        $('#addKPI .Code').val(result.Code);
+                        $('#addKPI .LevelID').val(result.LevelNumber);
+                        $('#addKPI .ParentID').val(result.ParentID);
+                        $('#addKPI .ID').val(result.ID);
+
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            },
+            resetForm() {
+                $('.ID').val("");
+                $('.Name').val("");
+                $('.Code').val("");
+                $('.LevelID').val("");
+                $('.ParentID').val("");
+
+                $('.ID').css('border-color', 'lightgrey');
+                $('.Name').css('border-color', 'lightgrey');
+                $('.Code').css('border-color', 'lightgrey');
+                $('.LevelID').css('border-color', 'lightgrey');
+                $('.ParentID').css('border-color', 'lightgrey');
+            },
+            validate() {
+                var isValid = true;
+                if ($('.Name').val().trim() === "") {
+                    $('.Name').css('border-color', 'Red');
+                    isValid = false;
+                }
+                else {
+                    $('.Name').css('border-color', 'lightgrey');
+                }
+                if ($('.Code').val().trim() === "") {
+                    $('.Code').css('border-color', 'Red');
+                    isValid = false;
+                }
+                else {
+                    $('.Code').css('border-color', 'lightgrey');
+                }
+                if ($('.LevelID').val().trim() === "") {
+                    $('.LevelID').css('border-color', 'Red');
+                    isValid = false;
+                }
+                else {
+                    $('.LevelID').css('border-color', 'lightgrey');
+                }
+                if ($('.ParentID').val().trim() === "") {
+                    $('.ParentID').css('border-color', 'Red');
+                    isValid = false;
+                }
+                else {
+                    $('.ParentID').css('border-color', 'lightgrey');
+                }
+                return isValid;
+            },
+        }
+    </script>
+}
+<div class="row">
+    <div class="col-md-4">
+        <div class="box box-primary" id="box">
+            <div class="box-header kpi-name">
+                <span class="id" style="display:none"></span>
+                <span class="code" style="display:none"></span>
+
+                <span style="font-size:18px;font-weight:bold">Level</span>
+            </div>
+            <div class="box-body" id="addKPI">
+                <div class="form-group" style="display:none">
+                    <label for="Name">ID </label>
+                    <input type="text" class="form-control ID" id="ID" placeholder="ID" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="Name">Name </label>
+                    <input type="text" class="form-control Name" id="Name" placeholder="Enter Name">
+                </div>
+                <div class="form-group">
+                    <label for="Code">Code </label>
+                    <input type="text" class="form-control Code" id="Code" placeholder="Enter Code">
+                </div>
+                <div class="form-group">
+                    <label for="Code">Level </label>
+                    <input type="text" class="form-control LevelID" id="LevelID" placeholder="Enter Level">
+                </div>
+                <div class="form-group">
+                    <label for="ParentID">Parent ID </label>
+                    <input type="text" class="form-control ParentID" id="ParentID" placeholder="Enter ParentID">
+                </div>
+
+            </div>
+            <!-- /.box-body -->
+
+            <div class="box-footer text-center">
+                <button id="btnSave" class="btn btn-primary"><i class="fa fa-save"></i> Save</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="box box-primary">
+            <div class="box-header">
+                <span style="font-size:18px;font-weight:bold">Hierarchy</span>
+
+                <div class="pull-right box-tools">
+                    <button type="button" class="btn btn-info btn-sm btnAddLevel">
+                        <i class="fa fa-plus"></i> Add
+                    </button>
+                    <!-- button with a dropdown -->
+                    <button type="button" class="btn btn-warning btn-sm fancy-collapse">
+                        <i class="fa fa-compress"></i> Collapse
+                    </button>
+                    <button type="button" class="btn btn-info btn-sm fancy-expand">
+                        <i class="fa fa-expand"></i> Expand
+                    </button>
+                </div>
+            </div>
+            <div class="box-body">
+                <table id="treetable" class="table table-condensed table-hover table-striped fancytree-fade-expander fancytree-colorize-selected">
+                    <colgroup>
+                        <col width="50px"></col>
+                        <col width="*"></col>
+                        <col width="100px"></col>
+                        <col width="100px"></col>
+                        <col width="100px"></col>
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>Level</th>
+                            <th>Name</th>
+                            <th>Code</th>
+                            <th>ParentID</th>
+                            <th>ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input name="level" type="text"></td>
+                            <td></td>
+                            <td><input name="code" type="text"></td>
+                            <td><input name="parentid" type="text"></td>
+                            <td><input name="id" type="text"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+

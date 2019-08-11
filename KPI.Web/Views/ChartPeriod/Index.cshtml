@@ -1,0 +1,843 @@
+﻿@model KPI.Model.ViewModel.ChartVM
+@using KPI.Model.helpers;
+@using MvcBreadCrumbs
+@{
+    ViewBag.Title = "Chart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var datasets = ViewBag.Datasets as int?[];
+    var labels = ViewBag.Labels as string[];
+    var label = ViewBag.Label as string;
+    var kpiname = ViewBag.KPIName as string;
+    var period = ViewBag.Period as string;
+    var kpilevelcode = ViewBag.KPILevelCode as string;
+    var statusfavorite = ViewBag.StatusFavorite as string;
+      var url = ViewBag.Url as string;
+}
+@Html.Raw(BreadCrumb.Display())
+@section Scripts{
+    <script>
+
+        var labelString;
+        if ("@period" === "W") {
+            labelString = " Weeks in year ";
+            $("#searchWeek").show();
+        }
+
+        if ("@period" === "M") {
+            labelString = "Months in year";
+              $("#searchMonth").show();
+        }
+        if ("@period" === "Q") {
+            labelString = "Quarters in year";
+              $("#searchQuarter").show();
+        }
+
+        if ("@period" === "Y") {
+            labelString = "Years";
+              $("#searchYear").show();
+
+        }
+
+        var datasets =@Html.Raw(Json.Encode(datasets));
+         if (datasets.length === 0) {
+                   Swal.fire({
+                        title: 'There is no data!',
+                        //text: 'Error',
+                        type: 'error'
+                    });
+             }
+var labels =@Html.Raw(Json.Encode(labels));
+    var label = "@label";
+        var period = "@period";
+         var kpilevelcode = "@kpilevelcode";
+        $(function () {
+
+    if (period=== "W") {
+            $("#tblkpi tr:first-child").append("<th>Week</th>");
+            $.each(labels, function (key, item) {
+                $("#tblkpi tr:first-child").append("<th >" + item + "</th>");
+            });
+            $("#tblkpi tr:nth-child(2)").append("<th >Percentage</th>");
+            $.each(datasets, function (key, item) {
+                $("#tblkpi tr:nth-child(2)").append("<td>" + item + "</td>");
+            });
+        }
+    else if (period=== "M") {
+              $("#tblkpi tr:first-child").append("<th >Month</th>");
+            $.each(labels, function (key, item) {
+                $("#tblkpi tr:first-child").append("<th >" + item + "</th>");
+            });
+            $("#tblkpi tr:nth-child(2)").append("<th >Percentage</th>");
+            $.each(datasets, function (key, item) {
+                $("#tblkpi tr:nth-child(2)").append("<td>" + item + "</td>");
+            });
+        }
+    else if (period=== "Q") {
+              $("#tblkpi tr:first-child").append("<th >Quarter</th>");
+            $.each(labels, function (key, item) {
+                $("#tblkpi tr:first-child").append("<th >" + item + "</th>");
+            });
+            $("#tblkpi tr:nth-child(2)").append("<th >Percentage</th>");
+            $.each(datasets, function (key, item) {
+                $("#tblkpi tr:nth-child(2)").append("<td>" + item + "</td>");
+            });
+        }
+    else if (period=== "Y") {
+              $("#tblkpi tr:first-child").append("<th >Year</th>");
+            $.each(labels, function (key, item) {
+                $("#tblkpi tr:first-child").append("<th >" + item + "</th>");
+            });
+            $("#tblkpi tr:nth-child(2)").append("<th >Percentage</th>");
+            $.each(datasets, function (key, item) {
+                $("#tblkpi tr:nth-child(2)").append("<td>" + item + "</td>");
+            });
+        }
+
+            var ctx = document.getElementById('lineChart').getContext('2d');
+
+   Chart.defaults.global.defaultFontSize = 14;
+            var myChart = new Chart(ctx, {
+
+                //type: 'line',
+                type:'line'
+                ,
+        data: {
+            labels: labels,
+            datasets: [{
+                label: label,
+                data: datasets,
+                fill: "#ffffff",
+                borderWidth: 2,
+                borderColor: "#d81b60",
+                backgroundColor: "#d81b60",
+                pointBackgroundColor: "#d81b60"
+            }]
+        },
+                options: {
+                    elements: {
+                    point:{
+                        radius: 0
+                    }
+                },
+             layout: {
+            padding: {
+                left: 0,
+                right: 20,
+                top: 0,
+                bottom: 0
+            }
+        },
+             title: {
+            display: true,
+                text: "@label - @kpiname",
+                fontSize: 16,
+                fontColor: 'black'
+
+        },
+            plugins: {
+                datalabels: {
+                    display: false
+                }
+            },
+            elements: {
+                line: {
+                    tension: 0
+                }
+
+            },
+            scales: {
+                yAxes: [{
+                    display: true,
+                    position: "left",
+                    ticks: {
+                        beginAtZero: true,
+                        padding: 10,
+                        fontSize: 14,
+                        max: 100
+                    },
+                     scaleLabel: {
+                        display: true,
+                         labelString: 'Percentage',
+                      }
+                }],
+                xAxes: [{
+                    gridLines: {
+                        display: true,
+                        tickMarkLength: 8
+                    },
+                    ticks: {
+                        fontSize: 14,
+                    }
+                    ,
+                     scaleLabel: {
+                        display: true,
+                        labelString: labelString
+                      }
+                }]
+            },
+            animation: {
+                onComplete() {
+                    var chartInstance = this.chart,
+                        ctx = chartInstance.ctx;
+
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'bottom';
+
+                    this.data.datasets.forEach(function (dataset, i) {
+                        var meta = chartInstance.controller.getDatasetMeta(i);
+                        meta.data.forEach(function (bar, index) {
+                            var data = dataset.data[index];
+                            ctx.fillText(data, bar._model.x, bar._model.y-5);
+                        });
+                    });
+                }
+            },
+            poitDot: true
+        }
+    });
+        chartperiodController.init();
+});
+var chartperiodlConfig = {
+    pageSize: 6,
+    pageIndex: 1
+};
+var chartperiodController = {
+    init() {
+
+        chartperiodController.loadDataComment();
+        chartperiodController.loadDataProvide();
+         chartperiodController.registerEvent();
+    },
+    registerEvent() {
+        var year = chartperiodController.getUrlParameter('year');
+        var start = chartperiodController.getUrlParameter('start');
+        var end = chartperiodController.getUrlParameter('end');
+
+        $("#weekOfYear").val(year);
+        $("#startWeek").val(start);
+        $("#endWeek").val(end);
+
+        $("#monthOfYear").val(year);
+        $("#startMonth").val(start);
+        $("#endMonth").val(end);
+
+
+        $("#quarterOfYear").val(year);
+        $("#startQuarter").val(start);
+        $("#endQuarter").val(end);
+
+        $("#weekOfYear").val(year);
+        $("#startYear").val(start);
+        $("#endYear").val(end);
+
+        if (Number($('#weekOfYear').val()) !== 0) {
+            $("#fromDateEndDate").show();
+           var year = year;
+            var startWeek = start;
+            var fromDate = new Date("Jan 01, " + year + " 01:00:00");
+            var fw = fromDate.getTime() + 604800000 * (startWeek - 1);
+
+            var fromDayStartWeek = new Date(fw);
+            var fromDayStartW = (fromDayStartWeek.getMonth() + 1) + ' - ' + fromDayStartWeek.getDate() + ' - ' + fromDayStartWeek.getFullYear();
+
+            var endDayStartWeek = new Date(fw + 518400000);
+            var endDayStartW = (endDayStartWeek.getMonth() + 1) + ' - ' + endDayStartWeek.getDate() + ' - ' + endDayStartWeek.getFullYear();
+
+            var endWeek = end;
+            var ed = new Date("Jan 01, " + year + " 01:00:00");
+            var ew = ed.getTime() + 604800000 * (endWeek - 1);
+
+            var fromDayEndWeek = new Date(ew);
+            var fromDayEndW = (fromDayEndWeek.getMonth()+1) + ' - ' + fromDayEndWeek.getDate() + ' - ' + fromDayEndWeek.getFullYear();
+
+
+            var endDayEndWeek = new Date(ew + 518400000);
+            var endDayEndW = (endDayEndWeek.getMonth() + 1) + ' - ' + endDayEndWeek.getDate() + ' - ' + endDayEndWeek.getFullYear();
+
+              $("#fromDateEndDate .fromDayOfWeek").text('Month '+start+' ( from ' + fromDayStartW + ' to ' + endDayStartW +' )');
+              $("#fromDateEndDate .endDayOfWeek").text(' -> Month '+end+' ( from ' + fromDayEndW + ' to ' + endDayEndW+' )');
+
+        }
+        if (Number($('#monthOfYear').val()) !== 0) {
+            $("#fromDateEndDate").show();
+
+
+              $("#fromDateEndDate .fromDayOfWeek").text('Month '+start+' ( from ' + fromDayStartQ + ' to ' + endDayStartQ +' )');
+              $("#fromDateEndDate .endDayOfWeek").text(' -> Month '+end+' ( from ' + fromDayEndQ + ' to ' + endDayEndQ+' )');
+
+        }
+
+         if (Number($('#monthOfQuarter').val()) !== 0) {
+            $("#fromDateEndDate").show();
+
+
+           var year = year;
+            var startQuarter = start;
+            var fromDayStartMonth = new Date(year, start, 1);
+            var fromDayStartM = (fromDayStartWeek.getMonth() + 1) + ' - ' + fromDayStartMonth.getDate() + ' - ' + fromDayStartMonth.getFullYear();
+
+            var endDayStartMonth = new Date(year, start + 1, 0);
+            var endDayStartM = (endDayStartMonth.getMonth()+1) + ' - ' + endDayStartMonth.getDate() + ' - ' + endDayStartMonth.getFullYear();
+
+            var endWeek = end;
+            var fromDayEndMonth = new Date(ew);
+            var fromDayEndW = (fromDayEndMonth.getMonth()+1) + ' - ' + fromDayEndMonth.getDate() + ' - ' + fromDayEndMonth.getFullYear();
+
+
+            var endDayEndMonth = new Date(ew + 518400000);
+            var endDayEndM = (endDayEndMonth.getMonth() + 1) + ' - ' + endDayEndMonth.getDate() + ' - ' + endDayEndMonth.getFullYear();
+
+              $("#fromDateEndDate .fromDayOfWeek").text('Month '+start+' ( from ' + fromDayStartM + ' to ' + endDayStartM +' )');
+              $("#fromDateEndDate .endDayOfWeek").text(' -> Month '+end+' ( from ' + fromDayEndM + ' to ' + endDayEndM+' )');
+
+        }
+        $('#btnClearSearch').off('click').on('click', function () {
+        var kpilevelcode = chartperiodController.getUrlParameter('kpilevelcode');
+        var period = chartperiodController.getUrlParameter('period');
+           window.location.href = "/ChartPeriod/?kpilevelcode="+kpilevelcode+"&period="+period+"&year=0&start=0&end=0)";
+
+        })
+
+        $('#comment').unbind('keypress').on('keypress', function (e) {
+            if (e.keyCode == 13) {
+
+                chartperiodController.addData();
+                $('#boxComments').empty();
+                chartperiodController.loadDataComment();
+            }
+
+        });
+        $('#btnComment').off('click').on('click', function (e) {
+            if (e.keyCode === 13) {
+
+                chartperiodController.addData();
+                $('#boxComments').empty();
+                chartperiodController.loadDataComment();
+
+            }
+        });
+         $('#btnLike').off('click').on('click', function (e) {
+
+                chartperiodController.addFavourite();
+          });
+         $('#endWeek').off('change').on('change', function (e) {
+             chartperiodController.search();
+
+         });
+         $('#endMonth').off('change').on('change', function (e) {
+             chartperiodController.search();
+
+         });
+         $('#endQuarter').off('change').on('change', function (e) {
+             chartperiodController.search();
+
+         });
+         $('#endYear').off('change').on('change', function (e) {
+             chartperiodController.search();
+         });
+        $('#btnCompare').off('click').on('click', function (e) {
+             chartperiodController.loadDataProvide();
+
+         });
+    },
+    search() {
+          if ("@period" === "W")
+                    window.location.href = "/ChartPeriod/?kpilevelcode=@kpilevelcode&period=@period&year="+Number($("#weekOfYear").val())+"&start=" + Number($("#startWeek").val()) + "&end=" + Number($("#endWeek").val());
+
+         if ("@period" === "M")
+                   window.location.href = "/ChartPeriod/?kpilevelcode=@kpilevelcode&period=@period&year="+Number($("#monthOfYear").val())+"&start=" + Number($("#startMonth").val()) + "&end=" + Number($("#endMonth").val());
+
+         if ("@period" === "Q")
+                  window.location.href = "/ChartPeriod/?kpilevelcode=@kpilevelcode&period=@period&year="+Number($("#quarterOfYear").val())+"&start=" + Number($("#startQuarter").val()) + "&end=" + Number($("#endQuarter").val());
+
+          if ("@period" === "Y")
+                   window.location.href = "/ChartPeriod/?kpilevelcode=@kpilevelcode&period=@period&year=0&start=" + Number($("#startYear").val()) + "&end=" + Number($("#endYear").val());
+    }
+    ,
+    addData() {
+        if ($('#comment').val() == "") {
+            Swal.fire({
+                title: 'Warning!',
+                text: 'Please enter message!',
+                type: 'warning',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+        var mObj = {
+            KPILevelCode: "@kpilevelcode@period",
+            CommentMsg: $('#comment').val(),
+            UserID: Number($("#user").data('userid'))
+        };
+        $.ajax({
+            url: "/ChartPeriod/AddComment",
+            data: JSON.stringify(mObj),
+            type: "POST",
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            success: function (result) {
+                $('#comment').val("");
+                chartperiodController.loadDataComment();
+            },
+            error: function (errormessage) {
+                console.log(errormessage.responseText);
+            }
+        });
+    },
+     addDataHistory() {
+        if ($('#comment').val() == "") {
+            Swal.fire({
+                title: 'Warning!',
+                text: 'Please enter message!',
+                type: 'warning',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+        var mObj = {
+            UserID: Number($("#user").data('userid'))
+        };
+        $.ajax({
+            url: "/ChartPeriod/AddCommentHistory",
+            data: JSON.stringify(mObj),
+            type: "POST",
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            success: function (result) {
+                $('#comment').val("");
+                chartperiodController.loadDataComment();
+            },
+            error: function (errormessage) {
+                console.log(errormessage.responseText);
+            }
+        });
+    },
+     getUrlParameter: function(sParam) {
+    var sPageURL = window.location.search.substring(1),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+        }
+        }
+    }
+     ,
+    addFavourite() {
+        var UserID = $('#user').data('userid');
+        if (UserID === 0 || UserID === "" || UserID === undefined) {
+            Swal.fire({
+                title: 'Warning!',
+                text: 'Error!',
+                type: 'warning',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+        var mObj = {
+            KPILevelCode: "@kpilevelcode",
+            Period: "@period",
+            UserID: UserID,
+        };
+        $.ajax({
+            url: "/ChartPeriod/AddFavourite",
+            data: JSON.stringify(mObj),
+            type: "POST",
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            success: function (result) {
+                //
+                Swal.fire({
+                    title: 'success!',
+                    text: 'Add success!',
+                    type: 'success',
+                    confirmButtonText: 'OK'
+                });
+            },
+            error: function (errormessage) {
+                console.log(errormessage.responseText);
+            }
+        });
+    },
+    loadDataProvide() {
+        var obj="@kpilevelcode,@period";
+          $.ajax({
+            url: "/ChartPeriod/LoadDataProvide/?obj="+obj,
+            type: "POST",
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+        console.log(data.listCompare);
+             var count = 1;
+             var html = '';
+             var template = $('#tblcomparechart-template').html();
+             $.each(data.listCompare, function (i, item) {
+                 html += Mustache.render(template, {
+                     No: count,
+                     KPILevelCode: item.KPILevelCode,
+                     LevelNumber:item.LevelNumber,
+                     Area: item.Area,
+                     Status: item.Status==true?'<span class="label label-success">visible</span>' : '<span class="label bg-danger">not visible</span>'
+                 });
+                 count++;
+             });
+                $('#tblcomparechart').html(html);
+                 //$(".select").change(function () {
+
+        //        var code = $('.sop-code').val();
+        //        if (code.indexOf($(this).val()) == -1) {
+        //            let isCharCode = valOldCode == "" ? "" : '-';
+        //            valOldCode += isCharCode + $(this).val();
+        //            $('.sop-code').val(valOldCode);
+
+        //            let isCharName = valOldName == "" ? "" : ' - ';
+        //            valOldName += isCharName + $(this).find("option:selected").text();
+        //            $('.sop-name').val(valOldName);
+
+        //        }
+        //    });
+                 var old="";
+                $('#comparechart .compare').unbind().change(function (e) {
+                    var code = $(this).val();
+                    if (old.indexOf($(this).val()) == -1) {
+                        old += code + '-';
+                         $('.arrcompare').text(old);
+                    console.log(old);
+                    }
+
+                });
+
+            $('#btnCompare-kpilevel').off('click').on('click', function () {
+
+            var value = $('.arrcompare').text().toString();
+           var obj = value.substring(value.length - 1, 0);
+                window.location.href = "/Compare/?obj=" + obj;
+             })
+
+            },
+            error: function (errormessage) {
+                console.log(errormessage.responseText);
+            }
+        });
+    }
+    ,
+    loadDataComment() {
+        $.ajax({
+            url: '/ChartPeriod/LoadDataComment',
+            type: "GET",
+            data: {
+                kpilevelcode: "@kpilevelcode@period,"+$("#user").data('userid'),
+            },
+            dataType: "json",
+            success: function (res) {
+                console.log(res);
+                var data = res.data;
+                var total = res.total;
+
+                $('.total-comments').text(total);
+                var html = '';
+                $.each(data, function (i, item) {
+
+                    var nowDate = new Date(parseInt(item.CommentedDate.substr(6)));
+                    var date = new Date(nowDate);
+                    var result = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getUTCSeconds();
+
+                    html += '<div class="box-comment">';
+                    html += '<img class="img-circle img-sm" src="/Content/dist/img/default-50x50.gif" alt="User Image">';
+                    html += '<div class="comment-text">';
+                    html += '<span class="username">';
+                    html += item.FullName;
+                    html += '<span class="text-muted pull-right">'+result+'</span>';
+                    html += '</span>';
+                    if (item.Read===true) {
+                        html += item.CommentMsg
+                    }
+                    else {
+                          html += item.CommentMsg
+                    html += ' <span class="badge bg-green">new</span>';
+                    }
+
+                    html += '</div>';
+                    html += '</div>';
+
+                });
+                $('#boxComments').empty();
+                $('#boxComments').append(html);
+
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    },
+}
+
+    </script>
+}
+<section id="chartperiod">
+    <div class="row">
+        <div class="col-md-12">
+            <!-- LINE CHART -->
+            <div class="box box-widget">
+                <div class="box-header with-border">
+                    @if (period == "W")
+                    {
+                        <h3 class="box-title" style="font-weight:bold">KPI Chart - @kpiname - Weekly</h3>
+                    }
+                    else if (period == "M")
+                    {
+                        <h3 class="box-title" style="font-weight:bold">KPI Chart - @kpiname - Monthly</h3>
+
+                    }
+                    else if (period == "Q")
+                    {
+                        <h3 class="box-title" style="font-weight:bold">KPI Chart - @kpiname - Quarterly</h3>
+
+                    }
+                    else if (period == "Y")
+                    {
+                        <h3 class="box-title" style="font-weight:bold">KPI Chart - @kpiname - Yearly</h3>
+
+                    }
+                    @*@if (@Session["UserName"] != null)
+                        {
+                            <span style="display:none" class="userid">@Session["UserID"].ToString()</span>
+
+                        }*@
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool"><i class="fa fa-times"></i></button>
+
+                    </div>
+                </div>
+                <div class="box-body">
+                    <button type="button" data-toggle="modal" data-target="#modal-group" class="btn bg-navy margin btnLike pull-right" id="btnCompare"><i class="fa fa-adjust"></i> Compare</button>
+                    @if (@statusfavorite == "false")
+                    {
+                        <button type="button" class="btn btn-info margin btnLike pull-right" id="btnLike"><i class="fa fa-heart"></i> Add Favourite</button>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-default  margin btnLike pull-right disabled" disabled id="btnLike"><i class="fa fa-heart"></i> Added Favourite</button>
+
+                    }
+                    <div class="form-inline" style="display:none" id="searchMonth">
+                        <label class="my-1 mr-2" for="startMonth">Year</label>
+                        <select class="custom-select form-control year my-1 mr-sm-2" id="monthOfYear">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1999; i <= 2099; i++)
+                                {
+                                    <option value="@i">Year @i</option>
+                                }
+                            }
+                        </select>
+                        <label class="my-1 mr-2" for="startMonth">Start</label>
+                        <select class="custom-select form-control my-1 mr-sm-2" id="startMonth">
+                            <option value="0" selected>Choose...</option>
+                            <option value="1">Jan</option>
+                            <option value="2">Feb</option>
+                            <option value="3">Mar</option>
+                            <option value="4">Apr</option>
+                            <option value="5">May</option>
+                            <option value="6">Jun</option>
+                            <option value="7">Jul</option>
+                            <option value="8">Aug</option>
+                            <option value="9">Sep</option>
+                            <option value="10">Oct</option>
+                            <option value="11">Nov</option>
+                            <option value="12">Dec</option>
+                        </select>
+                        <label class="my-1 mr-2" for="endMonth">End</label>
+                        <select class="custom-select form-control my-1 mr-sm-2" id="endMonth">
+                            <option value="0" selected>Choose...</option>
+                            <option value="1">Jan</option>
+                            <option value="2">Feb</option>
+                            <option value="3">Mar</option>
+                            <option value="4">Apr</option>
+                            <option value="5">May</option>
+                            <option value="6">Jun</option>
+                            <option value="7">Jul</option>
+                            <option value="8">Aug</option>
+                            <option value="9">Sep</option>
+                            <option value="10">Oct</option>
+                            <option value="11">Nov</option>
+                            <option value="12">Dec</option>
+                        </select>
+                    </div>
+
+                    @* week *@
+                    <div class="form-inline" style="display:none" id="searchWeek">
+                        <label class="my-1 mr-2" for="startMonth">Year</label>
+                        <select class="custom-select form-control year my-1 mr-sm-2" id="weekOfYear">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1999; i <= 2099; i++)
+                                {
+                                    <option value="@i">Year @i</option>
+                                }
+                            }
+                        </select>
+                        <label class="my-1 mr-2" for="startMonth">Week Start</label>
+                        <select class="custom-select form-control my-1 mr-sm-2" id="startWeek">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1; i <= 52; i++)
+                                {
+                                    <option value="@i">Week @i</option>
+                                }
+                            }
+                        </select>
+                        <label class="my-1 mr-2" for="endMonth">Week End</label>
+                        <select class="custom-select form-control my-1 mr-sm-2" id="endWeek">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1; i <= 52; i++)
+                                {
+                                    <option value="@i">Week @i</option>
+                                }
+                            }
+                        </select>
+                        <button type="button" class="btn bg-green margin" id="btnClearSearch"><i class="fa fa-remove"></i> Clear search</button>
+                    </div>
+                    @* Quarter *@
+                    <div class="form-inline" style="display:none" id="searchQuarter">
+                        <label class="my-1 mr-2" for="startMonth">Year</label>
+                        <select class="custom-select form-control year my-1 mr-sm-2" id="quarterOfYear">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1999; i <= 2099; i++)
+                                {
+                                    <option value="@i">Year @i</option>
+                                }
+                            }
+                        </select>
+                        <label class="my-1 mr-2" for="startMonth">Start</label>
+                        <select class="custom-select form-control my-1 mr-sm-2" id="startQuarter">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1; i <= 4; i++)
+                                {
+                                    <option value="@i">Quarter @i</option>
+                                }
+                            }
+                        </select>
+                        <label class="my-1 mr-2" for="endMonth">End</label>
+                        <select class="custom-select form-control my-1 mr-sm-2" id="endQuarter">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1; i <= 4; i++)
+                                {
+                                    <option value="@i">Quarter @i</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    @* Year *@
+                    <div class="form-inline" style="display:none" id="searchYear">
+                        <label class="my-1 mr-2" for="startMonth">Start</label>
+                        <select class="custom-select form-control my-1 mr-sm-2" id="startYear">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 2019; i <= 2050; i++)
+                                {
+                                    <option value="@i">Year @i</option>
+                                }
+                            }
+                        </select>
+                        <label class="my-1 mr-2" for="endMonth">End</label>
+                        <select class="custom-select form-control my-1 mr-sm-2" id="endYear">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 2019; i <= 2050; i++)
+                                {
+                                    <option value="@i">Year @i</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="chart">
+                        <canvas id="lineChart" style="height:250px"></canvas>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <p class="text-green text-bold" style="font-size:16px;display:none" id="fromDateEndDate"> <span class="fromDayOfWeek"></span> <span class="endDayOfWeek"></span> </p>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-12">
+            <div class="box box-widget">
+                <div class="box-header with-border">
+                    @if (period == "W")
+                    {
+                        <h3 class="box-title" style="font-weight:bold">Data  - @kpiname - Weekly</h3>
+                    }
+                    else if (period == "M")
+                    {
+                        <h3 class="box-title" style="font-weight:bold">Data - @kpiname - Monthly</h3>
+
+                    }
+                    else if (period == "Q")
+                    {
+                        <h3 class="box-title" style="font-weight:bold">Data - @kpiname - Quarterly</h3>
+
+                    }
+                    else if (period == "Y")
+                    {
+                        <h3 class="box-title" style="font-weight:bold">Data - @kpiname - Yearly</h3>
+
+                    }
+
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" style="margin-bottom:20px;" id="tblkpi">
+                            <tbody>
+                                <tr></tr>
+                                <tr></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <span class="text-muted"><span class="total-comments"></span> comments</span>
+                </div>
+                <div class="box-footer boxComments" id="boxComments">
+                    <div class="box-comment">
+                        <!-- User image -->
+                        <img class="img-circle img-sm" src="~/Content/dist/img/default-50x50.gif" alt="User Image">
+
+                        <div class="comment-text">
+                            <span class="username">
+                                Maria Gonzales
+                                <span class="text-muted pull-right">8:03 PM Today</span>
+                            </span><!-- /.username -->
+                            It is a long established fact that a reader will be distracted
+                            by the readable content of a page when looking at its layout.
+                        </div>
+                        <!-- /.comment-text -->
+                    </div>
+                    <!-- /.box-comment -->
+                </div>
+
+                <div class="box-footer">
+                    <img class="img-responsive img-circle img-sm" src="/Content/dist/img/default-50x50.gif" alt="Alt Text">
+                    <!-- .img-push is used to add margin to elements next to floating images -->
+                    <div class="img-push">
+                        <input type="text" class="form-control input-sm" id="comment" placeholder="Press enter to post comment">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @RenderPage("_Modal.cshtml")
+</section>

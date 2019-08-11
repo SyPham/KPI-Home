@@ -1,0 +1,136 @@
+﻿@using MvcBreadCrumbs
+@{
+    ViewBag.Title = "Workplace";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Html.Raw(BreadCrumb.Display())
+<div class="box">
+    <div class="box-header with-border">
+        <h3 class="box-title">My Workplace</h3>
+    </div>
+    <!-- /.box-header -->
+    <div class="box-body table-responsive no-padding">
+        <button type="button" data-toggle="modal" data-target="#modal-group" class="btn btn-block btn-success btn-upload " style="width:30%;margin:auto">Upload File</button>
+
+        <table class="table table-hover table-bordered hidden">
+            <thead>
+                <tr>
+                    <th style="width: 10px">#</th>
+                    <th>KPI Name</th>
+                    <th>Update Status</th>
+                    <th>Expiry Date</th>
+                    <th>Upload</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr href="/KPI/Detail">
+                    <td>1.</td>
+                    <td> <span style="padding-left:5px">KPI A</span> <i class="fa fa-heart text-red"></i></td>
+                    <td>
+                        <span class="label label-success">done</span>
+
+                    </td>
+                    <td>
+                        June 8th 2019
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-block btn-success btn-upload">Upload</button>
+                    </td>
+                </tr>
+                <tr href="/KPI/Detail">
+                    <td>2.</td>
+                    <td><span style="padding-left:5px">KPI B</span> <i class="fa fa-heart text-red"></i></td>
+                    <td>
+                        <span class="label label-danger">undone</span>
+                    </td>
+                    <td>
+                        June 30th 2019
+                    </td>
+                    <td>
+                        <button type="button" data-toggle="modal" data-target="#modal-group" class="btn btn-block btn-success btn-upload">Upload</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- /.box-body -->
+    <div class="box-footer clearfix hidden">
+        <ul class="pagination pagination-sm no-margin pull-right">
+            <li><a href="#">«</a></li>
+            <li><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">»</a></li>
+        </ul>
+    </div>
+</div>
+@RenderPage("_Modal.cshtml")
+@section Scripts{
+    <script>
+
+        $(document).ready(function () {
+            $('#Upload .download').click(function () {
+                console.log("click download");
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Workplace/ExcelExport",
+                    cache: false,
+                    success: function (data) {
+                        window.location = '/Workplace/Download';
+                    },
+                    error: function (data) {
+                        Materialize.toast("Something went wrong. ", 3000, 'rounded');
+                    }
+                });
+            });
+
+            $('table tr').addClass("text-center");
+            $('table th').addClass("text-center");
+            $('table tr td:last-child').css("width", "60px");
+
+            $('table tr td button').on('click', function () {
+                $(this).next().click();
+            });
+
+            $('table tr td i').click(function () {
+                $(this).toggleClass('text-red');
+            });
+
+            $("form#upload").submit(function (e) {
+                e.preventDefault();
+                console.log("click upload");
+                var formData = new FormData(this);
+                var upload = function () {
+                    $.ajax({
+                        url: "/Workplace/Submit",
+                        type: 'POST',
+                        data: formData,
+                        dataType: 'json',
+                        processData: false,  // tell jQuery not to process the data
+                        contentType: false,  // tell jQuery not to set contentType
+                        success: function (result) {
+                            if (result) {
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: 'Upload successfully!',
+                                    type: 'success',
+                                    confirmButtonText: 'OK'
+                                });
+                                $("#modal-group").modal('hide');
+                            } else {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Upload failed!',
+                                    type: 'error'
+                                });
+                            }
+                        }
+                    });
+                }
+                upload();
+            });
+        });
+    </script>
+}
