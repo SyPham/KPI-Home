@@ -5,24 +5,24 @@
     ViewBag.Title = "Chart";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var datasets = ViewBag.Datasets as int?[];
+    var dataremarks = (List<KPI.Model.ViewModel.Dataremark>)ViewBag.Dataremarks;
     var labels = ViewBag.Labels as string[];
     var label = ViewBag.Label as string;
     var kpiname = ViewBag.KPIName as string;
     var period = ViewBag.Period as string;
     var kpilevelcode = ViewBag.KPILevelCode as string;
     var statusfavorite = ViewBag.StatusFavorite as string;
-      var url = ViewBag.Url as string;
+    var url = ViewBag.Url as string;
 }
 @Html.Raw(BreadCrumb.Display())
 @section Scripts{
-    <script>
+    <script type="text/javascript">
 
         var labelString;
         if ("@period" === "W") {
             labelString = " Weeks in year ";
             $("#searchWeek").show();
         }
-
         if ("@period" === "M") {
             labelString = "Months in year";
               $("#searchMonth").show();
@@ -31,13 +31,10 @@
             labelString = "Quarters in year";
               $("#searchQuarter").show();
         }
-
         if ("@period" === "Y") {
             labelString = "Years";
               $("#searchYear").show();
-
         }
-
         var datasets =@Html.Raw(Json.Encode(datasets));
          if (datasets.length === 0) {
                    Swal.fire({
@@ -46,94 +43,147 @@
                         type: 'error'
                     });
              }
-var labels =@Html.Raw(Json.Encode(labels));
+        var labels =@Html.Raw(Json.Encode(labels));
+        var dataremarks =@Html.Raw(Json.Encode(dataremarks));
     var label = "@label";
         var period = "@period";
          var kpilevelcode = "@kpilevelcode";
         $(function () {
 
-    if (period=== "W") {
-            $("#tblkpi tr:first-child").append("<th>Week</th>");
+            if (period === "W") {
+            //Thêm tiêu đề cho tr:first-child th
+                $("#tblkpi tr:first-child").append("<th>Week</th>");
+
+            //Thêm dữ liệu tr từ tuần 1 đến tuần còn lại
             $.each(labels, function (key, item) {
                 $("#tblkpi tr:first-child").append("<th >" + item + "</th>");
             });
+
+            //Thêm tiêu đề cho tr:nth-child(2) th
             $("#tblkpi tr:nth-child(2)").append("<th >Percentage</th>");
-            $.each(datasets, function (key, item) {
-                $("#tblkpi tr:nth-child(2)").append("<td>" + item + "</td>");
+
+             //Thêm dữ liệu cho tr:nth-child(2) td
+            $.each(dataremarks, function (key, item) {
+                $("#tblkpi tr:nth-child(2)").append("<td data-id='"+item.ID+"' onclick='return chartperiodController.Remark("+item.ID+")' >" + item.Value + "</td>");
             });
+
+        var lastRemark = dataremarks[dataremarks.length - 1];
+                console.log(lastRemark.ID)
+                $('#lastRemark').val(lastRemark.Remark);
+                $('.lastRemark').text(lastRemark.ID);
+                $('.lastRemarkLabel').text("Week " + lastRemark.Week + " : ");
+            $("#fromDateEndDate").show();
         }
-    else if (period=== "M") {
-              $("#tblkpi tr:first-child").append("<th >Month</th>");
+    else if (period === "M") {
+            //Thêm tiêu đề cho tr:first-child th
+            $("#tblkpi tr:first-child").append("<th >Month</th>");
+
+            //Thêm dữ liệu tr từ tháng 1 đến tháng còn lại
             $.each(labels, function (key, item) {
                 $("#tblkpi tr:first-child").append("<th >" + item + "</th>");
             });
-            $("#tblkpi tr:nth-child(2)").append("<th >Percentage</th>");
-            $.each(datasets, function (key, item) {
-                $("#tblkpi tr:nth-child(2)").append("<td>" + item + "</td>");
+
+            //Thêm tiêu đề cho tr:nth-child(2) th
+                $("#tblkpi tr:nth-child(2)").append("<th >Percentage</th>");
+
+            //Thêm dữ liệu cho tr:nth-child(2) td
+            $.each(dataremarks, function (key, item) {
+                $("#tblkpi tr:nth-child(2)").append("<td data-id='"+item.ID+"' onclick='return chartperiodController.Remark("+item.ID+")'  >" + item.Value + "</td>");
             });
+
+             var lastRemark = dataremarks[dataremarks.length - 1];
+
+             $('#lastRemark').val(lastRemark.Remark);
+            $('.lastRemarkLabel').text("Month " + lastRemark.Month + " : ");
+            //Hiển thị ngày tháng dưới chartjs
+            $("#fromDateEndDateM").show();
         }
     else if (period=== "Q") {
-              $("#tblkpi tr:first-child").append("<th >Quarter</th>");
+             //Thêm tiêu đề cho tr:first-child th
+            $("#tblkpi tr:first-child").append("<th >Quarter</th>");
+
+            //Thêm dữ liệu tr từ quý 1 đến tháng còn lại
             $.each(labels, function (key, item) {
                 $("#tblkpi tr:first-child").append("<th >" + item + "</th>");
-            });
+        });
+
+            //Thêm tiêu đề cho tr:nth-child(2) th
             $("#tblkpi tr:nth-child(2)").append("<th >Percentage</th>");
-            $.each(datasets, function (key, item) {
-                $("#tblkpi tr:nth-child(2)").append("<td>" + item + "</td>");
+
+            //Thêm dữ liệu cho tr:nth-child(2) td
+            $.each(dataremarks, function (key, item) {
+                $("#tblkpi tr:nth-child(2)").append("<td data-id='"+item.ID+"' onclick='return chartperiodController.Remark("+item.ID+")'>" + item.Value + "</td>");
             });
+
+            var lastRemark = dataremarks[dataremarks.length - 1];
+             $('#lastRemark').val(lastRemark.Remark);
+            $('.lastRemarkLabel').text("Quarter " + lastRemark.Quater + " : ");
+
+            //Hiển thị ngày tháng dưới chartjs
+            $("#fromDateEndDateQ").show();
+
         }
-    else if (period=== "Y") {
-              $("#tblkpi tr:first-child").append("<th >Year</th>");
+    else if (period === "Y") {
+
+             //Thêm tiêu đề cho tr:first-child th
+            $("#tblkpi tr:first-child").append("<th >Year</th>");
+
+            //Thêm dữ liệu tr từ quý 1 đến tháng còn lại
             $.each(labels, function (key, item) {
                 $("#tblkpi tr:first-child").append("<th >" + item + "</th>");
             });
+
+            //Thêm tiêu đề cho tr:nth-child(2) th
             $("#tblkpi tr:nth-child(2)").append("<th >Percentage</th>");
-            $.each(datasets, function (key, item) {
-                $("#tblkpi tr:nth-child(2)").append("<td>" + item + "</td>");
+
+             //Thêm dữ liệu cho tr:nth-child(2) td
+            $.each(dataremarks, function (key, item) {
+                $("#tblkpi tr:nth-child(2)").append("<td data-id='"+item.ID+"' onclick='return chartperiodController.Remark("+item.ID+")'  >" + item.Value + "</td>");
             });
+             var lastRemark = dataremarks[dataremarks.length - 1];
+             $('#lastRemark').val(lastRemark.Remark);
+            $('.lastRemarkLabel').text("Year " + lastRemark.Year + " : " );
+
         }
 
             var ctx = document.getElementById('lineChart').getContext('2d');
 
-   Chart.defaults.global.defaultFontSize = 14;
+            Chart.defaults.global.defaultFontSize = 14;
             var myChart = new Chart(ctx, {
-
-                //type: 'line',
-                type:'line'
-                ,
-        data: {
-            labels: labels,
-            datasets: [{
-                label: label,
-                data: datasets,
-                fill: "#ffffff",
-                borderWidth: 2,
-                borderColor: "#d81b60",
-                backgroundColor: "#d81b60",
-                pointBackgroundColor: "#d81b60"
-            }]
-        },
+                type:'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: label,
+                        data: datasets,
+                        fill: "#ffffff",
+                        borderWidth: 2,
+                        borderColor: "#d81b60",
+                        backgroundColor: "#d81b60",
+                        pointBackgroundColor: "#d81b60"
+                    }]
+                },
                 options: {
                     elements: {
                     point:{
                         radius: 0
                     }
                 },
-             layout: {
-            padding: {
-                left: 0,
-                right: 20,
-                top: 0,
-                bottom: 0
-            }
-        },
+                 layout: {
+                padding: {
+                    left: 0,
+                    right: 20,
+                    top: 0,
+                    bottom: 0
+                }
+            },
              title: {
             display: true,
                 text: "@label - @kpiname",
                 fontSize: 16,
                 fontColor: 'black'
 
-        },
+            },
             plugins: {
                 datalabels: {
                     display: false
@@ -141,9 +191,8 @@ var labels =@Html.Raw(Json.Encode(labels));
             },
             elements: {
                 line: {
-                    tension: 0
+                    tension: 0.2
                 }
-
             },
             scales: {
                 yAxes: [{
@@ -209,29 +258,78 @@ var chartperiodController = {
          chartperiodController.registerEvent();
     },
     registerEvent() {
+        $("#tblkpi tr:nth-child(2) td").dblclick(function () {
+            $('#modal-group-comment-data').modal('show');
+        });
+        $('#lastRemark').off('keypress').on('keypress', function (e) {
+            if (e.keyCode === 13) {
+                chartperiodController.UpdateRemark();
+            }
+        });
         var year = chartperiodController.getUrlParameter('year');
         var start = chartperiodController.getUrlParameter('start');
         var end = chartperiodController.getUrlParameter('end');
+         var period = chartperiodController.getUrlParameter('period');
+        if (year == "0" && start === "0" && end === "0") {
 
-        $("#weekOfYear").val(year);
-        $("#startWeek").val(start);
-        $("#endWeek").val(end);
+            var d = new Date();
+            var currenyear = d.getFullYear();
+            year = currenyear;
+            start = 1;
+            end = 52;
+            if (period === "W") {
+                $("#weekOfYear").val(currenyear);
+                $("#startWeek").val(1);
+                $("#endWeek").val(52);
 
-        $("#monthOfYear").val(year);
-        $("#startMonth").val(start);
-        $("#endMonth").val(end);
+            }
+
+            if (period === "M") {
+                $("#monthOfYear").val(currenyear);
+                $("#startMonth").val(1);
+                $("#endMonth").val(12);
+                 year = currenyear;
+                    start = 1;
+                    end = 12;
+            }
+            if (period === "Q") {
+                $("#quarterOfYear").val(currenyear);
+                $("#startQuarter").val(1);
+                $("#endQuarter").val(4);
+                 year = currenyear;
+                    start = 1;
+                    end = 4;
+            }
+            if (period === "Y") {
+                $("#weekOfYear").val(currenyear);
+                $("#startYear").val(currenyear);
+                $("#endYear").val(currenyear);
+                 year = currenyear;
+                start = currenyear;
+                end = currenyear;
+            }
+        }
+        else {
+            $("#weekOfYear").val(year);
+            $("#startWeek").val(start);
+            $("#endWeek").val(end);
+
+            $("#monthOfYear").val(year);
+            $("#startMonth").val(start);
+            $("#endMonth").val(end);
 
 
-        $("#quarterOfYear").val(year);
-        $("#startQuarter").val(start);
-        $("#endQuarter").val(end);
+            $("#quarterOfYear").val(year);
+            $("#startQuarter").val(start);
+            $("#endQuarter").val(end);
 
-        $("#weekOfYear").val(year);
-        $("#startYear").val(start);
-        $("#endYear").val(end);
+            $("#weekOfYear").val(year);
+            $("#startYear").val(start);
+            $("#endYear").val(end);
 
+        }
+       
         if (Number($('#weekOfYear').val()) !== 0) {
-            $("#fromDateEndDate").show();
            var year = year;
             var startWeek = start;
             var fromDate = new Date("Jan 01, " + year + " 01:00:00");
@@ -254,41 +352,54 @@ var chartperiodController = {
             var endDayEndWeek = new Date(ew + 518400000);
             var endDayEndW = (endDayEndWeek.getMonth() + 1) + ' - ' + endDayEndWeek.getDate() + ' - ' + endDayEndWeek.getFullYear();
 
-              $("#fromDateEndDate .fromDayOfWeek").text('Month '+start+' ( from ' + fromDayStartW + ' to ' + endDayStartW +' )');
-              $("#fromDateEndDate .endDayOfWeek").text(' -> Month '+end+' ( from ' + fromDayEndW + ' to ' + endDayEndW+' )');
+              $("#fromDateEndDate .fromDayOfWeek").text('Week '+start+' ( from ' + fromDayStartW + ' to ' + endDayStartW +' )');
+              $("#fromDateEndDate .endDayOfWeek").text(' -> Week '+end+' ( from ' + fromDayEndW + ' to ' + endDayEndW+' )');
 
         }
         if (Number($('#monthOfYear').val()) !== 0) {
-            $("#fromDateEndDate").show();
+            var now = new Date(year,start,1);
+            var prevMonthLastDate = new Date(now.getFullYear(), now.getMonth(), 0);
+            var prevMonthFirstDate = new Date(now.getFullYear() - (now.getMonth() > 0 ? 0 : 1), (now.getMonth() - 1 + 12) % 12, 1);
+
+            var formatDateComponent = function(dateComponent) {
+              return (dateComponent < 10 ? '0' : '') + dateComponent;
+            };
+
+            var now2 = new Date(year,end,1);
+            var prevMonthLastDate2 = new Date(now2.getFullYear(), now2.getMonth(), 0);
+            var prevMonthFirstDate2 = new Date(now2.getFullYear() - (now2.getMonth() > 0 ? 0 : 1), (now2.getMonth() - 1 + 12) % 12, 1);
+
+            var formatDateComponent = function(dateComponent) {
+              return (dateComponent < 10 ? '0' : '') + dateComponent;
+            };
+
+            var formatDate = function(date) {
+              return formatDateComponent(date.getMonth() + 1) + ' - ' + formatDateComponent(date.getDate()) + ' - ' + date.getFullYear();
+            };
 
 
-              $("#fromDateEndDate .fromDayOfWeek").text('Month '+start+' ( from ' + fromDayStartQ + ' to ' + endDayStartQ +' )');
-              $("#fromDateEndDate .endDayOfWeek").text(' -> Month '+end+' ( from ' + fromDayEndQ + ' to ' + endDayEndQ+' )');
-
+              $("#fromDateEndDateM .fromDayOfMonth").text('Month '+start+' ( from ' + formatDate(prevMonthFirstDate) + ' to ' + formatDate(prevMonthLastDate) +' )');
+              $("#fromDateEndDateM .endDayOfMonth").text(' -> Month '+end+' ( from ' + formatDate(prevMonthFirstDate2) + ' to ' + formatDate(prevMonthLastDate2)+' )');
         }
 
-         if (Number($('#monthOfQuarter').val()) !== 0) {
-            $("#fromDateEndDate").show();
+         if (Number($('#quarterOfYear').val()) !== 0) {
+            var startQ = new Date(year,start*3-3,1);
+             var endQ = new Date(year, start * 3, 0);
 
+              var startQ2 = new Date(year,end*3-3,1);
+             var endQ2 = new Date(year, end * 3, 0);
+               var formatDateComponent = function(dateComponent) {
+              return (dateComponent < 10 ? '0' : '') + dateComponent;
+             };
 
-           var year = year;
-            var startQuarter = start;
-            var fromDayStartMonth = new Date(year, start, 1);
-            var fromDayStartM = (fromDayStartWeek.getMonth() + 1) + ' - ' + fromDayStartMonth.getDate() + ' - ' + fromDayStartMonth.getFullYear();
-
-            var endDayStartMonth = new Date(year, start + 1, 0);
-            var endDayStartM = (endDayStartMonth.getMonth()+1) + ' - ' + endDayStartMonth.getDate() + ' - ' + endDayStartMonth.getFullYear();
-
-            var endWeek = end;
-            var fromDayEndMonth = new Date(ew);
-            var fromDayEndW = (fromDayEndMonth.getMonth()+1) + ' - ' + fromDayEndMonth.getDate() + ' - ' + fromDayEndMonth.getFullYear();
-
-
-            var endDayEndMonth = new Date(ew + 518400000);
-            var endDayEndM = (endDayEndMonth.getMonth() + 1) + ' - ' + endDayEndMonth.getDate() + ' - ' + endDayEndMonth.getFullYear();
-
-              $("#fromDateEndDate .fromDayOfWeek").text('Month '+start+' ( from ' + fromDayStartM + ' to ' + endDayStartM +' )');
-              $("#fromDateEndDate .endDayOfWeek").text(' -> Month '+end+' ( from ' + fromDayEndM + ' to ' + endDayEndM+' )');
+            var formatDate = function(date) {
+              return formatDateComponent(date.getMonth() + 1) + ' - ' + formatDateComponent(date.getDate()) + ' - ' + date.getFullYear();
+            };
+            //var formatDate = function(date) {
+            //  return (date.getMonth() + 1) + '/' + (date.getDate()) + '/' + date.getFullYear();
+            //};
+              $("#fromDateEndDateQ .fromDayOfQuarter").text('Quarter '+start+' ( from ' + formatDate(startQ) + ' to ' + formatDate(endQ) +' )');
+              $("#fromDateEndDateQ .endDayOfQuarter").text(' -> Quarter '+end+' ( from ' + formatDate(startQ2) + ' to ' + formatDate(endQ2)+' )');
 
         }
         $('#btnClearSearch').off('click').on('click', function () {
@@ -352,8 +463,7 @@ var chartperiodController = {
 
           if ("@period" === "Y")
                    window.location.href = "/ChartPeriod/?kpilevelcode=@kpilevelcode&period=@period&year=0&start=" + Number($("#startYear").val()) + "&end=" + Number($("#endYear").val());
-    }
-    ,
+    },
     addData() {
         if ($('#comment').val() == "") {
             Swal.fire({
@@ -384,7 +494,7 @@ var chartperiodController = {
             }
         });
     },
-     addDataHistory() {
+    addDataHistory() {
         if ($('#comment').val() == "") {
             Swal.fire({
                 title: 'Warning!',
@@ -412,7 +522,7 @@ var chartperiodController = {
             }
         });
     },
-     getUrlParameter: function(sParam) {
+    getUrlParameter: function(sParam) {
     var sPageURL = window.location.search.substring(1),
         sURLVariables = sPageURL.split('&'),
         sParameterName,
@@ -425,8 +535,7 @@ var chartperiodController = {
             return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
         }
         }
-    }
-     ,
+    },
     addFavourite() {
         var UserID = $('#user').data('userid');
         if (UserID === 0 || UserID === "" || UserID === undefined) {
@@ -463,6 +572,52 @@ var chartperiodController = {
             }
         });
     },
+    Remark(id) {
+        $.post("/ChartPeriod/Remark", { dataid: id }, function (result) {
+            console.log(result);
+            //$("#remark").val(result.Remark);
+                $(".lastRemark").text(id);
+
+             $("#textarea-remark").toggle(500);
+             if (result.Week != undefined) {
+                 $("#lastRemark").val(result.Remark);
+                 $("#remark").val("Week " + result.Week + " : " + result.Remark);
+                $('.lastRemarkLabel').text("Week " + result.Week + " : ");
+
+             }
+             if (result.Month != undefined) {
+                 $("#lastRemark").val(result.Remark);
+                 $("#remark").val("Month " + result.Month + " : " + result.Remark);
+                $('.lastRemarkLabel').text("Month " + result.Month + " : ");
+
+
+             }
+             if (result.Quater != undefined) {
+                 $("#lastRemark").val(result.Remark);
+                 $("#remark").val("Quarter " + result.Quater + " : " + result.Remark);
+                $('.lastRemarkLabel').text("Quarter " + result.Quater + " : " );
+
+             }
+             if (result.Year != undefined) {
+                 $("#lastRemark").val(result.Remark);
+                 $("#remark").val("Year " + result.Year + " : " + result.Remark);
+                $('.lastRemarkLabel').text("Year " + result.Year + " : ");
+
+             }
+        });
+    },
+    UpdateRemark() {
+        var remark = $('#lastRemark').val();
+        var dataid = Number($('.lastRemark').text());
+         $.post("/ChartPeriod/UpdateRemark", { dataid:dataid , remark:remark }, function (result) {
+            Swal.fire({
+                title: 'Success!',
+                text: 'Add successfully!',
+                type: 'success',
+                confirmButtonText: 'OK'
+            });
+        });
+    } ,
     loadDataProvide() {
         var obj="@kpilevelcode,@period";
           $.ajax({
@@ -486,23 +641,14 @@ var chartperiodController = {
                  count++;
              });
                 $('#tblcomparechart').html(html);
-                 //$(".select").change(function () {
 
-        //        var code = $('.sop-code').val();
-        //        if (code.indexOf($(this).val()) == -1) {
-        //            let isCharCode = valOldCode == "" ? "" : '-';
-        //            valOldCode += isCharCode + $(this).val();
-        //            $('.sop-code').val(valOldCode);
-
-        //            let isCharName = valOldName == "" ? "" : ' - ';
-        //            valOldName += isCharName + $(this).find("option:selected").text();
-        //            $('.sop-name').val(valOldName);
-
-        //        }
-        //    });
                  var old="";
                 $('#comparechart .compare').unbind().change(function (e) {
+
+
                     var code = $(this).val();
+
+
                     if (old.indexOf($(this).val()) == -1) {
                         old += code + '-';
                          $('.arrcompare').text(old);
@@ -514,7 +660,10 @@ var chartperiodController = {
             $('#btnCompare-kpilevel').off('click').on('click', function () {
 
             var value = $('.arrcompare').text().toString();
-           var obj = value.substring(value.length - 1, 0);
+                var obj = value.substring(value.length - 1, 0);
+                   var kpilevelcode = chartperiodController.getUrlParameter('kpilevelcode');
+                    var period = chartperiodController.getUrlParameter('period');
+                   obj = obj + '-' +kpilevelcode + ',' + period ;
                 window.location.href = "/Compare/?obj=" + obj;
              })
 
@@ -523,8 +672,7 @@ var chartperiodController = {
                 console.log(errormessage.responseText);
             }
         });
-    }
-    ,
+    },
     loadDataComment() {
         $.ajax({
             url: '/ChartPeriod/LoadDataComment',
@@ -575,7 +723,6 @@ var chartperiodController = {
         });
     },
 }
-
     </script>
 }
 <section id="chartperiod">
@@ -768,7 +915,19 @@ var chartperiodController = {
                     </div>
                 </div>
                 <div class="box-footer">
-                    <p class="text-green text-bold" style="font-size:16px;display:none" id="fromDateEndDate"> <span class="fromDayOfWeek"></span> <span class="endDayOfWeek"></span> </p>
+
+                    <p class="text-green text-bold" style="font-size:16px;display:none" id="fromDateEndDate">
+                        <span class="fromDayOfWeek"></span>
+                        <span class="endDayOfWeek"></span>
+                    </p>
+                    <p class="text-green text-bold" style="font-size:16px;display:none" id="fromDateEndDateM">
+                        <span class="fromDayOfMonth"></span>
+                        <span class="endDayOfMonth"></span>
+                    </p>
+                    <p class="text-green text-bold" style="font-size:16px;display:none" id="fromDateEndDateQ">
+                        <span class="fromDayOfQuarter"></span>
+                        <span class="endDayOfQuarter"></span>
+                    </p>
                 </div>
             </div>
 
@@ -807,32 +966,13 @@ var chartperiodController = {
                             </tbody>
                         </table>
                     </div>
-
-                    <span class="text-muted"><span class="total-comments"></span> comments</span>
                 </div>
-                <div class="box-footer boxComments" id="boxComments">
-                    <div class="box-comment">
-                        <!-- User image -->
-                        <img class="img-circle img-sm" src="~/Content/dist/img/default-50x50.gif" alt="User Image">
+                <div class="box-footer"  id="textarea-remark">
+                    <div class="form-group">
+                        <span class="lastRemark" style="display:none"></span>
+                        <label for="lastRemark" class="lastRemarkLabel"></label>
+                        <textarea data-dataid="" style="font-weight:bold;color:#0094ff" class="form-control" id="lastRemark"></textarea>
 
-                        <div class="comment-text">
-                            <span class="username">
-                                Maria Gonzales
-                                <span class="text-muted pull-right">8:03 PM Today</span>
-                            </span><!-- /.username -->
-                            It is a long established fact that a reader will be distracted
-                            by the readable content of a page when looking at its layout.
-                        </div>
-                        <!-- /.comment-text -->
-                    </div>
-                    <!-- /.box-comment -->
-                </div>
-
-                <div class="box-footer">
-                    <img class="img-responsive img-circle img-sm" src="/Content/dist/img/default-50x50.gif" alt="Alt Text">
-                    <!-- .img-push is used to add margin to elements next to floating images -->
-                    <div class="img-push">
-                        <input type="text" class="form-control input-sm" id="comment" placeholder="Press enter to post comment">
                     </div>
                 </div>
             </div>

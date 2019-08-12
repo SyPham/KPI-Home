@@ -18,6 +18,7 @@ namespace KPI.Model.EF
         public int? Quater { get; set; }
         public int? Year { get; set; }
         public string DateUpload { get; set; }
+        public string Remark { get; set; }
         private DateTime? createTime = null;
         public DateTime CreateTime
         {

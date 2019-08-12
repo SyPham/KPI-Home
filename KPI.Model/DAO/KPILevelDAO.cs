@@ -598,7 +598,7 @@ namespace KPI.Model.DAO
             if (period == "W")
             {
 
-                listCompare = _dbContext.KPILevels.Where(x => x.KPIID == kpiid && x.WeeklyChecked == true)
+                listCompare = _dbContext.KPILevels.Where(x => x.KPIID == kpiid && x.WeeklyChecked == true && !x.KPILevelCode.Contains(kpilevelcode))
                     .Join(_dbContext.Levels,
                     x => x.LevelID,
                     a => a.ID,
@@ -616,7 +616,7 @@ namespace KPI.Model.DAO
 
             if (period == "M")
             {
-                listCompare = _dbContext.KPILevels.Where(x => x.KPIID == kpiid && x.MonthlyChecked == true)
+                listCompare = _dbContext.KPILevels.Where(x => x.KPIID == kpiid && x.MonthlyChecked == true && !x.KPILevelCode.Contains(kpilevelcode))
                     .Join(_dbContext.Levels,
                     x => x.LevelID,
                     a => a.ID,
@@ -634,7 +634,7 @@ namespace KPI.Model.DAO
 
             if (period == "Q")
             {
-                listCompare = _dbContext.KPILevels.Where(x => x.KPIID == kpiid && x.QuaterlyChecked == true)
+                listCompare = _dbContext.KPILevels.Where(x => x.KPIID == kpiid && x.QuaterlyChecked == true && !x.KPILevelCode.Contains(kpilevelcode))
                     .Join(_dbContext.Levels,
                     x => x.LevelID,
                     a => a.ID,
@@ -652,7 +652,7 @@ namespace KPI.Model.DAO
 
             if (period == "Y")
             {
-                listCompare = _dbContext.KPILevels.Where(x => x.KPIID == kpiid && x.YearlyChecked == true)
+                listCompare = _dbContext.KPILevels.Where(x => x.KPIID == kpiid && x.YearlyChecked == true && !x.KPILevelCode.Contains(kpilevelcode))
                     .Join(_dbContext.Levels,
                     x => x.LevelID,
                     a => a.ID,

@@ -19,9 +19,9 @@ namespace KPI.Web.Controllers
             BreadCrumb.SetLabel("Add User Of List Each Levels");
             return View();
         }
-        public ActionResult AddUserToLevel(int id, int teamid)
+        public ActionResult AddUserToLevel(int id, int levelid)
         {
-            return Json(new UserAdminDAO().AddUserToLevel(id, teamid), JsonRequestBehavior.AllowGet);
+            return Json(new UserAdminDAO().AddUserToLevel(id, levelid), JsonRequestBehavior.AllowGet);
         }
         public ActionResult LoadDataUser(string code,int page, int pageSize)
         {

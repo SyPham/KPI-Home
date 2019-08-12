@@ -44,24 +44,31 @@ namespace KPI.Model.DAO
                     if (year == null && start == null && end == null || year == 0 && start == 0 && end == 0)
                     {
                         model = model.Where(x => x.CreateTime.Year == currentYear && x.Week >= 1 && x.Week <= currentWeek);
-                        url = String.Format("/ChartPeriod/?kpilevelcode={0}&period={1}&year={2}&start={3}&end={4}", kpilevelcode, period, currentYear, start, end);
                     }
                     if (year > 0 && start > 0 && end > 0)
                     {
                         model = model.Where(x => x.CreateTime.Year == year && x.Week >= start && x.Week <= end);
-                        url = String.Format("/ChartPeriod/?kpilevelcode={0}&period={1}&year={2}&start={3}&end={4}", kpilevelcode, period, currentYear, start, end);
 
                     }
 
                     var datasets = model.Where(x => x.KPIKind == "W").OrderBy(x => x.Week).Select(x => x.Value).ToArray();
-
+                    var Dataremarks = model
+                        .Where(x => x.KPIKind == "W")
+                        .OrderBy(x => x.Week)
+                        .Select(x => new Dataremark
+                        {
+                            ID =x.ID,
+                            Value =x.Value.Value,
+                            Remark =x.Remark,
+                            Week=x.Week
+                        }).ToList();
                     //data: labels chartjs
                     var listlabels = model.Where(x => x.KPIKind == "W").OrderBy(x => x.Week).Select(x => x.Week).ToArray();
                     var labels = Array.ConvertAll(listlabels, x => x.ToSafetyString());
 
                     return new ChartVM
                     {
-                        url=url,
+                        Dataremarks=Dataremarks,
                         datasets = datasets,
                         labels = labels,
                         label = label,
@@ -82,7 +89,16 @@ namespace KPI.Model.DAO
                         model = model.Where(x => x.CreateTime.Year == year && x.Month >= start && x.Month <= end);
                     }
                     //model = model.Where(x => x.CreateTime.Year == year && x.Month >= 1 && x.Month <= currentMonth);
-
+                    var Dataremarks = model
+                       .Where(x => x.KPIKind == "M")
+                       .OrderBy(x => x.Month)
+                       .Select(x => new Dataremark
+                       {
+                           ID = x.ID,
+                           Value = x.Value.Value,
+                           Remark = x.Remark,
+                           Month = x.Month
+                       }).ToList();
                     var datasets = model.Where(x => x.KPIKind == "M").OrderBy(x => x.Month).Select(x => x.Value).ToArray();
 
                     //data: labels chartjs
@@ -124,6 +140,7 @@ namespace KPI.Model.DAO
                     }
                     return new ChartVM
                     {
+                        Dataremarks = Dataremarks,
                         datasets = datasets,
                         labels = labels,
                         label = label,
@@ -145,7 +162,16 @@ namespace KPI.Model.DAO
                     }
                     //model = model.Where(x => x.CreateTime.Year == year && x.Quater >= 1 && x.Quater <= currentQuarter);
                     var datasets = model.Where(x => x.KPIKind == "Q").OrderBy(x => x.Quater).Select(x => x.Value).ToArray();
-
+                    var Dataremarks = model
+                      .Where(x => x.KPIKind == "Q")
+                      .OrderBy(x => x.Quater)
+                      .Select(x => new Dataremark
+                      {
+                          ID = x.ID,
+                          Value = x.Value.Value,
+                          Remark = x.Remark,
+                          Quater = x.Quater
+                      }).ToList();
                     //data: labels chartjs
                     var listlabels = model.Where(x => x.KPIKind == "Q").OrderBy(x => x.Quater).Select(x => x.Quater).ToArray();
                     //var labels = Array.ConvertAll(listlabels, x => x.ToSafetyString());
@@ -166,6 +192,7 @@ namespace KPI.Model.DAO
                     }
                     return new ChartVM
                     {
+                        Dataremarks=Dataremarks,
                         datasets = datasets,
                         labels = labels,
                         label = label,
@@ -182,12 +209,22 @@ namespace KPI.Model.DAO
                         model = model.Where(x => x.Year >= start && x.Year <= end);
                     }
                     var datasets = model.Where(x => x.KPIKind == "Y").OrderBy(x => x.Year).Select(x => x.Value).ToArray();
-
+                    var Dataremarks = model
+                      .Where(x => x.KPIKind == "Y")
+                      .OrderBy(x => x.Year)
+                      .Select(x => new Dataremark
+                      {
+                          ID = x.ID,
+                          Value = x.Value.Value,
+                          Remark = x.Remark,
+                          Year = x.Year
+                      }).ToList();
                     //data: labels chartjs
                     var listlabels = model.Where(x => x.KPIKind == "Y").OrderBy(x => x.Year).Select(x => x.Year).ToArray();
                     var labels = Array.ConvertAll(listlabels, x => x.ToSafetyString());
                     return new ChartVM
                     {
+                        Dataremarks=Dataremarks,
                         datasets = datasets,
                         labels = labels,
                         label = label,
@@ -253,7 +290,12 @@ namespace KPI.Model.DAO
             }
             return model;
         }
-
+        public object Remark(int dataid)
+        {
+            var model = _dbContext.Datas.FirstOrDefault(x => x.ID == dataid);
+           
+            return model;
+        }
         public DataCompareVM Compare(string obj)
         {
             var model = new DataCompareVM();
@@ -310,5 +352,20 @@ namespace KPI.Model.DAO
                 return new DataCompareVM();
             }
         }
+        public bool UpdateRemark(int dataid,string remark)
+        {
+            var model = _dbContext.Datas.FirstOrDefault(x => x.ID == dataid);
+            try
+            {
+                model.Remark = remark.ToSafetyString();
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
     }
 }

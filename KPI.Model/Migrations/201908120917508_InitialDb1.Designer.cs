@@ -7,13 +7,13 @@ namespace KPI.Model.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.0.0-20911")]
-    public sealed partial class updatemenu : IMigrationMetadata
+    public sealed partial class InitialDb1 : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(updatemenu));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(InitialDb1));
         
         string IMigrationMetadata.Id
         {
-            get { return "201908110927536_updatemenu"; }
+            get { return "201908120917508_InitialDb1"; }
         }
         
         string IMigrationMetadata.Source

@@ -90,10 +90,8 @@
             $.each(@Html.Raw(Json.Encode(@list1.datasets)), function (key, item) {
                 $("#tblkpi tr:nth-child(2)").append("<td>" + item + "</td>");
             });
-
         }
             var densityCanvas = document.getElementById("lineChart");
-
             Chart.defaults.global.defaultFontFamily = "Lato";
             Chart.defaults.global.defaultFontSize = 18;
 
@@ -102,9 +100,9 @@
                 data:  @Html.Raw(Json.Encode(@list1.datasets)),
                 fill: "#ffffff",
                 borderWidth: 2,
-                borderColor: "#d81b60",
-                backgroundColor: "#d81b60",
-                pointBackgroundColor: "#d81b60"
+                borderColor: "#dd4b39",
+                backgroundColor: "#dd4b39",
+                pointBackgroundColor: "#dd4b39"
             };
 
             var list2= {
@@ -149,21 +147,15 @@
 
                     };
              }
-            else if (list3.data.length=== 0) {
-
-                   compareData = {
-                    labels: @Html.Raw(Json.Encode(@list1.labels)),
-                    datasets: [list1, list2,list4]
-                    };
-            }
-            else if (list1.data.length!== 0&&list2.data.length!== 0) {
+            
+             if (list3.data.length=== 0&&list4.data.length=== 0) {
 
                    compareData = {
                     labels: @Html.Raw(Json.Encode(@list1.labels)),
                     datasets: [list1, list2]
                     };
             }
-             else {
+              if(list1.data.length!== 0&&list2.data.length!== 0&&list3.data.length!== 0&&list4.data.length!== 0) {
 
                    compareData = {
                     labels: @Html.Raw(Json.Encode(@list1.labels)),
@@ -178,13 +170,15 @@
             },
             elements: {
                 line: {
-                    tension: 0.1
+                    tension: 0.2
                 }
-
             },
                 scales: {
                     yAxes: [{
-
+                      gridLines: {
+                        tickMarkLength: 8,
+                        color:["#f4f4f4","#d81b60"]
+                    },
                     ticks: {
                         beginAtZero: true,
                         padding: 10,
@@ -198,12 +192,14 @@
                           }
                     }],
                     xAxes: [{
-                    gridLines: {
+                        gridLines: {
                         display: true,
-                        tickMarkLength: 8
+                        drawBorder: false,
+                        tickMarkLength: 10
                     },
                     ticks: {
                         fontSize: 14,
+                        stepSize:5
                     }
                     ,
                      scaleLabel: {
@@ -233,7 +229,7 @@
             }
             };
 
-            var barChart = new Chart(densityCanvas, {
+            var lineChart = new Chart(densityCanvas, {
                 type: 'line',
                 data: compareData,
                 options: chartOptions

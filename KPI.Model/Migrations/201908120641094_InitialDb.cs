@@ -2,17 +2,17 @@ namespace KPI.Model.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
-
-    public partial class updatemenu : DbMigration
+    
+    public partial class InitialDb : DbMigration
     {
         public override void Up()
         {
-            AddColumn("dbo.Menus", "ParentID", c => c.Int(nullable: false));
+            DropColumn("dbo.Data", "Discriminator");
         }
-
+        
         public override void Down()
         {
-            DropColumn("dbo.Menus", "ParentID");
+            AddColumn("dbo.Data", "Discriminator", c => c.String(nullable: false, maxLength: 128));
         }
     }
 }

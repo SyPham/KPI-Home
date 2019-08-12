@@ -95,53 +95,13 @@
     <Compile Include="helpers\PagedData.cs" />
     <Compile Include="helpers\Pagination.cs" />
     <Compile Include="KPIDbContext.cs" />
-    <Compile Include="Migrations\201908021439441_version.cs" />
-    <Compile Include="Migrations\201908021439441_version.Designer.cs">
-      <DependentUpon>201908021439441_version.cs</DependentUpon>
+    <Compile Include="Migrations\201908120641094_InitialDb.cs" />
+    <Compile Include="Migrations\201908120641094_InitialDb.Designer.cs">
+      <DependentUpon>201908120641094_InitialDb.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201908080425517_addRoleandCredential.cs" />
-    <Compile Include="Migrations\201908080425517_addRoleandCredential.Designer.cs">
-      <DependentUpon>201908080425517_addRoleandCredential.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201908080435334_addRoleandCredential1.cs" />
-    <Compile Include="Migrations\201908080435334_addRoleandCredential1.Designer.cs">
-      <DependentUpon>201908080435334_addRoleandCredential1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201908090046525_removecredential.cs" />
-    <Compile Include="Migrations\201908090046525_removecredential.Designer.cs">
-      <DependentUpon>201908090046525_removecredential.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201908090649368_updatedb.cs" />
-    <Compile Include="Migrations\201908090649368_updatedb.Designer.cs">
-      <DependentUpon>201908090649368_updatedb.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201908090802005_updatedb1.cs" />
-    <Compile Include="Migrations\201908090802005_updatedb1.Designer.cs">
-      <DependentUpon>201908090802005_updatedb1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201908090857288_updatedb2.cs" />
-    <Compile Include="Migrations\201908090857288_updatedb2.Designer.cs">
-      <DependentUpon>201908090857288_updatedb2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201908100057467_update.cs" />
-    <Compile Include="Migrations\201908100057467_update.Designer.cs">
-      <DependentUpon>201908100057467_update.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201908100312349_update1.cs" />
-    <Compile Include="Migrations\201908100312349_update1.Designer.cs">
-      <DependentUpon>201908100312349_update1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201908100316254_update2.cs" />
-    <Compile Include="Migrations\201908100316254_update2.Designer.cs">
-      <DependentUpon>201908100316254_update2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201908110927536_updatemenu.cs" />
-    <Compile Include="Migrations\201908110927536_updatemenu.Designer.cs">
-      <DependentUpon>201908110927536_updatemenu.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201908111304119_updatemenu1.cs" />
-    <Compile Include="Migrations\201908111304119_updatemenu1.Designer.cs">
-      <DependentUpon>201908111304119_updatemenu1.cs</DependentUpon>
+    <Compile Include="Migrations\201908120917508_InitialDb1.cs" />
+    <Compile Include="Migrations\201908120917508_InitialDb1.Designer.cs">
+      <DependentUpon>201908120917508_InitialDb1.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -167,41 +127,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201908021439441_version.resx">
-      <DependentUpon>201908021439441_version.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201908120641094_InitialDb.resx">
+      <DependentUpon>201908120641094_InitialDb.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201908080425517_addRoleandCredential.resx">
-      <DependentUpon>201908080425517_addRoleandCredential.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201908080435334_addRoleandCredential1.resx">
-      <DependentUpon>201908080435334_addRoleandCredential1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201908090046525_removecredential.resx">
-      <DependentUpon>201908090046525_removecredential.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201908090649368_updatedb.resx">
-      <DependentUpon>201908090649368_updatedb.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201908090802005_updatedb1.resx">
-      <DependentUpon>201908090802005_updatedb1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201908090857288_updatedb2.resx">
-      <DependentUpon>201908090857288_updatedb2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201908100057467_update.resx">
-      <DependentUpon>201908100057467_update.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201908100312349_update1.resx">
-      <DependentUpon>201908100312349_update1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201908100316254_update2.resx">
-      <DependentUpon>201908100316254_update2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201908110927536_updatemenu.resx">
-      <DependentUpon>201908110927536_updatemenu.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201908111304119_updatemenu1.resx">
-      <DependentUpon>201908111304119_updatemenu1.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201908120917508_InitialDb1.resx">
+      <DependentUpon>201908120917508_InitialDb1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

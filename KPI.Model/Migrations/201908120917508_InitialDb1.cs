@@ -2,17 +2,17 @@ namespace KPI.Model.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
-
-    public partial class version : DbMigration
+    
+    public partial class InitialDb1 : DbMigration
     {
         public override void Up()
         {
-            AlterColumn("dbo.KPILevels", "Weekly", c => c.Int());
+            AddColumn("dbo.KPILevels", "Standard", c => c.Int(nullable: false));
         }
-
+        
         public override void Down()
         {
-            AlterColumn("dbo.KPILevels", "Weekly", c => c.String());
+            DropColumn("dbo.KPILevels", "Standard");
         }
     }
 }

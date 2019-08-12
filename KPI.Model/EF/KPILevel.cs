@@ -38,5 +38,6 @@ namespace KPI.Model.EF
         public DateTime? CreateTime { get; set; }
 
         public int LevelNumber { get; set; }
+        public int Standard { get; set; }
     }
 }

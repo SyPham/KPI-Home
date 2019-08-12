@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KPI.Model.EF;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -30,5 +31,22 @@ namespace KPI.Model.ViewModel
         public string kpilevelcode { get; set; }
         public bool statusfavorite { get; set; }
         public string url { get; set; }
+        public int[] dataids { get; set; }
+
+      
+        public List<Dataremark> Dataremarks { get; set; }
+    }
+    public  class Dataremark 
+    {
+        public int ID { get; set; }
+        public string KPILevelCode { get; set; }
+        public string KPIKind { get; set; }
+        public int? Value { get; set; }
+        public int? Week { get; set; }
+        public int? Month { get; set; }
+        public int? Quater { get; set; }
+        public int? Year { get; set; }
+        public string DateUpload { get; set; }
+        public string Remark { get; set; }
     }
 }
