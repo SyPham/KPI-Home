@@ -11,6 +11,8 @@
     var list4 = (KPI.Model.ViewModel.ChartVM)ViewBag.List4;
     var period = list1.period;
     var kpiname = list1.kpiname;
+    var standard = (int)ViewBag.Standard;
+    var unit = (string)ViewBag.Unit;
 }
 
 @Html.Raw(BreadCrumb.Display())
@@ -95,44 +97,62 @@
             Chart.defaults.global.defaultFontFamily = "Lato";
             Chart.defaults.global.defaultFontSize = 18;
 
+            var standards = [];
+            for (var i = 0; i < @Html.Raw(Json.Encode(@list1.datasets).Length); i++) {
+                standards.push(@standard);
+            }
+            var standard = {
+                label:  "Standard",
+                backgroundColor: Samples.color(0),
+                borderColor: Samples.color(0),
+                data: standards,
+                datalabels: {
+                    align: 'center',
+                    anchor: 'center'
+                }
+            }
             var list1 = {
                 label:  "@Html.Raw(@list1.label)",
-                data:  @Html.Raw(Json.Encode(@list1.datasets)),
-                fill: "#ffffff",
-                borderWidth: 2,
-                borderColor: "#dd4b39",
-                backgroundColor: "#dd4b39",
-                pointBackgroundColor: "#dd4b39"
+                backgroundColor: Samples.color(1),
+                borderColor: Samples.color(1),
+                data: @Html.Raw(Json.Encode(@list1.datasets)),
+                datalabels: {
+                    align: 'center',
+                    anchor: 'center'
+                }
             };
 
             var list2= {
                 label:   "@Html.Raw(@list2.label)",
                 data:  @Html.Raw(Json.Encode(@list2.datasets)),
-                fill: "#ffffff",
-                borderWidth: 2,
-                borderColor: "#00acd6",
-                backgroundColor: "#00acd6",
-                pointBackgroundColor: "#00acd6"
+                backgroundColor: Samples.color(2),
+                borderColor: Samples.color(2),
+                datalabels: {
+                    align: 'center',
+                    anchor: 'center'
+                }
             };
 
             var list3 = {
                 label:  "@Html.Raw(@list3.label)",
                 data:  @Html.Raw(Json.Encode(@list3.datasets)),
-                  fill: "#ffffff",
-                borderWidth: 2,
-                borderColor: " #398439",
-                backgroundColor: " #398439",
-                pointBackgroundColor: " #398439"
+                 backgroundColor: Samples.color(3),
+                borderColor: Samples.color(3),
+                datalabels: {
+                    align: 'center',
+                    anchor: 'center'
+                }
             };
 
             var list4= {
                 label:   "@Html.Raw(@list4.label)",
                 data:  @Html.Raw(Json.Encode(@list4.datasets)),
-                   fill: "#ffffff",
-                borderWidth: 2,
-                borderColor: " #d58512",
-                backgroundColor: " #d58512",
-                pointBackgroundColor: " #d58512"
+                  backgroundColor: Samples.color(4),
+                borderColor: Samples.color(4),
+                datalabels: {
+                    align: 'center',
+                    anchor: 'center'
+                }
             };
             console.log(list1.data.length);
             console.log(list2.data.length);
@@ -143,31 +163,38 @@
 
                   compareData = {
                     labels: @Html.Raw(Json.Encode(@list1.labels)),
-                    datasets: [list1, list2, list3]
-
+                    datasets: [standard,list1, list2, list3]
                     };
              }
-            
+
              if (list3.data.length=== 0&&list4.data.length=== 0) {
 
                    compareData = {
                     labels: @Html.Raw(Json.Encode(@list1.labels)),
-                    datasets: [list1, list2]
+                    datasets: [standard,list1, list2]
                     };
             }
               if(list1.data.length!== 0&&list2.data.length!== 0&&list3.data.length!== 0&&list4.data.length!== 0) {
 
                    compareData = {
                     labels: @Html.Raw(Json.Encode(@list1.labels)),
-                    datasets: [list1, list2,list3, list4]
+                    datasets: [standard,list1, list2,list3, list4]
                     };
             }
             var chartOptions = {
                  plugins: {
-                datalabels: {
-                    display: false
-                }
-            },
+                        datalabels: {
+                            backgroundColor: function (context) {
+                                return context.dataset.backgroundColor;
+                            },
+                            borderRadius: 4,
+                            color: 'white',
+                            font: {
+                                weight: 'bold'
+                            },
+                            formatter: Math.round
+                        }
+                    },
             elements: {
                 line: {
                     tension: 0.2
@@ -177,7 +204,7 @@
                     yAxes: [{
                       gridLines: {
                         tickMarkLength: 8,
-                        color:["#f4f4f4","#d81b60"]
+                        //color:["#f4f4f4","#d81b60"]
                     },
                     ticks: {
                         beginAtZero: true,
@@ -187,7 +214,7 @@
                     },
                         scaleLabel: {
                              display: true,
-                             labelString: 'Percentage',
+                             labelString: '@unit',
                              fontSize: 20
                           }
                     }],
@@ -208,27 +235,8 @@
                       }
                     }]
 
-                },
-
-            animation: {
-                onComplete() {
-                    var chartInstance = this.chart,
-                        ctx = chartInstance.ctx;
-
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'bottom';
-
-                    this.data.datasets.forEach(function (dataset, i) {
-                        var meta = chartInstance.controller.getDatasetMeta(i);
-                        meta.data.forEach(function (bar, index) {
-                            var data = dataset.data[index];
-                            ctx.fillText(data, bar._model.x, bar._model.y-5);
-                        });
-                    });
                 }
-            }
             };
-
             var lineChart = new Chart(densityCanvas, {
                 type: 'line',
                 data: compareData,

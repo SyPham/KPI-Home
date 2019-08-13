@@ -152,34 +152,29 @@
                 standards.push(standard);
             }
             //---------------------------------------------------------------------------------
-            var chart = new Chart('lineChart', {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [ {
-                         label: "Standard",
-                        backgroundColor: Samples.color(0),
-                        borderColor: Samples.color(0),
-                        data: standards,
-                        datalabels: {
-                            align: 'center',
-                            anchor: 'center'
-                        }
-                    },
-                    {
-                         label: label,
-                        backgroundColor: Samples.color(1),
-                        borderColor: Samples.color(1),
-                        data: datasets,
-                        datalabels: {
-                            align: 'center',
-                            anchor: 'center'
-                        }
-                    }]
-                },
-                options: {
-
-                    elements: {
+            //Config charts
+            var listData = {
+                label: "Standard",
+                backgroundColor: Samples.color(0),
+                borderColor: Samples.color(0),
+                data: standards,
+                datalabels: {
+                    align: 'center',
+                    anchor: 'center'
+                }
+            };
+            var listStandard = {
+                label: label,
+                backgroundColor: Samples.color(1),
+                borderColor: Samples.color(1),
+                data: datasets,
+                datalabels: {
+                    align: 'center',
+                    anchor: 'center'
+                }
+            };
+            var options = {
+                 elements: {
                         line: {
                             tension: 0
                         }
@@ -239,8 +234,16 @@
                         labelString: labelString
                       }
                 }]
-            },
-                }
+            }
+            }
+
+            var chart = new Chart('lineChart', {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [listStandard,listData]
+                },
+                options: options
             });
             //---------------------------------------------------------------------------------
             @*var ctx = document.getElementById('lineChart').getContext('2d');
@@ -777,7 +780,7 @@ var chartperiodController = {
                    var kpilevelcode = chartperiodController.getUrlParameter('kpilevelcode');
                     var period = chartperiodController.getUrlParameter('period');
                    obj = obj + '-' +kpilevelcode + ',' + period ;
-                window.location.href = "/Compare/?obj=" + obj;
+                window.location.href = "/Compare/?obj=" + obj+";@standard,@unit";
              })
 
             },

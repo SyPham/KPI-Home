@@ -1,4 +1,5 @@
 ﻿using KPI.Model.DAO;
+using KPI.Model.helpers;
 using MvcBreadCrumbs;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,13 @@ namespace KPI.Web.Controllers
             BreadCrumb.Add(Url.Action("Index", "Home"), "Home");
             BreadCrumb.Add("/KPI/Index", "KPI");
             BreadCrumb.SetLabel("Compare");
-            var compare = new DataChartDAO().Compare(obj);
+            if (obj == null)
+                return View();
+            var value = obj.Split(';')[1].Split(',');
+            var standard = value[0].ToInt();
+            var unit = value[1].ToString();
+            var comp = obj.Split(';')[0].ToString();
+            var compare = new DataChartDAO().Compare(comp);
             if (compare.list1 == null)
             {
                 compare.list1 = new Model.ViewModel.ChartVM();
@@ -39,6 +46,8 @@ namespace KPI.Web.Controllers
             ViewBag.List2 = compare.list2;
             ViewBag.List3 = compare.list3;
             ViewBag.List4 = compare.list4;
+            ViewBag.Standard = standard;
+            ViewBag.Unit = unit;
             return View();
         }
     }

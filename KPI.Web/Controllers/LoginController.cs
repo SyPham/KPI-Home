@@ -19,7 +19,6 @@ namespace KPI.Web.Controllers
         // GET: Login
         public ActionResult Index()
         {
-            //var model = new UserAdminDAO().Checkpermisson(1);
             return View();
         }
 

@@ -261,6 +261,10 @@ namespace KPI.Model.DAO
             model.kpiname = _dbContext.KPIs.Find(item.KPIID).Name;
             model.label = _dbContext.Levels.FirstOrDefault(x => x.ID == item.LevelID).Name;
             model.kpilevelcode = kpilevelcode;
+
+            var unit = _dbContext.KPIs.FirstOrDefault(x => x.ID == item.KPIID).Unit;
+            var unitName = _dbContext.Units.FirstOrDefault(x => x.ID == unit).Name;
+
             if (period == "W")
             {
                 var datasetsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Week).Select(x => x.Value).ToArray();
@@ -269,6 +273,8 @@ namespace KPI.Model.DAO
                 model.datasets = datasetsKPILevel1;
                 model.labels = labels1;
                 model.period = period;
+                //model.Unit = unitName;
+                //model.Standard = _dbContext.KPILevels.FirstOrDefault(x=>x.KPILevelCode==kpilevelcode && x.WeeklyChecked==true).WeeklyStandard;
             }
             if (period == "M")
             {
@@ -278,6 +284,8 @@ namespace KPI.Model.DAO
                 model.datasets = datasetsKPILevel1;
                 model.labels = labels1;
                 model.period = period;
+                //model.Unit = unitName;
+                //model.Standard = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == kpilevelcode && x.MonthlyChecked == true).MonthlyStandard;
             }
             if (period == "Q")
             {
@@ -287,6 +295,8 @@ namespace KPI.Model.DAO
                 model.datasets = datasetsKPILevel1;
                 model.labels = labels1;
                 model.period = period;
+                model.Unit = unitName;
+                model.Standard = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == kpilevelcode && x.QuarterlyChecked == true).QuarterlyStandard;
             }
             if (period == "Y")
             {
@@ -296,13 +306,14 @@ namespace KPI.Model.DAO
                 model.datasets = datasetsKPILevel1;
                 model.labels = labels1;
                 model.period = period;
+                //model.Unit = unitName;
+                //model.Standard = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == kpilevelcode && x.YearlyChecked == true).YearlyStandard;
             }
             return model;
         }
         public object Remark(int dataid)
         {
             var model = _dbContext.Datas.FirstOrDefault(x => x.ID == dataid);
-           
             return model;
         }
         public DataCompareVM Compare(string obj)
