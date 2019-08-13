@@ -4,7 +4,7 @@ $(document).ready(function () {
     $("#addKPI .parent-search .search-box").hide();
 });
 var config = {
-    pageSize: 3,
+    pageSize: 10,
     pageIndex: 1
 };
 var adminKPIController = {
@@ -12,6 +12,7 @@ var adminKPIController = {
         adminKPIController.loadData();
         adminKPIController.registerEvent();
         adminKPIController.loadDataCategory();
+        adminKPIController.getAllUnit();
     },
     registerEvent: function () {
         $('#search').off('keypress').on('keypress', function (e) {
@@ -85,7 +86,8 @@ var adminKPIController = {
             Code: $('#addKPI .Code').val(),
             Name: $('#addKPI .Name').val(),
             LevelID: $('#addKPI .LevelID').val(),
-            CategoryID: $('#addKPI .Category').val()
+            CategoryID: $('#addKPI .Category').val(),
+            Unit: $('#addKPI .Unit').val()
         };
         $.ajax({
             url: "/AdminKPI/Add",
@@ -163,9 +165,11 @@ var adminKPIController = {
         $('.Name').val("");
         $('.LevelID').val("");
         $('.Category').val("");
+        $('.Unit').val("");
         $('.Name').css('border-color', 'lightgrey');
         $('.LevelID').css('border-color', 'lightgrey');
         $('.Category').css('border-color', 'lightgrey');
+        $('.Unit').css('border-color', 'lightgrey');
     },
     updateData: function () {
         console.log(1);
@@ -174,7 +178,8 @@ var adminKPIController = {
             Name: $('#modal-group2 .Name').val(),
             Code: $('#modal-group2 .Code').val(),
             LevelID: $('#modal-group2 .LevelID').val(),
-            CategoryID: $('#modal-group2 .Category').val()
+            CategoryID: $('#modal-group2 .Category').val(),
+            Unit: $('#modal-group2 .Unit').val()
         };
 
         $.ajax({
@@ -202,6 +207,24 @@ var adminKPIController = {
             }
         });
     },
+    getAllUnit: function () {
+        $.ajax({
+            url: "/AdminKPI/GetAllUnit",
+            type: "GET",
+            contentType: "application/json;charset=UTF-8",
+            dataType: "json",
+            success: function (data) {
+                $('.Unit').append('<option value="">.: Choose unit :.</option>')
+               
+                $.each(data, function (key,item) {
+                    $('.Unit').append('<option value="' + item.ID + '">' + item.Name +'</option>')
+                });
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    },
     loadDetail: function (id) {
         var value = id;
         $.ajax({
@@ -216,6 +239,7 @@ var adminKPIController = {
                 $('#modal-group2 .Code').val(result.Code);
                 $('#modal-group2 .LevelID').val(result.LevelID);
                 $('#modal-group2 .Category').val(result.CategoryID);
+                $('#modal-group2 .Unit').val(result.Unit);
                 $('#modal-group2').modal('show');
 
             },
@@ -230,13 +254,13 @@ var adminKPIController = {
             type: "GET",
             dataType: "json",
             success: function (data) {
-                $("#table-group select").empty();
-                $("#table-group select").append('<option value="">.: Choose Category :.</option>');
+                $("#table-group .CategorySearch").empty();
+                $("#table-group .CategorySearch").append('<option value="">.: Choose Category :.</option>');
                 $(".Category").empty();
                 $(".Category").append('<option value="">.: Choose Category :.</option>');
                 //console.log(data);
                 $.each(data, function (key, item) {
-                    $("#table-group select").append("<option value=\"" + item.ID + "\">" + item.Name + "</option>");
+                    $("#table-group .CategorySearch").append("<option value=\"" + item.ID + "\">" + item.Name + "</option>");
                     $(".Category").append("<option value=\"" + item.ID + "\">" + item.Name + "</option>");
                 });
             }
@@ -258,17 +282,24 @@ var adminKPIController = {
         else {
             $('.LevelID').css('border-color', 'lightgrey');
         }
-        if ($('#Category').val().trim() === "") {
-            $('#Category').css('border-color', 'Red');
+        if ($('.Category').val().trim() === "") {
+            $('.Category').css('border-color', 'Red');
             isValid = false;
         }
         else {
-            $('#Category').css('border-color', 'lightgrey');
+            $('.Category').css('border-color', 'lightgrey');
+        }
+        if ($('.Unit').val().trim() === "") {
+            $('.Unit').css('border-color', 'Red');
+            isValid = false;
+        }
+        else {
+            $('.Unit').css('border-color', 'lightgrey');
         }
         return isValid;
     },
     loadData: function (changePageSize) {
-        var name = $('#search').val();
+        var name = $('.search').val();
         var categoryId = $('#table-group select').find(':selected').val();
         $.ajax({
             url: '/AdminKPI/LoadData',
@@ -287,7 +318,7 @@ var adminKPIController = {
                 if (response.status) {
                     $("#main-loading-delay").hide();
                     var count = 1;
-                    //console.log(response.data);
+                    console.log(response.data);
                     var data = response.data;
                     var html = '';
                     var template = $('#tblkpi-template').html();
@@ -298,6 +329,7 @@ var adminKPIController = {
                             Code: item.Code,
                             Level: item.LevelID,
                             CategoryName: item.CategoryName,
+                            Unit: item.Unit,
                             ID: item.ID,
                             IDDelete: item.ID
                         });

@@ -17,13 +17,13 @@ namespace KPI.Model.ViewModel
 
         public int? Weekly { get; set; }
         public DateTime? Monthly { get; set; }
-        public DateTime? Quaterly { get; set; }
+        public DateTime? Quarterly { get; set; }
         public DateTime? Yearly { get; set; }
 
         public bool? Checked { get; set; }
         public bool? WeeklyChecked { get; set; }
         public bool? MonthlyChecked { get; set; }
-        public bool? QuaterlyChecked { get; set; }
+        public bool? QuarterlyChecked { get; set; }
         public bool? YearlyChecked { get; set; }
         public bool? CheckedPeriod { get; set; }
 

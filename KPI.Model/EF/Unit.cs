@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 
 namespace KPI.Model.EF
 {
-    public class KPI : Inheritance
+  public  class Unit 
     {
-        public string CategoryCode { get; set; }
-        public int CategoryID { get; set; }
-        public int Unit { get; set; }
+        public int ID { get; set; }
+        public string Name { get; set; }
     }
 }

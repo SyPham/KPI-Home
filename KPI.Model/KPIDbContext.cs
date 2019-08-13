@@ -31,6 +31,7 @@ namespace KPI.Model
         public DbSet <Resource> Resources { get; set; }
         public DbSet <Permission> Permissions { get; set; }
         public DbSet<Menu> Menus { get; set; }
+        public DbSet<Unit> Units { get; set; }
         protected override void OnModelCreating(DbModelBuilder builder)
         {
             //builder.Entity<IdentityUserRole>().HasKey(i => new { i.UserId, i.RoleId });

@@ -20,7 +20,7 @@ namespace KPI.Model.DAO
         ///
         /// </summary>
         /// <param name="entity"></param>
-        /// <returns>Update các cột WeeklyChecked, MonthlyChecked, QuaterlyChecked, YearlyChecked</returns>
+        /// <returns>Update các cột WeeklyChecked, MonthlyChecked, QuarterlyChecked, YearlyChecked</returns>
         public bool Update(EF.KPILevel entity)
         {
             var comparedt = new DateTime(2001, 1, 1);
@@ -33,9 +33,9 @@ namespace KPI.Model.DAO
             {
                 kpiLevel.Monthly = entity.Monthly;
             }
-            if (DateTime.Compare(entity.Quaterly.Value, comparedt) != 0)
+            if (DateTime.Compare(entity.Quarterly.Value, comparedt) != 0)
             {
-                kpiLevel.Quaterly = entity.Quaterly;
+                kpiLevel.Quarterly = entity.Quarterly;
             }
             if (DateTime.Compare(entity.Yearly.Value, comparedt) != 0)
             {
@@ -49,9 +49,9 @@ namespace KPI.Model.DAO
             {
                 kpiLevel.MonthlyChecked = entity.MonthlyChecked;
             }
-            if (entity.QuaterlyChecked != null)
+            if (entity.QuarterlyChecked != null)
             {
-                kpiLevel.QuaterlyChecked = entity.QuaterlyChecked;
+                kpiLevel.QuarterlyChecked = entity.QuarterlyChecked;
             }
             if (entity.MonthlyChecked != null)
             {
@@ -69,9 +69,9 @@ namespace KPI.Model.DAO
             {
                 kpiLevel.MonthlyPublic = entity.MonthlyPublic;
             }
-            if (entity.QuaterlyPublic != null)
+            if (entity.QuarterlyPublic != null)
             {
-                kpiLevel.QuaterlyPublic = entity.QuaterlyPublic;
+                kpiLevel.QuarterlyPublic = entity.QuarterlyPublic;
             }
             if (entity.YearlyPublic != null)
             {
@@ -82,7 +82,22 @@ namespace KPI.Model.DAO
                 kpiLevel.Checked = entity.Checked;
                 kpiLevel.KPILevelCode = entity.KPILevelCode;
             }
-
+            if (entity.WeeklyStandard != 0)
+            {
+                kpiLevel.WeeklyStandard = entity.WeeklyStandard;
+            }
+            if (entity.MonthlyStandard != 0)
+            {
+                kpiLevel.MonthlyStandard = entity.MonthlyStandard;
+            }
+            if (entity.QuarterlyStandard != 0)
+            {
+                kpiLevel.QuarterlyStandard = entity.QuarterlyStandard;
+            }
+            if (entity.YearlyStandard != 0)
+            {
+                kpiLevel.YearlyStandard = entity.YearlyStandard;
+            }
             kpiLevel.UserCheck = entity.UserCheck;
             kpiLevel.TimeCheck = entity.TimeCheck;
             //kpiLevel.Code = entity.Code;
@@ -165,13 +180,13 @@ namespace KPI.Model.DAO
 
                             Weekly = kpiLevel.Weekly,
                             Monthly = kpiLevel.Monthly,
-                            Quaterly = kpiLevel.Quaterly,
+                            Quarterly = kpiLevel.Quarterly,
                             Yearly = kpiLevel.Yearly,
 
                             Checked = kpiLevel.Checked,
                             WeeklyChecked = kpiLevel.WeeklyChecked,
                             MonthlyChecked = kpiLevel.MonthlyChecked,
-                            QuaterlyChecked = kpiLevel.QuaterlyChecked,
+                            QuarterlyChecked = kpiLevel.QuarterlyChecked,
                             YearlyChecked = kpiLevel.YearlyChecked,
                             CheckedPeriod = kpiLevel.CheckedPeriod,
 
@@ -256,21 +271,21 @@ namespace KPI.Model.DAO
 
                                 Weekly = kpiLevel.Weekly,
                                 Monthly = kpiLevel.Monthly,
-                                Quaterly = kpiLevel.Quaterly,
+                                Quarterly = kpiLevel.Quarterly,
                                 Yearly = kpiLevel.Yearly,
 
                                 Checked = kpiLevel.Checked,
                                 WeeklyChecked = kpiLevel.WeeklyChecked,
                                 MonthlyChecked = kpiLevel.MonthlyChecked,
-                                QuaterlyChecked = kpiLevel.QuaterlyChecked,
+                                QuarterlyChecked = kpiLevel.QuarterlyChecked,
                                 YearlyChecked = kpiLevel.YearlyChecked,
                                 CheckedPeriod = kpiLevel.CheckedPeriod,
 
                                 //true co du lieu false khong co du lieu
-                                StatusEmptyDataW = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == kpiLevel.KPILevelCode && x.KPIKind == (kpiLevel.WeeklyChecked == true ? "W" : "")) != null ? true : false,
-                                StatusEmptyDataM = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == kpiLevel.KPILevelCode && x.KPIKind == (kpiLevel.MonthlyChecked == true ? "M" : "")) != null ? true : false,
-                                StatusEmptyDataQ = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == kpiLevel.KPILevelCode && x.KPIKind == (kpiLevel.QuaterlyChecked == true ? "Q" : "")) != null ? true : false,
-                                StatusEmptyDataY = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == kpiLevel.KPILevelCode && x.KPIKind == (kpiLevel.YearlyChecked == true ? "Y" : "")) != null ? true : false,
+                                StatusEmptyDataW = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == kpiLevel.KPILevelCode && x.Period == (kpiLevel.WeeklyChecked == true ? "W" : "")) != null ? true : false,
+                                StatusEmptyDataM = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == kpiLevel.KPILevelCode && x.Period == (kpiLevel.MonthlyChecked == true ? "M" : "")) != null ? true : false,
+                                StatusEmptyDataQ = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == kpiLevel.KPILevelCode && x.Period == (kpiLevel.QuarterlyChecked == true ? "Q" : "")) != null ? true : false,
+                                StatusEmptyDataY = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == kpiLevel.KPILevelCode && x.Period == (kpiLevel.YearlyChecked == true ? "Y" : "")) != null ? true : false,
 
                                 TimeCheck = kpiLevel.TimeCheck,
                                 CreateTime = kpiLevel.CreateTime,
@@ -281,37 +296,37 @@ namespace KPI.Model.DAO
                                 //neu < 1 thi dung, 
                                 StatusUploadDataW = weekofyear - _dbContext.Datas.Where(a =>
                                  a.KPILevelCode == kpiLevel.KPILevelCode &&
-                                 a.KPIKind == (kpiLevel.WeeklyChecked == true ? "W" : ""))
+                                 a.Period == (kpiLevel.WeeklyChecked == true ? "W" : ""))
                                 .Max(x => x.Week) > 1 ? false :
                                 ((weekofyear - _dbContext.Datas.Where(a =>
                                 a.KPILevelCode == kpiLevel.KPILevelCode &&
-                                a.KPIKind == (kpiLevel.WeeklyChecked == true ? "W" : ""))
+                                a.Period == (kpiLevel.WeeklyChecked == true ? "W" : ""))
                                 .Max(x => x.Week)) == 1 ? (kpiLevel.Weekly < currentweekday ? true : false) : false),
 
                                 StatusUploadDataM = monthofyear - _dbContext.Datas.Where(a =>
                                 a.KPILevelCode == kpiLevel.KPILevelCode &&
-                                a.KPIKind == (kpiLevel.MonthlyChecked == true ? "M" : ""))
+                                a.Period == (kpiLevel.MonthlyChecked == true ? "M" : ""))
                                 .Max(x => x.Month) > 1 ? false : monthofyear - _dbContext.Datas.Where(a =>
                                   a.KPILevelCode == kpiLevel.KPILevelCode &&
-                                  a.KPIKind == (kpiLevel.MonthlyChecked == true ? "M" : ""))
+                                  a.Period == (kpiLevel.MonthlyChecked == true ? "M" : ""))
                                 .Max(x => x.Month) == 1 ? (DateTime.Compare(currentdate, kpiLevel.Monthly.Value) < 0 ? true : false) : false,
 
                                 StatusUploadDataQ =
                                 quarterofyear - _dbContext.Datas.Where(a =>
                                   a.KPILevelCode == kpiLevel.KPILevelCode &&
-                                  a.KPIKind == (kpiLevel.QuaterlyChecked == true ? "Q" : ""))
-                                .Max(x => x.Quater) > 1 ? false : quarterofyear - _dbContext.Datas.Where(a =>
+                                  a.Period == (kpiLevel.QuarterlyChecked == true ? "Q" : ""))
+                                .Max(x => x.Quarter) > 1 ? false : quarterofyear - _dbContext.Datas.Where(a =>
                                    a.KPILevelCode == kpiLevel.KPILevelCode &&
-                                   a.KPIKind == (kpiLevel.QuaterlyChecked == true ? "Q" : ""))
-                                .Max(x => x.Quater) == 1 ? (DateTime.Compare(currentdate, kpiLevel.Quaterly.Value) < 0 ? true : false) : false, //true dung han flase tre han
+                                   a.Period == (kpiLevel.QuarterlyChecked == true ? "Q" : ""))
+                                .Max(x => x.Quarter) == 1 ? (DateTime.Compare(currentdate, kpiLevel.Quarterly.Value) < 0 ? true : false) : false, //true dung han flase tre han
 
                                 StatusUploadDataY =
                                 year - _dbContext.Datas.Where(a =>
                                   a.KPILevelCode == kpiLevel.KPILevelCode &&
-                                  a.KPIKind == (kpiLevel.YearlyChecked == true ? "Y" : ""))
+                                  a.Period == (kpiLevel.YearlyChecked == true ? "Y" : ""))
                                 .Max(x => x.Year) > 1 ? false : year - _dbContext.Datas.Where(a =>
                                       a.KPILevelCode == kpiLevel.KPILevelCode &&
-                                      a.KPIKind == (kpiLevel.YearlyChecked == true ? "Y" : ""))
+                                      a.Period == (kpiLevel.YearlyChecked == true ? "Y" : ""))
                                 .Max(x => x.Year) == 1 ? (DateTime.Compare(currentdate, kpiLevel.Yearly.Value) < 0 ? true : false) : false,
 
                             };
@@ -365,10 +380,10 @@ namespace KPI.Model.DAO
                 if (period == "W".ToUpper())
                 {
 
-                    var datasets = model.Where(x => x.KPIKind == "W").OrderBy(x => x.Week).Select(x => x.Value).ToArray();
+                    var datasets = model.Where(x => x.Period == "W").OrderBy(x => x.Week).Select(x => x.Value).ToArray();
 
                     //data: labels chartjs
-                    var labels = model.Where(x => x.KPIKind == "W").OrderBy(x => x.Week).Select(x => x.Week).ToArray();
+                    var labels = model.Where(x => x.Period == "W").OrderBy(x => x.Week).Select(x => x.Week).ToArray();
 
 
                     return new
@@ -381,10 +396,10 @@ namespace KPI.Model.DAO
                 else if (period == "M".ToUpper())
                 {
 
-                    var datasets = model.Where(x => x.KPIKind == "M").OrderBy(x => x.Month).Select(x => x.Value).ToArray();
+                    var datasets = model.Where(x => x.Period == "M").OrderBy(x => x.Month).Select(x => x.Value).ToArray();
 
                     //data: labels chartjs
-                    var labels = model.Where(x => x.KPIKind == "M").OrderBy(x => x.Month).Select(x => x.Month).ToArray();
+                    var labels = model.Where(x => x.Period == "M").OrderBy(x => x.Month).Select(x => x.Month).ToArray();
                     return new
                     {
                         datasets,
@@ -394,10 +409,10 @@ namespace KPI.Model.DAO
                 }
                 else if (period == "Q".ToUpper())
                 {
-                    var datasets = model.Where(x => x.KPIKind == "Q").OrderBy(x => x.Quater).Select(x => x.Value).ToArray();
+                    var datasets = model.Where(x => x.Period == "Q").OrderBy(x => x.Quarter).Select(x => x.Value).ToArray();
 
                     //data: labels chartjs
-                    var labels = model.Where(x => x.KPIKind == "Q").OrderBy(x => x.Quater).Select(x => x.Quater).ToArray();
+                    var labels = model.Where(x => x.Period == "Q").OrderBy(x => x.Quarter).Select(x => x.Quarter).ToArray();
                     return new
                     {
                         datasets,
@@ -408,10 +423,10 @@ namespace KPI.Model.DAO
                 else if (period == "Y".ToUpper())
                 {
 
-                    var datasets = model.Where(x => x.KPIKind == "Y").OrderBy(x => x.Year).Select(x => x.Value).ToArray();
+                    var datasets = model.Where(x => x.Period == "Y").OrderBy(x => x.Year).Select(x => x.Value).ToArray();
 
                     //data: labels chartjs
-                    var labels = model.Where(x => x.KPIKind == "Y").OrderBy(x => x.Year).Select(x => x.Year).ToArray();
+                    var labels = model.Where(x => x.Period == "Y").OrderBy(x => x.Year).Select(x => x.Year).ToArray();
                     return new
                     {
                         datasets,
@@ -634,7 +649,7 @@ namespace KPI.Model.DAO
 
             if (period == "Q")
             {
-                listCompare = _dbContext.KPILevels.Where(x => x.KPIID == kpiid && x.QuaterlyChecked == true && !x.KPILevelCode.Contains(kpilevelcode))
+                listCompare = _dbContext.KPILevels.Where(x => x.KPIID == kpiid && x.QuarterlyChecked == true && !x.KPILevelCode.Contains(kpilevelcode))
                     .Join(_dbContext.Levels,
                     x => x.LevelID,
                     a => a.ID,

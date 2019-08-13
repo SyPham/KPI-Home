@@ -1,4 +1,5 @@
 ﻿using KPI.Model.DAO;
+using MvcBreadCrumbs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,11 +8,15 @@ using System.Web.Mvc;
 
 namespace KPI.Web.Controllers
 {
+    [BreadCrumb(Clear = true)]
     public class AdminKPILevelController : BaseController
     {
         // GET: AdminKPILevel
+        [BreadCrumb(Clear = true)]
         public ActionResult Index()
         {
+            BreadCrumb.Add(Url.Action("Index", "Home"), "Home");
+            BreadCrumb.SetLabel("KPI Level");
             return View();
         }
         public JsonResult GetListTree()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,19 +19,23 @@ namespace KPI.Model.EF
 
         public int? Weekly { get; set; }
         public DateTime? Monthly { get; set; }
-        public DateTime? Quaterly { get; set; }
+        [Column("Quarterly")]
+        public DateTime? Quarterly { get; set; }
         public DateTime? Yearly { get; set; }
 
         public bool? Checked { get; set; }
         public bool? WeeklyChecked { get; set; }
         public bool? MonthlyChecked { get; set; }
-        public bool? QuaterlyChecked { get; set; }
+
+        [Column("QuarterlyChecked")]
+        public bool? QuarterlyChecked { get; set; }
         public bool? YearlyChecked { get; set; }
         public bool? CheckedPeriod { get; set; }
 
         public bool? WeeklyPublic { get; set; }
         public bool? MonthlyPublic { get; set; }
-        public bool? QuaterlyPublic { get; set; }
+        [Column("QuarterlyPublic")]
+        public bool? QuarterlyPublic { get; set; }
         public bool? YearlyPublic { get; set; }
 
         public DateTime? TimeCheck { get; set; }
@@ -38,6 +43,11 @@ namespace KPI.Model.EF
         public DateTime? CreateTime { get; set; }
 
         public int LevelNumber { get; set; }
-        public int Standard { get; set; }
+        [Column("WeeklyStandard")]
+        public int WeeklyStandard { get; set; }
+        public int MonthlyStandard { get; set; }
+        [Column("QuarterlyStandard")]
+        public int QuarterlyStandard { get; set; }
+        public int YearlyStandard { get; set; }
     }
 }

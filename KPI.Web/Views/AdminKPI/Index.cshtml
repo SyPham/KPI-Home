@@ -5,7 +5,7 @@
 
 }
 @Html.Raw(BreadCrumb.Display())
-<div class="box" id="table-group">
+<div class="box box-widget" id="table-group">
     <div class="box-header with-border">
         <button id="btnShowModal" class="btn btn-success pull-right" data-toggle="modal" data-target="#modal-group"><i class="fa fa-plus"></i> Add</button>
         <h3 class="box-title pull-left">List KPIs</h3>
@@ -14,7 +14,7 @@
 
             </div>
             <div class="col-md-3">
-                <select class="form-control pull-right"></select>
+                <select class="form-control pull-right CategorySearch"></select>
             </div>
             <div class="col-md-3">
                 <input type="text" class="form-control" autocomplete="off" id="search" placeholder="Search name" />
@@ -32,6 +32,8 @@
                     <th>Code</th>
                     <th>Level</th>
                     <th>Category</th>
+                    <th>Unit</th>
+
                     <th>Add/Edit/Delete</th>
                 </tr>
             </thead>
@@ -44,11 +46,12 @@
                 <td>{{Code}}</td>
                 <td>{{Level}}</td>
                 <td>{{CategoryName}}</td>
+                <td>{{Unit}}</td>
                 <td>
                     <div class="btn-group">
                         <div class="btn-group">
-                            <button type="button" data-iddel="{{IDDelete}}" class="btn btn-danger btn-sm btnDelete" id="btnDelete"><i class="fa fa-remove"></i> Delete</button>
                             <button type="button" data-id="{{ID}}" data-toggle="modal" data-target="#modal-group2" class="btn btn-primary btn-sm btnUpdate"><i class="fa fa-edit"></i> Edit</button>
+                            <button type="button" data-iddel="{{IDDelete}}" class="btn btn-danger btn-sm btnDelete" id="btnDelete"><i class="fa fa-remove"></i> Delete</button>
                         </div>
                     </div>
                 </td>

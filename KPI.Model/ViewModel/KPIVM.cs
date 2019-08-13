@@ -14,6 +14,7 @@ namespace KPI.Model.ViewModel
         public string Code { get; set; }
         public int LevelID { get; set; }
         public string CategoryName { get; set; }
+        public string Unit { get; set; }
         public int CategoryID { get; set; }
         public DateTime CreateTime { get; set; }
     }

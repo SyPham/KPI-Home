@@ -59,6 +59,9 @@ namespace KPI.Web.Controllers
         {
             return Json(new KPIAdminDAO().Autocomplete(name), JsonRequestBehavior.AllowGet);
         }
-      
+        public JsonResult GetAllUnit()
+        {
+            return Json(new KPIAdminDAO().GetAllUnit(), JsonRequestBehavior.AllowGet);
+        }
     }
 }

@@ -78,6 +78,7 @@
     <Compile Include="EF\Menu.cs" />
     <Compile Include="EF\Permission.cs" />
     <Compile Include="EF\Resource.cs" />
+    <Compile Include="EF\Unit.cs" />
     <Compile Include="EF\Role.cs" />
     <Compile Include="EF\Category.cs" />
     <Compile Include="EF\Comment.cs" />
@@ -102,6 +103,34 @@
     <Compile Include="Migrations\201908120917508_InitialDb1.cs" />
     <Compile Include="Migrations\201908120917508_InitialDb1.Designer.cs">
       <DependentUpon>201908120917508_InitialDb1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908130054408_updateTableKPI.cs" />
+    <Compile Include="Migrations\201908130054408_updateTableKPI.Designer.cs">
+      <DependentUpon>201908130054408_updateTableKPI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908130105555_addTblUnit.cs" />
+    <Compile Include="Migrations\201908130105555_addTblUnit.Designer.cs">
+      <DependentUpon>201908130105555_addTblUnit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908130133599_addTblUnit1.cs" />
+    <Compile Include="Migrations\201908130133599_addTblUnit1.Designer.cs">
+      <DependentUpon>201908130133599_addTblUnit1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908130331447_updateKpiLevel.cs" />
+    <Compile Include="Migrations\201908130331447_updateKpiLevel.Designer.cs">
+      <DependentUpon>201908130331447_updateKpiLevel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908130333298_updateKpiLevel1.cs" />
+    <Compile Include="Migrations\201908130333298_updateKpiLevel1.Designer.cs">
+      <DependentUpon>201908130333298_updateKpiLevel1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908130339024_updateKpiLevel2.cs" />
+    <Compile Include="Migrations\201908130339024_updateKpiLevel2.Designer.cs">
+      <DependentUpon>201908130339024_updateKpiLevel2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908130341279_updateData.cs" />
+    <Compile Include="Migrations\201908130341279_updateData.Designer.cs">
+      <DependentUpon>201908130341279_updateData.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -132,6 +161,27 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201908120917508_InitialDb1.resx">
       <DependentUpon>201908120917508_InitialDb1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908130054408_updateTableKPI.resx">
+      <DependentUpon>201908130054408_updateTableKPI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908130105555_addTblUnit.resx">
+      <DependentUpon>201908130105555_addTblUnit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908130133599_addTblUnit1.resx">
+      <DependentUpon>201908130133599_addTblUnit1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908130331447_updateKpiLevel.resx">
+      <DependentUpon>201908130331447_updateKpiLevel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908130333298_updateKpiLevel1.resx">
+      <DependentUpon>201908130333298_updateKpiLevel1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908130339024_updateKpiLevel2.resx">
+      <DependentUpon>201908130339024_updateKpiLevel2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908130341279_updateData.resx">
+      <DependentUpon>201908130341279_updateData.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

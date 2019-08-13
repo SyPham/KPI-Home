@@ -51,9 +51,9 @@ namespace KPI.Model.DAO
 
                     }
 
-                    var datasets = model.Where(x => x.KPIKind == "W").OrderBy(x => x.Week).Select(x => x.Value).ToArray();
+                    var datasets = model.Where(x => x.Period == "W").OrderBy(x => x.Week).Select(x => x.Value).ToArray();
                     var Dataremarks = model
-                        .Where(x => x.KPIKind == "W")
+                        .Where(x => x.Period == "W")
                         .OrderBy(x => x.Week)
                         .Select(x => new Dataremark
                         {
@@ -63,7 +63,7 @@ namespace KPI.Model.DAO
                             Week=x.Week
                         }).ToList();
                     //data: labels chartjs
-                    var listlabels = model.Where(x => x.KPIKind == "W").OrderBy(x => x.Week).Select(x => x.Week).ToArray();
+                    var listlabels = model.Where(x => x.Period == "W").OrderBy(x => x.Week).Select(x => x.Week).ToArray();
                     var labels = Array.ConvertAll(listlabels, x => x.ToSafetyString());
 
                     return new ChartVM
@@ -90,7 +90,7 @@ namespace KPI.Model.DAO
                     }
                     //model = model.Where(x => x.CreateTime.Year == year && x.Month >= 1 && x.Month <= currentMonth);
                     var Dataremarks = model
-                       .Where(x => x.KPIKind == "M")
+                       .Where(x => x.Period == "M")
                        .OrderBy(x => x.Month)
                        .Select(x => new Dataremark
                        {
@@ -99,10 +99,10 @@ namespace KPI.Model.DAO
                            Remark = x.Remark,
                            Month = x.Month
                        }).ToList();
-                    var datasets = model.Where(x => x.KPIKind == "M").OrderBy(x => x.Month).Select(x => x.Value).ToArray();
+                    var datasets = model.Where(x => x.Period == "M").OrderBy(x => x.Month).Select(x => x.Value).ToArray();
 
                     //data: labels chartjs
-                    var listlabels = model.Where(x => x.KPIKind == "M").OrderBy(x => x.Month).Select(x => x.Month).ToArray();
+                    var listlabels = model.Where(x => x.Period == "M").OrderBy(x => x.Month).Select(x => x.Month).ToArray();
                     string[] labels = new string[listlabels.Length];
 
                     for (int i = 0; i < listlabels.Length; i++)
@@ -154,26 +154,26 @@ namespace KPI.Model.DAO
                 {
                     if (year == null && start == null && end == null || year == 0 && start == 0 && end == 0)
                     {
-                        model = model.Where(x => x.CreateTime.Year == currentYear && x.Quater >= 1 && x.Quater <= currentQuarter);
+                        model = model.Where(x => x.CreateTime.Year == currentYear && x.Quarter >= 1 && x.Quarter <= currentQuarter);
                     }
                     if (year > 0 && start > 0 && end > 0)
                     {
-                        model = model.Where(x => x.CreateTime.Year == year && x.Quater >= start && x.Quater <= end);
+                        model = model.Where(x => x.CreateTime.Year == year && x.Quarter >= start && x.Quarter <= end);
                     }
                     //model = model.Where(x => x.CreateTime.Year == year && x.Quater >= 1 && x.Quater <= currentQuarter);
-                    var datasets = model.Where(x => x.KPIKind == "Q").OrderBy(x => x.Quater).Select(x => x.Value).ToArray();
+                    var datasets = model.Where(x => x.Period == "Q").OrderBy(x => x.Quarter).Select(x => x.Value).ToArray();
                     var Dataremarks = model
-                      .Where(x => x.KPIKind == "Q")
-                      .OrderBy(x => x.Quater)
+                      .Where(x => x.Period == "Q")
+                      .OrderBy(x => x.Quarter)
                       .Select(x => new Dataremark
                       {
                           ID = x.ID,
                           Value = x.Value.Value,
                           Remark = x.Remark,
-                          Quater = x.Quater
+                          Quater = x.Quarter
                       }).ToList();
                     //data: labels chartjs
-                    var listlabels = model.Where(x => x.KPIKind == "Q").OrderBy(x => x.Quater).Select(x => x.Quater).ToArray();
+                    var listlabels = model.Where(x => x.Period == "Q").OrderBy(x => x.Quarter).Select(x => x.Quarter).ToArray();
                     //var labels = Array.ConvertAll(listlabels, x => x.ToSafetyString());
                     string[] labels = new string[listlabels.Length];
                     for (int i = 0; i < listlabels.Length; i++)
@@ -208,9 +208,9 @@ namespace KPI.Model.DAO
                     {
                         model = model.Where(x => x.Year >= start && x.Year <= end);
                     }
-                    var datasets = model.Where(x => x.KPIKind == "Y").OrderBy(x => x.Year).Select(x => x.Value).ToArray();
+                    var datasets = model.Where(x => x.Period == "Y").OrderBy(x => x.Year).Select(x => x.Value).ToArray();
                     var Dataremarks = model
-                      .Where(x => x.KPIKind == "Y")
+                      .Where(x => x.Period == "Y")
                       .OrderBy(x => x.Year)
                       .Select(x => new Dataremark
                       {
@@ -220,7 +220,7 @@ namespace KPI.Model.DAO
                           Year = x.Year
                       }).ToList();
                     //data: labels chartjs
-                    var listlabels = model.Where(x => x.KPIKind == "Y").OrderBy(x => x.Year).Select(x => x.Year).ToArray();
+                    var listlabels = model.Where(x => x.Period == "Y").OrderBy(x => x.Year).Select(x => x.Year).ToArray();
                     var labels = Array.ConvertAll(listlabels, x => x.ToSafetyString());
                     return new ChartVM
                     {
@@ -254,8 +254,8 @@ namespace KPI.Model.DAO
             model.kpilevelcode = kpilevelcode;
             if (period == "W")
             {
-                var datasetsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.KPIKind == period).OrderBy(x => x.Week).Select(x => x.Value).ToArray();
-                var labelsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.KPIKind == period).OrderBy(x => x.Week).Select(x => x.Week).ToArray();
+                var datasetsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Week).Select(x => x.Value).ToArray();
+                var labelsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Week).Select(x => x.Week).ToArray();
                 var labels1 = Array.ConvertAll(labelsKPILevel1, x => x.ToSafetyString());
                 model.datasets = datasetsKPILevel1;
                 model.labels = labels1;
@@ -263,8 +263,8 @@ namespace KPI.Model.DAO
             }
             if (period == "M")
             {
-                var datasetsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.KPIKind == period).OrderBy(x => x.Month).Select(x => x.Value).ToArray();
-                var labelsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.KPIKind == period).OrderBy(x => x.Month).Select(x => x.Month).ToArray();
+                var datasetsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Month).Select(x => x.Value).ToArray();
+                var labelsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Month).Select(x => x.Month).ToArray();
                 var labels1 = Array.ConvertAll(labelsKPILevel1, x => x.ToSafetyString());
                 model.datasets = datasetsKPILevel1;
                 model.labels = labels1;
@@ -272,8 +272,8 @@ namespace KPI.Model.DAO
             }
             if (period == "Q")
             {
-                var datasetsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.KPIKind == period).OrderBy(x => x.Quater).Select(x => x.Value).ToArray();
-                var labelsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.KPIKind == period).OrderBy(x => x.Quater).Select(x => x.Quater).ToArray();
+                var datasetsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Quarter).Select(x => x.Value).ToArray();
+                var labelsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Quarter).Select(x => x.Quarter).ToArray();
                 var labels1 = Array.ConvertAll(labelsKPILevel1, x => x.ToSafetyString());
                 model.datasets = datasetsKPILevel1;
                 model.labels = labels1;
@@ -281,8 +281,8 @@ namespace KPI.Model.DAO
             }
             if (period == "Y")
             {
-                var datasetsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.KPIKind == period).OrderBy(x => x.Year).Select(x => x.Value).ToArray();
-                var labelsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.KPIKind == period).OrderBy(x => x.Year).Select(x => x.Year).ToArray();
+                var datasetsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Year).Select(x => x.Value).ToArray();
+                var labelsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Year).Select(x => x.Year).ToArray();
                 var labels1 = Array.ConvertAll(labelsKPILevel1, x => x.ToSafetyString());
                 model.datasets = datasetsKPILevel1;
                 model.labels = labels1;

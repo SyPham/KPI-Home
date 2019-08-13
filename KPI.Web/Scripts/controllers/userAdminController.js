@@ -2,11 +2,11 @@
     adminUserController.init();
 });
 var userConfig = {
-    pageSize: 6,
+    pageSize: 10,
     pageIndex: 1
 };
 var kpiLevelConfig = {
-    pageSize: 6,
+    pageSize: 10,
     pageIndex: 1
 };
 var adminUserController = {

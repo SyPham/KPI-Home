@@ -1,6 +1,7 @@
 ﻿using KPI.Model.Abstract;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,11 +12,13 @@ namespace KPI.Model.EF
     {
         public int ID { get; set; }
         public string KPILevelCode { get; set; }
-        public string KPIKind { get; set; }
+        [Column("Period")]
+        public string Period { get; set; }
         public int? Value { get; set; }
         public int? Week { get; set; }
         public int? Month { get; set; }
-        public int? Quater { get; set; }
+        [Column("Quarter")]
+        public int? Quarter { get; set; }
         public int? Year { get; set; }
         public string DateUpload { get; set; }
         public string Remark { get; set; }

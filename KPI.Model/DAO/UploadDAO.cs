@@ -57,9 +57,9 @@ namespace KPI.Model.DAO
                         return false;
                     }
                 }
-                else if (item.Quater != null && kpilevelcode.Quater == item.Quater)
+                else if (item.Quarter != null && kpilevelcode.Quarter == item.Quarter)
                 {
-                    kpilevelcode.Quater = item.Quater;
+                    kpilevelcode.Quarter = item.Quarter;
                     try
                     {
                         _dbContext.SaveChanges();
@@ -98,10 +98,10 @@ namespace KPI.Model.DAO
                     var code = value.Substring(0, value.Length - 1);
                     var kind = value.Substring(value.Length - 1, 1);
 
-                    var updateW = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == code && x.KPIKind == kind && x.Week == item.PeriodValue);
-                    var updateM = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == code && x.KPIKind == kind && x.Month == item.PeriodValue);
-                    var updateQ = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == code && x.KPIKind == kind && x.Quater == item.PeriodValue);
-                    var updateY = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == code && x.KPIKind == kind && x.Year == item.PeriodValue);
+                    var updateW = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == code && x.Period == kind && x.Week == item.PeriodValue);
+                    var updateM = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == code && x.Period == kind && x.Month == item.PeriodValue);
+                    var updateQ = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == code && x.Period == kind && x.Quarter == item.PeriodValue);
+                    var updateY = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == code && x.Period == kind && x.Year == item.PeriodValue);
 
                     if (kind == "W" && updateW == null)
                     {
@@ -110,7 +110,7 @@ namespace KPI.Model.DAO
                         dataW.Value = item.Value;
                         dataW.Week = item.PeriodValue;
                         dataW.CreateTime = item.CreateTime;
-                        dataW.KPIKind = kind;
+                        dataW.Period = kind;
                         _dbContext.Datas.Add(dataW);
                         _dbContext.SaveChanges();
                     }
@@ -126,7 +126,7 @@ namespace KPI.Model.DAO
                         dataM.Value = item.Value;
                         dataM.Month = item.PeriodValue;
                         dataM.CreateTime = item.CreateTime;
-                        dataM.KPIKind = kind;
+                        dataM.Period = kind;
                         _dbContext.Datas.Add(dataM);
                         _dbContext.SaveChanges();
                     }
@@ -140,9 +140,9 @@ namespace KPI.Model.DAO
                         var dataQ = new Data();
                         dataQ.KPILevelCode = code;
                         dataQ.Value = item.Value;
-                        dataQ.Quater = item.PeriodValue;
+                        dataQ.Quarter = item.PeriodValue;
                         dataQ.CreateTime = item.CreateTime;
-                        dataQ.KPIKind = kind;
+                        dataQ.Period = kind;
                     }
                     else if (kind == "Q" && updateM != null)
                     {
@@ -156,7 +156,7 @@ namespace KPI.Model.DAO
                         dataY.Value = item.Value;
                         dataY.CreateTime = item.CreateTime;
                         dataY.Year = item.Year;
-                        dataY.KPIKind = kind;
+                        dataY.Period = kind;
                     }
                     else if (kind == "Y" && updateM != null)
                     {
@@ -202,7 +202,7 @@ namespace KPI.Model.DAO
                             LevelName = c.Name,
                             StatusW = _dbContext.KPILevels.FirstOrDefault(x=>x.KPILevelCode== a.KPILevelCode).Weekly!=null?true:false,
                             StatusM = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == a.KPILevelCode).Monthly != null ? true : false,
-                            StatusQ = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == a.KPILevelCode).Quaterly != null ? true : false,
+                            StatusQ = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == a.KPILevelCode).Quarterly != null ? true : false,
                             StatusY = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == a.KPILevelCode).Yearly != null ? true : false,
                         }).AsEnumerable();
             model = model.ToList();
