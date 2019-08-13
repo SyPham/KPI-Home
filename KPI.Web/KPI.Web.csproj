@@ -8021,6 +8021,8 @@
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\controllers\adminCategoryController.js" />
     <Content Include="Scripts\controllers\adminKPIController.js" />
+    <Content Include="Scripts\controllers\Chartjs\chart-init.js" />
+    <Content Include="Scripts\controllers\Chartjs\utils.js" />
     <Content Include="Scripts\controllers\chartperiodController.js" />
     <Content Include="Scripts\controllers\departmentAdminController.js" />
     <Content Include="Scripts\controllers\centerAdminController.js" />

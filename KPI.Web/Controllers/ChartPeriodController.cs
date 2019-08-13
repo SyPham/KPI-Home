@@ -42,7 +42,8 @@ namespace KPI.Web.Controllers
             ViewBag.Period = model.period;
             ViewBag.KPILevelCode = model.kpilevelcode;
             ViewBag.StatusFavorite = model.statusfavorite == true ? "true" : "false";
-            ViewBag.Url = model.url;
+            ViewBag.Standard = model.Standard;
+            ViewBag.Unit = model.Unit;
             ViewBag.Dataremarks = model.Dataremarks;
             return View();
         }

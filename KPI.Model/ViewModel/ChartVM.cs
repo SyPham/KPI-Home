@@ -30,7 +30,8 @@ namespace KPI.Model.ViewModel
         public string period { get; set; }
         public string kpilevelcode { get; set; }
         public bool statusfavorite { get; set; }
-        public string url { get; set; }
+        public int Standard { get; set; }
+        public string Unit { get; set; }
         public int[] dataids { get; set; }
 
       

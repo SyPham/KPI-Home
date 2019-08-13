@@ -38,7 +38,8 @@ namespace KPI.Model.DAO
                 var label = _dbContext.Levels.FirstOrDefault(x => x.ID == item.LevelID).Name;
                 //datasets chartjs
                 var model = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode);
-
+                var unit = _dbContext.KPIs.FirstOrDefault(x => x.ID == item.KPIID).Unit;
+                var unitName = _dbContext.Units.FirstOrDefault(x => x.ID == unit).Name;
                 if (period == "W".ToUpper())
                 {
                     if (year == null && start == null && end == null || year == 0 && start == 0 && end == 0)
@@ -68,6 +69,8 @@ namespace KPI.Model.DAO
 
                     return new ChartVM
                     {
+                        Unit = unitName,
+                        Standard = _dbContext.KPILevels.FirstOrDefault(x=>x.KPILevelCode==kpilevelcode && x.WeeklyChecked==true).WeeklyStandard,
                         Dataremarks=Dataremarks,
                         datasets = datasets,
                         labels = labels,
@@ -140,6 +143,8 @@ namespace KPI.Model.DAO
                     }
                     return new ChartVM
                     {
+                        Unit= unitName,
+                        Standard = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == kpilevelcode && x.MonthlyChecked == true).MonthlyStandard,
                         Dataremarks = Dataremarks,
                         datasets = datasets,
                         labels = labels,
@@ -192,7 +197,9 @@ namespace KPI.Model.DAO
                     }
                     return new ChartVM
                     {
-                        Dataremarks=Dataremarks,
+                        Unit = unitName,
+                        Standard = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == kpilevelcode && x.QuarterlyChecked == true).QuarterlyStandard,
+                        Dataremarks = Dataremarks,
                         datasets = datasets,
                         labels = labels,
                         label = label,
@@ -224,7 +231,9 @@ namespace KPI.Model.DAO
                     var labels = Array.ConvertAll(listlabels, x => x.ToSafetyString());
                     return new ChartVM
                     {
-                        Dataremarks=Dataremarks,
+                        Unit = unitName,
+                        Standard = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == kpilevelcode && x.YearlyChecked == true).YearlyStandard,
+                        Dataremarks = Dataremarks,
                         datasets = datasets,
                         labels = labels,
                         label = label,

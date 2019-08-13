@@ -12,12 +12,12 @@
     var period = ViewBag.Period as string;
     var kpilevelcode = ViewBag.KPILevelCode as string;
     var statusfavorite = ViewBag.StatusFavorite as string;
-    var url = ViewBag.Url as string;
+    int standard = (int)ViewBag.Standard;
+    var unit = ViewBag.Unit as string;
 }
 @Html.Raw(BreadCrumb.Display())
 @section Scripts{
     <script type="text/javascript">
-
         var labelString;
         if ("@period" === "W") {
             labelString = " Weeks in year ";
@@ -45,11 +45,13 @@
              }
         var labels =@Html.Raw(Json.Encode(labels));
         var dataremarks =@Html.Raw(Json.Encode(dataremarks));
-    var label = "@label";
+        var label = "@label";
         var period = "@period";
-         var kpilevelcode = "@kpilevelcode";
+        var kpilevelcode = "@kpilevelcode";
+        var standard = "@standard";
+        var unit = "@unit";
         $(function () {
-
+            $('.standard').text(standard);
             if (period === "W") {
             //Thêm tiêu đề cho tr:first-child th
                 $("#tblkpi tr:first-child").append("<th>Week</th>");
@@ -60,7 +62,7 @@
             });
 
             //Thêm tiêu đề cho tr:nth-child(2) th
-            $("#tblkpi tr:nth-child(2)").append("<th >Percentage</th>");
+            $("#tblkpi tr:nth-child(2)").append("<th >"+unit+"</th>");
 
              //Thêm dữ liệu cho tr:nth-child(2) td
             $.each(dataremarks, function (key, item) {
@@ -145,23 +147,131 @@
             $('.lastRemarkLabel').text("Year " + lastRemark.Year + " : " );
 
         }
+            var standards = [];
+            for (let i = 0; i < labels.length; i++) {
+                standards.push(standard);
+            }
+            //---------------------------------------------------------------------------------
+            var chart = new Chart('lineChart', {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [ {
+                         label: "Standard",
+                        backgroundColor: Samples.color(0),
+                        borderColor: Samples.color(0),
+                        data: standards,
+                        datalabels: {
+                            align: 'center',
+                            anchor: 'center'
+                        }
+                    },
+                    {
+                         label: label,
+                        backgroundColor: Samples.color(1),
+                        borderColor: Samples.color(1),
+                        data: datasets,
+                        datalabels: {
+                            align: 'center',
+                            anchor: 'center'
+                        }
+                    }]
+                },
+                options: {
 
-            var ctx = document.getElementById('lineChart').getContext('2d');
+                    elements: {
+                        line: {
+                            tension: 0
+                        }
+                    },
+                    plugins: {
+                        datalabels: {
+                            backgroundColor: function (context) {
+                                return context.dataset.backgroundColor;
+                            },
+                            borderRadius: 4,
+                            color: 'white',
+                            font: {
+                                weight: 'bold'
+                            },
+                            formatter: Math.round
+                        }
+                    }
+                    ,
+                     title: {
+                    display: true,
+                        text: "@label - @kpiname",
+                        fontSize: 16,
+                        fontColor: 'black'
+
+                    },
+                    elements: {
+                        line: {
+                            tension: 0.2
+                        }
+                    },
+                    scales: {
+                yAxes: [{
+                    display: true,
+                    position: "left",
+                    ticks: {
+                        beginAtZero: true,
+                        padding: 10,
+                        fontSize: 14,
+                        //max: 100
+                    },
+                     scaleLabel: {
+                        display: true,
+                         labelString: unit,
+                      }
+                }],
+                xAxes: [{
+                    gridLines: {
+                        display: true,
+                        tickMarkLength: 8
+                    },
+                    ticks: {
+                        fontSize: 14,
+                    }
+                    ,
+                     scaleLabel: {
+                        display: true,
+                        labelString: labelString
+                      }
+                }]
+            },
+                }
+            });
+            //---------------------------------------------------------------------------------
+            @*var ctx = document.getElementById('lineChart').getContext('2d');
 
             Chart.defaults.global.defaultFontSize = 14;
             var myChart = new Chart(ctx, {
                 type:'line',
                 data: {
                     labels: labels,
-                    datasets: [{
+                    datasets: [
+                         {
+                        label: "Standard",
+                        data: standards,
+                        fill: "#ffffff",
+                        borderWidth: 2,
+                        borderColor: "#d9534f",
+                        backgroundColor: "#d9534f",
+                        pointBackgroundColor: "#d9534f",
+                        pointRadius: 0,
+                    },
+                        {
                         label: label,
                         data: datasets,
                         fill: "#ffffff",
                         borderWidth: 2,
-                        borderColor: "#d81b60",
-                        backgroundColor: "#d81b60",
-                        pointBackgroundColor: "#d81b60"
-                    }]
+                        borderColor: "#269abc",
+                        backgroundColor: "#269abc",
+                        pointBackgroundColor: "#269abc"
+                    },
+
+                    ]
                 },
                 options: {
                     elements: {
@@ -206,7 +316,7 @@
                     },
                      scaleLabel: {
                         display: true,
-                         labelString: 'Percentage',
+                         labelString: unit,
                       }
                 }],
                 xAxes: [{
@@ -227,23 +337,26 @@
             animation: {
                 onComplete() {
                     var chartInstance = this.chart,
-                        ctx = chartInstance.ctx;
-
+                    ctx = chartInstance.ctx;
+                    ctx.fillStyle = "#269abc";
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'bottom';
 
                     this.data.datasets.forEach(function (dataset, i) {
-                        var meta = chartInstance.controller.getDatasetMeta(i);
+                        if (i !== 0) {
+                             var meta = chartInstance.controller.getDatasetMeta(i);
                         meta.data.forEach(function (bar, index) {
                             var data = dataset.data[index];
                             ctx.fillText(data, bar._model.x, bar._model.y-5);
                         });
+                        }
+
                     });
                 }
             },
-            poitDot: true
+            //poitDot: true
         }
-    });
+    });*@
         chartperiodController.init();
 });
 var chartperiodlConfig = {
@@ -328,7 +441,7 @@ var chartperiodController = {
             $("#endYear").val(end);
 
         }
-       
+
         if (Number($('#weekOfYear').val()) !== 0) {
            var year = year;
             var startWeek = start;
@@ -765,6 +878,8 @@ var chartperiodController = {
                     </div>
                 </div>
                 <div class="box-body">
+
+
                     <button type="button" data-toggle="modal" data-target="#modal-group" class="btn bg-navy margin btnLike pull-right" id="btnCompare"><i class="fa fa-adjust"></i> Compare</button>
                     @if (@statusfavorite == "false")
                     {
@@ -773,8 +888,9 @@ var chartperiodController = {
                     else
                     {
                         <button type="button" class="btn btn-default  margin btnLike pull-right disabled" disabled id="btnLike"><i class="fa fa-heart"></i> Added Favourite</button>
-
                     }
+                    <button type="button" class="btn bg-maroon margin pull-right"><i class="fa fa-star"></i> <span>Standard : </span><span class="standard text-bold" style="">0</span></button>
+
                     <div class="form-inline" style="display:none" id="searchMonth">
                         <label class="my-1 mr-2" for="startMonth">Year</label>
                         <select class="custom-select form-control year my-1 mr-sm-2" id="monthOfYear">
@@ -911,7 +1027,9 @@ var chartperiodController = {
                         </select>
                     </div>
                     <div class="chart">
-                        <canvas id="lineChart" style="height:250px"></canvas>
+                        @*<canvas id="lineChart" style="height:250px"></canvas>*@
+                        <canvas id="lineChart" style="height:500px"></canvas>
+
                     </div>
                 </div>
                 <div class="box-footer">
@@ -967,7 +1085,7 @@ var chartperiodController = {
                         </table>
                     </div>
                 </div>
-                <div class="box-footer"  id="textarea-remark">
+                <div class="box-footer" id="textarea-remark">
                     <div class="form-group">
                         <span class="lastRemark" style="display:none"></span>
                         <label for="lastRemark" class="lastRemarkLabel"></label>
