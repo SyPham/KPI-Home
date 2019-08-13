@@ -7124,6 +7124,7 @@
     <Content Include="Content\skin-lion\vline-rtl.gif" />
     <Content Include="Content\skin-lion\vline.gif" />
     <Content Include="Content\style.css" />
+    <Content Include="database\script.sql" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
