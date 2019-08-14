@@ -96,7 +96,61 @@ namespace KPI.Model.DAO
             return _dbContext.Levels.FirstOrDefault(x => x.ID == id);
 
         }
+        public KPITreeViewModel GetListTreeForWorkplace(int userid)
+        {
+            var levels = new List<ViewModel.KPITreeViewModel>();
+            List<ViewModel.KPITreeViewModel> hierarchy = new List<ViewModel.KPITreeViewModel>();
 
+            var listLevels = _dbContext.Levels.OrderBy(x => x.LevelNumber).ToList();
+
+            var user = _dbContext.Users.FirstOrDefault(x => x.ID == userid);
+
+
+            var levelNumber = _dbContext.Levels.FirstOrDefault(x => x.ID == user.LevelID);
+
+            if (levelNumber == null)
+            {
+                return new KPITreeViewModel();
+            }
+
+            listLevels = listLevels.Where(x => x.LevelNumber >= levelNumber.LevelNumber).OrderBy(x => x.LevelNumber).ToList();
+            foreach (var item in listLevels)
+            {
+                var levelItem = new ViewModel.KPITreeViewModel();
+                levelItem.key = item.ID;
+                levelItem.title = item.Name;
+                levelItem.code = item.Code;
+                levelItem.state = item.State;
+                levelItem.levelnumber = item.LevelNumber;
+                levelItem.parentid = item.ParentID;
+                levels.Add(levelItem);
+            }
+            var itemLevel = _dbContext.Levels.FirstOrDefault(x => x.ID == user.LevelID);
+            hierarchy = levels.Where(c => c.parentid == itemLevel.ParentID)
+                       .Select(c => new ViewModel.KPITreeViewModel()
+                       {
+                           key = c.key,
+                           title = c.title,
+                           code = c.code,
+                           levelnumber = c.levelnumber,
+                           parentid = c.parentid,
+                           children = GetChildren(levels, c.key)
+                       })
+                       .ToList();
+
+            HieararchyWalk(hierarchy);
+            var obj = new KPITreeViewModel();
+            foreach (var item in hierarchy)
+            {
+                if (item.key == itemLevel.ID)
+                {
+                    obj = item;
+                    break;
+                }
+            }
+            var model = hierarchy.Where(x => x.key == itemLevel.ID).FirstOrDefault();
+            return model;
+        }
         public object GetListTreeClient(int userid)
         {
             var levels = new List<ViewModel.KPITreeViewModel>();

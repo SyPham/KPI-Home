@@ -40,7 +40,18 @@ namespace KPI.Model.EF
 
         public DateTime? TimeCheck { get; set; }
 
-        public DateTime? CreateTime { get; set; }
+        private DateTime? createTime = null;
+        public DateTime CreateTime
+        {
+            get
+            {
+                return this.createTime.HasValue
+                   ? this.createTime.Value
+                   : DateTime.Now;
+            }
+
+            set { this.createTime = value; }
+        }
 
         public int LevelNumber { get; set; }
         [Column("WeeklyStandard")]

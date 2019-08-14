@@ -1,4 +1,6 @@
 ﻿using KPI.Model.EF;
+using KPI.Model.helpers;
+using KPI.Model.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -192,22 +194,146 @@ namespace KPI.Model.DAO
         public object UploadData()
         {
             var model = (from a in _dbContext.KPILevels
-                        join h in _dbContext.KPIs on a.KPIID equals h.ID
-                        join c in _dbContext.Levels on a.LevelID equals c.ID
-                        where a.KPILevelCode!=null && a.KPILevelCode!=string.Empty
-                        select new
-                        {
-                            KPILevelCode=a.KPILevelCode,
-                            KPIName = h.Name,
-                            LevelName = c.Name,
-                            StatusW = _dbContext.KPILevels.FirstOrDefault(x=>x.KPILevelCode== a.KPILevelCode).Weekly!=null?true:false,
-                            StatusM = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == a.KPILevelCode).Monthly != null ? true : false,
-                            StatusQ = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == a.KPILevelCode).Quarterly != null ? true : false,
-                            StatusY = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == a.KPILevelCode).Yearly != null ? true : false,
-                        }).AsEnumerable();
+                         join h in _dbContext.KPIs on a.KPIID equals h.ID
+                         join c in _dbContext.Levels on a.LevelID equals c.ID
+                         where a.KPILevelCode != null && a.KPILevelCode != string.Empty
+                         select new
+                         {
+                             KPILevelCode = a.KPILevelCode,
+                             KPIName = h.Name,
+                             LevelName = c.Name,
+                             StatusW = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == a.KPILevelCode).Weekly != null ? true : false,
+                             StatusM = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == a.KPILevelCode).Monthly != null ? true : false,
+                             StatusQ = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == a.KPILevelCode).Quarterly != null ? true : false,
+                             StatusY = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == a.KPILevelCode).Yearly != null ? true : false,
+                         }).AsEnumerable();
             model = model.ToList();
 
             return model;
+        }
+
+
+        public object UpLoadKPILevel(int userid, int page, int pageSize)
+        {
+            var model = (from u in _dbContext.Users
+                         join l in _dbContext.Levels on u.LevelID equals l.ID
+                         join kpilevel in _dbContext.KPILevels on l.ID equals kpilevel.LevelID
+                         where u.ID == userid && kpilevel.Checked == true
+                         select new KPIUpLoadVM
+                         {
+                             KPIName = _dbContext.KPIs.FirstOrDefault(x => x.ID == kpilevel.KPIID).Name,
+                             StateW = _dbContext.KPILevels.FirstOrDefault(k => k.KPILevelCode == kpilevel.KPILevelCode).WeeklyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == kpilevel.KPILevelCode).Week != null ? true : false,
+                             StateM = _dbContext.KPILevels.FirstOrDefault(k => k.KPILevelCode == kpilevel.KPILevelCode).MonthlyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == kpilevel.KPILevelCode).Month == null ? true : false,
+                             StateQ = _dbContext.KPILevels.FirstOrDefault(k => k.KPILevelCode == kpilevel.KPILevelCode).QuarterlyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == kpilevel.KPILevelCode).Quarter == null ? true : false,
+                             StateY = _dbContext.KPILevels.FirstOrDefault(k => k.KPILevelCode == kpilevel.KPILevelCode).YearlyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == kpilevel.KPILevelCode).Year == null ? true : false
+                         });
+            int totalRow = model.Count();
+            model = model.OrderByDescending(x => x.KPIName)
+              .Skip((page - 1) * pageSize)
+              .Take(pageSize);
+            var vm = new WorkplaceVM()
+            {
+                KPIUpLoads = model.ToList(),
+                total = totalRow
+            };
+            return vm;
+        }
+        public List<DataExportVM> DataExport(int userid)
+        {
+            var currentYear = DateTime.Now.Year;
+            var currentWeek = DateTime.Now.GetIso8601WeekOfYear();
+            var currentMonth = DateTime.Now.Month;
+            var currentQuarter = DateTime.Now.GetQuarter();
+            var model = from u in _dbContext.Users
+                        join l in _dbContext.Levels on u.LevelID equals l.ID
+                        join kpilevel in _dbContext.KPILevels on l.ID equals kpilevel.LevelID
+                        where u.ID == userid && kpilevel.Checked == true
+                        select new DataExportVM
+                        {
+                            StateW = _dbContext.KPILevels.FirstOrDefault(k => k.KPILevelCode == kpilevel.KPILevelCode).WeeklyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == kpilevel.KPILevelCode).Week != null ? true : false,
+                            StateM = _dbContext.KPILevels.FirstOrDefault(k => k.KPILevelCode == kpilevel.KPILevelCode).MonthlyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == kpilevel.KPILevelCode).Month == null ? true : false,
+                            StateQ = _dbContext.KPILevels.FirstOrDefault(k => k.KPILevelCode == kpilevel.KPILevelCode).QuarterlyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == kpilevel.KPILevelCode).Quarter == null ? true : false,
+                            StateY = _dbContext.KPILevels.FirstOrDefault(k => k.KPILevelCode == kpilevel.KPILevelCode).YearlyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == kpilevel.KPILevelCode).Year == null ? true : false,
+                            PeriodValueW = _dbContext.Datas.Where(k => k.KPILevelCode == kpilevel.KPILevelCode).Select(x => x.Week).Max(),
+                            PeriodValueM = _dbContext.Datas.Where(k => k.KPILevelCode == kpilevel.KPILevelCode).Select(x => x.Month).Max(),
+                            PeriodValueQ = _dbContext.Datas.Where(k => k.KPILevelCode == kpilevel.KPILevelCode).Select(x => x.Quarter).Max(),
+                            PeriodValueY = _dbContext.Datas.Where(k => k.KPILevelCode == kpilevel.KPILevelCode).Select(x => x.Year).Max(),
+
+                            Value = 0,
+                            Year = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == kpilevel.KPILevelCode).CreateTime.Year,
+                            KPILevelCode = kpilevel.KPILevelCode,
+                            KPIName = _dbContext.KPIs.FirstOrDefault(x => x.ID == kpilevel.KPIID).Name,
+                            Area = _dbContext.Levels.FirstOrDefault(x => x.ID == kpilevel.LevelID).Name,
+
+                            UploadTimeW = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == kpilevel.KPILevelCode).Weekly,
+                            UploadTimeM = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == kpilevel.KPILevelCode).Monthly,
+                            UploadTimeQ = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == kpilevel.KPILevelCode).Quarterly,
+                            UploadTimeY = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == kpilevel.KPILevelCode).Yearly,
+                            Remark = string.Empty,
+                        };
+
+            var models = model.AsEnumerable().ToList();
+            return model.ToList();
+        }
+        public object UpLoadKPILevelTrack(int userid, int page, int pageSize)
+        {
+            var model1 = new LevelDAO().GetListTreeForWorkplace(userid);
+            var relative = ConvertHierarchicalToFlattenObject(model1);
+            var levels = new List<Level>();
+            foreach (var item in relative)
+            {
+                var level = new Level();
+                level.ID = item.key;
+                level.Name = item.title;
+                level.ParentID = item.parentid;
+                level.LevelNumber = item.levelnumber;
+                levels.Add(level);
+            }
+            
+            var model = (from u in _dbContext.Users
+                         join l in levels on u.LevelID equals l.ID
+                         join kpilevel in _dbContext.KPILevels on l.ID equals kpilevel.LevelID
+                         where u.ID == userid && kpilevel.Checked == true
+                         select new 
+                         {
+                             KPIName = _dbContext.KPIs.FirstOrDefault(x => x.ID == kpilevel.KPIID).Name,
+                             StateW = _dbContext.KPILevels.FirstOrDefault(k => k.KPILevelCode == kpilevel.KPILevelCode).WeeklyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == kpilevel.KPILevelCode).Week != null ? true : false,
+                             StateM = _dbContext.KPILevels.FirstOrDefault(k => k.KPILevelCode == kpilevel.KPILevelCode).MonthlyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == kpilevel.KPILevelCode).Month == null ? true : false,
+                             StateQ = _dbContext.KPILevels.FirstOrDefault(k => k.KPILevelCode == kpilevel.KPILevelCode).QuarterlyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == kpilevel.KPILevelCode).Quarter == null ? true : false,
+                             StateY = _dbContext.KPILevels.FirstOrDefault(k => k.KPILevelCode == kpilevel.KPILevelCode).YearlyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == kpilevel.KPILevelCode).Year == null ? true : false
+                         }).AsEnumerable().
+                         Select(x=>new KPIUpLoadVM
+                         {
+                             KPIName =x.KPIName,
+                             StateW = x.StateW,
+                             StateM = x.StateM,
+                             StateQ = x.StateQ,
+                            StateY = x.StateY
+                         });
+           
+
+            int totalRow = model.Count;
+            model = model.OrderByDescending(x => x.KPIName)
+              .Skip((page - 1) * pageSize)
+              .Take(pageSize);
+            var vm = new WorkplaceVM()
+            {
+                KPIUpLoads = model.ToList(),
+                total = totalRow
+            };
+            return vm;
+        }
+        /// <summary>
+        /// Convert the nested hierarchical object to flatten object
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <returns></returns>
+        public IEnumerable<KPITreeViewModel> ConvertHierarchicalToFlattenObject(KPITreeViewModel parent)
+        {
+            yield return parent;
+            foreach (KPITreeViewModel child in parent.children) // check null if you must
+                foreach (KPITreeViewModel relative in ConvertHierarchicalToFlattenObject(child))
+                    yield return relative;
         }
     }
 }

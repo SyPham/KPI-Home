@@ -194,3 +194,6 @@ thead tr th {
     text-align: left;
     color: #d81b60;
 }
+#tableWorkplace tr td {
+    text-align: center;
+}
