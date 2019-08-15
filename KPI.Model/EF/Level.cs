@@ -27,5 +27,6 @@ namespace KPI.Model.EF
 
             set { this.createTime = value; }
         }
+      
     }
 }

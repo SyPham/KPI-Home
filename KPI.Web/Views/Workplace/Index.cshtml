@@ -58,7 +58,7 @@
     <div class="col-md-12">
         <div class="box box-widget">
             <div class="box-header with-border">
-                <h3 class="box-title">List KPIs 2</h3>
+                <h3 class="box-title">List Related KPIs</h3>
             </div>
             <!-- /.box-header -->
             <div class="box-body table-responsive no-padding">
@@ -67,6 +67,7 @@
                         <tr>
                             <th style="width: 10px">#</th>
                             <th>KPI Name</th>
+                            <th>Area</th>
                             <th class="text-center"> State Upload Week </th>
                             <th class="text-center"> State Upload Month </th>
                             <th class="text-center"> State Upload Quarter </th>
@@ -78,20 +79,23 @@
                 </table>
                 <script id='tableWorkplaceTrack-template' type="text/template">
                     <tr>
-                        <td>{{No}}</td>
-                        <td>
+                        <td class="text-center">{{No}}</td>
+                        <td class="text-center">
                             <strong>{{KPIName}}</strong>
                         </td>
-                        <td>{{{StateW}}}</td>
-                        <td>{{{StateM}}}</td>
-                        <td>{{{StateQ}}}</td>
-                        <td>{{{StateY}}}</td>
+                        <td class="text-center">
+                            <strong>{{Area}}</strong>
+                        </td>
+                        <td class="text-center">{{{StateW}}}</td>
+                        <td class="text-center">{{{StateM}}}</td>
+                        <td class="text-center">{{{StateQ}}}</td>
+                        <td class="text-center">{{{StateY}}}</td>
                     </tr>
                 </script>
             </div>
             <!-- /.box-body -->
             <div class="box-footer clearfix">
-                <p class="pull-left total">
+                <p class="pull-left total-realted">
 
                 </p>
                 <ul id="paginationWorkplaceTrack" class="pagination pagination-sm no-margin pull-right">
@@ -127,7 +131,7 @@
                     workplaceController.registerEvent();
                 },
                 registerEvent() {
-                   
+
                 },
                 loadData(changePageSize) {
                     var userid = $('#user').data('userid');
@@ -140,10 +144,10 @@
                         function (data, status) {
                             var KPIUpLoads = data.KPIUpLoads;
                             var total = data.total;
-                             $('.total').text("Total record : "+total);
+                            $('.total').text("Total record : " + total);
                             var html = '';
                             var count = 1;
-                             var template = $('#tableWorkplace-template').html();
+                            var template = $('#tableWorkplace-template').html();
                             $.each(KPIUpLoads, function (i, item) {
                                 html += Mustache.render(template, {
                                     No: count,
@@ -196,29 +200,34 @@
                             pageSize: workplaceTrackConfig.pageSize
                         },
                         function (data, status) {
-                            var KPIUpLoads = data.KPIUpLoads;
-                            var total = data.total;
-                             $('.total').text("Total record : "+total);
-                            var html = '';
-                            var count = 1;
-                             var template = $('#tableWorkplaceTrack-template').html();
-                            $.each(KPIUpLoads, function (i, item) {
-                                html += Mustache.render(template, {
-                                    No: count,
-                                    KPIName: item.KPIName,
-                                    StateW: item.StateW == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>',
-                                    StateM: item.StateM == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>',
-                                    StateQ: item.StateQ == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>',
-                                    StateY: item.StateY == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>',
+                          
+                                var KPIUpLoads = data.model;
+                                console.log(data.model);
+                                var total = data.total;
+                                $('.total-realted').text("Total record : " + total);
+                                var html = '';
+                                var count = 1;
+                                var template = $('#tableWorkplaceTrack-template').html();
+                                $.each(KPIUpLoads, function (i, item) {
+                                    html += Mustache.render(template, {
+                                        No: count,
+                                        KPIName: item.KPIName,
+                                        Area: item.Area,
+                                        StateW: item.StateW == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>',
+                                        StateM: item.StateM == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>',
+                                        StateQ: item.StateQ == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>',
+                                        StateY: item.StateY == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>',
+                                    });
+                                    count++;
                                 });
-                                count++;
-                            });
-                            $('.tbodyTrack').empty();
-                            $('.tbodyTrack').html(html);
-                            workplaceController.pagingWorkplaceTrack(total, function () {
-                                workplaceController.loadDataTrack();
-                            }, changePageSize);
-                            workplaceController.registerEvent();
+                                $('.tbodyTrack').empty();
+                                $('.tbodyTrack').html(html);
+                                workplaceController.pagingWorkplaceTrack(total, function () {
+                                    workplaceController.loadDataTrack();
+                                }, changePageSize);
+                                workplaceController.registerEvent();
+                            
+
                         });
                 },
                 pagingWorkplaceTrack: function (totalRow, callback, changePageSize) {
@@ -253,7 +262,7 @@
                 $.ajax({
                     type: "POST",
                     url: "/Workplace/ExcelExport",
-                    data: {userid:userid},
+                    data: { userid: userid },
                     cache: false,
                     success: function (data) {
                         window.location = '/Workplace/Download';

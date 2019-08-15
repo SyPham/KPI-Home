@@ -9,9 +9,9 @@ namespace KPI.Model.ViewModel
 {
    public class ChartVM
     {
-        private int?[] datasetsList = {};
+        private int[] datasetsList = {};
 
-        public int?[] datasets
+        public int[] datasets
         {
             get
             {
@@ -42,11 +42,11 @@ namespace KPI.Model.ViewModel
         public int ID { get; set; }
         public string KPILevelCode { get; set; }
         public string KPIKind { get; set; }
-        public int? Value { get; set; }
-        public int? Week { get; set; }
-        public int? Month { get; set; }
-        public int? Quater { get; set; }
-        public int? Year { get; set; }
+        public int Value { get; set; }
+        public int Week { get; set; }
+        public int Month { get; set; }
+        public int Quater { get; set; }
+        public int Year { get; set; }
         public string DateUpload { get; set; }
         public string Remark { get; set; }
     }

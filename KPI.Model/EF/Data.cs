@@ -14,12 +14,12 @@ namespace KPI.Model.EF
         public string KPILevelCode { get; set; }
         [Column("Period")]
         public string Period { get; set; }
-        public int? Value { get; set; }
-        public int? Week { get; set; }
-        public int? Month { get; set; }
+        public int Value { get; set; }
+        public int Week { get; set; }
+        public int Month { get; set; }
         [Column("Quarter")]
-        public int? Quarter { get; set; }
-        public int? Year { get; set; }
+        public int Quarter { get; set; }
+        public int Year { get; set; }
         public string DateUpload { get; set; }
         public string Remark { get; set; }
         private DateTime? createTime = null;

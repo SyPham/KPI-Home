@@ -15,6 +15,7 @@ namespace KPI.Model.ViewModel
     public class KPIUpLoadVM
     {
         public string KPIName { get; set; }
+        public string Area { get; set; }
         public bool StateW { get; set; }
         public bool StateM { get; set; }
         public bool StateQ { get; set; }

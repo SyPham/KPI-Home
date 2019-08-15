@@ -35,13 +35,13 @@ namespace KPI.Model.ViewModel
         public string KPILevelCode { get; set; }
         public string KPIName { get; set; }
         public int Value { get; set; }
-        public int? PeriodValueW { get; set; }
-        public int? PeriodValueM { get; set; }
-        public int? PeriodValueQ { get; set; }
-        public int? PeriodValueY { get; set; }
+        public int PeriodValueW { get; set; }
+        public int PeriodValueM { get; set; }
+        public int PeriodValueQ { get; set; }
+        public int PeriodValueY { get; set; }
         public string Area { get; set; }
 
-        public int? UploadTimeW { get; set; }
+        public int UploadTimeW { get; set; }
         public DateTime? UploadTimeM { get; set; }
         public DateTime? UploadTimeQ { get; set; }
         public DateTime? UploadTimeY { get; set; }

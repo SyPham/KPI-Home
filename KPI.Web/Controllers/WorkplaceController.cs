@@ -77,6 +77,11 @@ namespace KPI.Web.Controllers
             var currentWeek = DateTime.Now.GetIso8601WeekOfYear();
             var currentMonth = DateTime.Now.Month;
             var currentQuarter = DateTime.Now.GetQuarter();
+
+            var now = DateTime.Now;
+            var end = now.GetEndOfQuarter();
+            var tt = end.Subtract(now).Days;
+
             try
             {
                 DataTable Dt = new DataTable();
@@ -90,37 +95,62 @@ namespace KPI.Web.Controllers
                 Dt.Columns.Add("Remark", typeof(string));
                 foreach (var item in model)
                 {
-                    if (item.PeriodValueW <= currentWeek && item.StateW)
+
+                    if (currentWeek - item.PeriodValueW == 1)
                     {
-                        for (int i = item.PeriodValueW.Value; i <= currentWeek; i++)
+                        Dt.Rows.Add(item.KPILevelCode + "W", item.KPIName, item.Value, currentWeek, item.Year, item.Area, item.UploadTimeW.ToSafetyString(), item.Remark);
+                    }
+                    if (currentWeek - item.PeriodValueW > 1)
+                    {
+                        for (int i = item.PeriodValueW.Value; i < currentWeek; i++)
                         {
-                            Dt.Rows.Add(item.KPILevelCode + "W", item.KPIName, item.Value, item.PeriodValueW ++, item.Year, item.Area, item.UploadTimeW.ToSafetyString(), item.Remark);
+                            Dt.Rows.Add(item.KPILevelCode + "W", item.KPIName, item.Value, item.PeriodValueW++, item.Year, item.Area, item.UploadTimeW.ToSafetyString(), item.Remark);
                         }
                     }
-                   
-                    if (item.PeriodValueM <= currentMonth && item.StateM)
+
+                    if (currentMonth - item.PeriodValueM == 1 )
                     {
-                        for (int i = item.PeriodValueM.Value; i <= currentMonth; i++)
+                        Dt.Rows.Add(item.KPILevelCode + "M", item.KPIName, item.Value, currentMonth, item.Year, item.Area, item.UploadTimeM.Value.ToSafetyString().Split(' ')[0], item.Remark);
+                    }
+                    if (currentMonth - item.PeriodValueM > 1)
+                    {
+                        for (int i = item.PeriodValueM.Value; i < currentMonth; i++)
                         {
                             Dt.Rows.Add(item.KPILevelCode + "M", item.KPIName, item.Value, item.PeriodValueM++, item.Year, item.Area, item.UploadTimeM.Value.ToSafetyString().Split(' ')[0], item.Remark);
                         }
                     }
-                   
-                    if (item.PeriodValueQ <= currentQuarter && item.StateQ)
+
+                    if (currentQuarter - item.PeriodValueQ > 1 )
                     {
-                        for (int i = item.PeriodValueQ.Value; i <= currentQuarter; i++)
+                        for (int i = item.PeriodValueQ.Value; i < currentQuarter; i++)
                         {
                             Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, item.Value, item.PeriodValueQ++, item.Year, item.Area, item.UploadTimeQ.ToSafetyString().Split(' ')[0], item.Remark);
                         }
                     }
-                    
-                    if (item.PeriodValueY <= currentYear && item.StateY)
+
+                    if (currentQuarter - item.PeriodValueQ == 1 )
                     {
-                        for (int i = item.PeriodValueY.Value; i <= currentYear; i++)
+                        if (tt == 15)
+                        {
+                            Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, item.Value, currentQuarter, item.Year, item.Area, item.UploadTimeQ.ToSafetyString().Split(' ')[0], item.Remark);
+                        }
+                    }
+
+                    if (currentYear - item.PeriodValueY > 1)
+                    {
+                        for (int i = item.PeriodValueY.Value; i < currentYear; i++)
                         {
                             Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, item.Value, item.PeriodValueY, item.Year++, item.Area, item.UploadTimeY.ToSafetyString().Split(' ')[0], item.Remark);
                         }
                     }
+                    if (currentYear - item.PeriodValueY == 1)
+                    {
+                        if (currentMonth == 12)
+                        {
+                            Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, item.Value, item.PeriodValueY, item.Year++, item.Area, item.UploadTimeY.ToSafetyString().Split(' ')[0], item.Remark);
+                        }
+                    }
+
                 }
                 var memoryStream = new MemoryStream();
                 using (var excelPackage = new ExcelPackage(memoryStream))

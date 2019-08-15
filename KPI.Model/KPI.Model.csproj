@@ -100,9 +100,14 @@
     <Compile Include="Migrations\201908140629059_Initial.Designer.cs">
       <DependentUpon>201908140629059_Initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201908150740079_update.cs" />
+    <Compile Include="Migrations\201908150740079_update.Designer.cs">
+      <DependentUpon>201908150740079_update.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModel\DataExportVM.cs" />
+    <Compile Include="ViewModel\LevelVM.cs" />
     <Compile Include="ViewModel\WorkplaceVM.cs" />
     <Compile Include="ViewModel\DataCompareVM.cs" />
     <Compile Include="ViewModel\CompareVM.cs" />
@@ -115,7 +120,6 @@
     <Compile Include="ViewModel\KPILevelVM.cs" />
     <Compile Include="ViewModel\KPITreeViewModel.cs" />
     <Compile Include="ViewModel\KPIViewModel.cs" />
-    <Compile Include="ViewModel\LevelVM.cs" />
     <Compile Include="ViewModel\MenuVM.cs" />
     <Compile Include="ViewModel\UploadDataVM.cs" />
     <Compile Include="ViewModel\UserProfileVM.cs" />
@@ -128,6 +132,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201908140629059_Initial.resx">
       <DependentUpon>201908140629059_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908150740079_update.resx">
+      <DependentUpon>201908150740079_update.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

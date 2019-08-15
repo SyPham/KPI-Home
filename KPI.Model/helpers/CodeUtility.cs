@@ -11,6 +11,63 @@ namespace KPI.Model.helpers
 {
     public static class CodeUtility
     {
+        /// <summary>
+        /// Gets the end of quarter.
+        /// </summary>
+        /// <param name="date">The date.</param>
+        /// <returns></returns>
+        public static DateTime GetEndOfQuarter(this DateTime date)
+        {
+            int daysInYear = GetDaysInYear(date);
+            double quarter = ((double)date.DayOfYear) / ((double)daysInYear);
+
+            if (quarter < 0.25)
+            {
+                return new DateTime(new DateTime(date.Year, 4, 1).Ticks - 1);
+            }
+
+            else if (quarter < 0.5)
+            {
+                return new DateTime(new DateTime(date.Year, 7, 1).Ticks - 1);
+            }
+
+            else if (quarter < 0.75)
+            {
+                return new DateTime(new DateTime(date.Year, 10, 1).Ticks - 1);
+            }
+
+            else
+            {
+                return new DateTime(new DateTime(date.Year + 1, 1, 1).Ticks - 1);
+            }
+        }
+        /// <summary>
+        /// Gets the days in year.
+        /// </summary>
+        /// <param name="date">The date.</param>
+        /// <returns></returns>
+        public static int GetDaysInYear(DateTime date)
+        {
+            if (date.Equals(DateTime.MinValue))
+            {
+                return -1;
+            }
+
+            DateTime thisYear = new DateTime(date.Year, 1, 1);
+            DateTime nextYear = new DateTime(date.Year + 1, 1, 1);
+
+            return (nextYear - thisYear).Days;
+        }
+        public static DateTime QuarterEnddate(this DateTime curDate, int whichQtr)
+        {
+            int tQtr = (curDate.Month - 1) / 3 + 1 + whichQtr;
+            return new DateTime(curDate.Year, (tQtr * 3) + 1, 1).AddDays(-1);
+        }
+
+        public static DateTime QuarterStartDate(this DateTime curDate, int whichQtr)
+        {
+            return QuarterEnddate(curDate, whichQtr).AddDays(1).AddMonths(-3);
+        }
         public static int ConvertStringDayOfWeekToNumber(this string dayofweek)
         {
             var value = dayofweek.ToSafetyString().ToUpper();

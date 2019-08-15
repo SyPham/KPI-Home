@@ -157,6 +157,7 @@
     <Compile Include="Controllers\ListUserLevelController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\ChartPeriodController.cs" />
+    <Compile Include="Controllers\MyWorkplaceController.cs" />
     <Compile Include="Controllers\PerformanceController.cs" />
     <Compile Include="Controllers\UploadDataController.cs" />
     <Compile Include="Controllers\WorkplaceController.cs" />
@@ -8748,6 +8749,9 @@
     <Content Include="Views\Compare\Index.cshtml" />
     <Content Include="Views\AdminCategory\Index.cshtml" />
     <Content Include="Views\AdminCategory\_Modal.cshtml" />
+    <Content Include="Views\MyWorkplace\Index.cshtml" />
+    <Content Include="Views\MyWorkplace\_ListKPILevel.cshtml" />
+    <Content Include="Views\MyWorkplace\_Modal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -8820,11 +8824,11 @@
   </Target>
   <Target Name="AfterBuild">
   </Target> -->
-<Target Name="CopyRoslynFiles" AfterTargets="AfterBuild" Condition="!$(Disable_CopyWebApplication) And '$(OutDir)' != '$(OutputPath)'">
+  <Target Name="CopyRoslynFiles" AfterTargets="AfterBuild" Condition="!$(Disable_CopyWebApplication) And '$(OutDir)' != '$(OutputPath)'">
     <ItemGroup>
       <RoslynFiles Include="$(CscToolPath)\*" />
     </ItemGroup>
     <MakeDir Directories="$(WebProjectOutputDir)\bin\roslyn" />
     <Copy SourceFiles="@(RoslynFiles)" DestinationFolder="$(WebProjectOutputDir)\bin\roslyn" SkipUnchangedFiles="true" Retries="$(CopyRetryCount)" RetryDelayMilliseconds="$(CopyRetryDelayMilliseconds)" />
-</Target>
+  </Target>
 </Project>

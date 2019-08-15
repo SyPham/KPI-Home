@@ -59,7 +59,7 @@ namespace KPI.Model.DAO
                         .Select(x => new Dataremark
                         {
                             ID =x.ID,
-                            Value =x.Value.Value,
+                            Value =x.Value,
                             Remark =x.Remark,
                             Week=x.Week
                         }).ToList();
@@ -98,7 +98,7 @@ namespace KPI.Model.DAO
                        .Select(x => new Dataremark
                        {
                            ID = x.ID,
-                           Value = x.Value.Value,
+                           Value = x.Value,
                            Remark = x.Remark,
                            Month = x.Month
                        }).ToList();
@@ -173,7 +173,7 @@ namespace KPI.Model.DAO
                       .Select(x => new Dataremark
                       {
                           ID = x.ID,
-                          Value = x.Value.Value,
+                          Value = x.Value,
                           Remark = x.Remark,
                           Quater = x.Quarter
                       }).ToList();
@@ -222,7 +222,7 @@ namespace KPI.Model.DAO
                       .Select(x => new Dataremark
                       {
                           ID = x.ID,
-                          Value = x.Value.Value,
+                          Value = x.Value,
                           Remark = x.Remark,
                           Year = x.Year
                       }).ToList();
