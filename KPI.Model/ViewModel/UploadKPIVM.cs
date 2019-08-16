@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KPI.Model.ViewModel
 {
-   public class UploadKPIVM
+    public class UploadKPIVM
     {
         public string KPILevelCode { get; set; }
         public string Area { get; set; }
@@ -17,5 +17,10 @@ namespace KPI.Model.ViewModel
         public int Year { get; set; }
         public bool Status { get; set; }
 
+    }
+    public class SendMailVM
+    {
+        public List<UploadKPIVM> ListUploadKPIVMs { get; set; }
+        public bool Status { get; set; }
     }
 }

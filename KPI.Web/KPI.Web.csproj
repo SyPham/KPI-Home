@@ -8677,6 +8677,7 @@
     <Content Include="Scripts\plugins\node_modules\jquery\src\wrap.js" />
     <Content Include="Scripts\script.js" />
     <Content Include="Scripts\sweetalert2%408.js" />
+    <Content Include="Templates\logo.jpg" />
     <Content Include="Templates\newEmail.html" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">

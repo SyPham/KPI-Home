@@ -92,7 +92,7 @@ namespace KPI.Model.DAO
             return true;
         }
 
-        public object UploadData(List<UploadDataVM> entity)
+        public SendMailVM UploadData(List<UploadDataVM> entity)
         {
             var listAdd = new List<Data>();
             var listUpdate = new List<Data>();
@@ -114,15 +114,13 @@ namespace KPI.Model.DAO
                     if (period == "W" && updateW == null)
                     {
                         var dataAdd = new Data();
-                     
                         dataAdd.KPILevelCode = code;
                         dataAdd.Value = item.Value;
                         dataAdd.Week = item.PeriodValue;
                         dataAdd.CreateTime = item.CreateTime;
                         dataAdd.Period = period;
                         listAdd.Add(dataAdd);
-                     
-                       
+
                     }
                     else if (period == "W" && updateW != null)
                     {
@@ -212,7 +210,7 @@ namespace KPI.Model.DAO
                     foreach (var item in listAdd)
                     {
                         var standard = modelKPILevel.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode);
-                        if (item.Week < standard.WeeklyStandard)
+                        if (item.Value < standard.WeeklyStandard)
                         {
                             var dataUploadKPIVM = new UploadKPIVM()
                             {
@@ -226,51 +224,10 @@ namespace KPI.Model.DAO
                             };
                             listDataUpload.Add(dataUploadKPIVM);
                         }
-                        if (item.Month < standard.MonthlyStandard)
-                        {
-                            var dataUploadKPIVM = new UploadKPIVM()
-                            {
-                                KPILevelCode = item.KPILevelCode,
-                                Area = levels.FirstOrDefault(x => x.ID == standard.LevelID).Name,
-                                KPIName = kpis.FirstOrDefault(x => x.ID == standard.KPIID).Name,
-                                Week = item.Week,
-                                Month = item.Month,
-                                Quarter = item.Quarter,
-                                Year = item.Year
-                            };
-                            listDataUpload.Add(dataUploadKPIVM);
-                        }
-                        if (item.Quarter < standard.QuarterlyStandard)
-                        {
-                            var dataUploadKPIVM = new UploadKPIVM()
-                            {
-                                KPILevelCode = item.KPILevelCode,
-                                Area = levels.FirstOrDefault(x => x.ID == standard.LevelID).Name,
-                                KPIName = kpis.FirstOrDefault(x => x.ID == standard.KPIID).Name,
-                                Week = item.Week,
-                                Month = item.Month,
-                                Quarter = item.Quarter,
-                                Year = item.Year
-                            };
-                            listDataUpload.Add(dataUploadKPIVM);
-                        }
-                        if (item.Year < standard.YearlyStandard)
-                        {
-                            var dataUploadKPIVM = new UploadKPIVM()
-                            {
-                                KPILevelCode = item.KPILevelCode,
-                                Area = levels.FirstOrDefault(x => x.ID == standard.LevelID).Name,
-                                KPIName = kpis.FirstOrDefault(x => x.ID == standard.KPIID).Name,
-                                Week = item.Week,
-                                Month = item.Month,
-                                Quarter = item.Quarter,
-                                Year = item.Year
-                            };
-                            listDataUpload.Add(dataUploadKPIVM);
-                        }
+
                     }
                 }
-                  
+
                 if (listUpdate.Count() > 0)
                 {
                     foreach (var item in listUpdate)
@@ -303,21 +260,29 @@ namespace KPI.Model.DAO
                 }
                 if (listDataUpload.Count > 0)
                 {
-                    return new object
+                    return new SendMailVM
                     {
-
+                       ListUploadKPIVMs= listDataUpload,
+                        Status=true,
                     };
                 }
-                return new object {
+                else
+                {
+                    return new SendMailVM
+                    {
+                        ListUploadKPIVMs = listDataUpload,
+                        Status = false,
+                    };
+                }
 
-                };
             }
             catch (Exception ex)
             {
                 var message = ex.Message;
-                return new
+                return new SendMailVM
                 {
-                    status = false
+                    ListUploadKPIVMs = listDataUpload,
+                    Status = false,
                 };
             }
 

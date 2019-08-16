@@ -65,32 +65,64 @@ namespace KPI.Web.Controllers
                         datasList.Add(item);
                     }
                 }
-                string content = System.IO.File.ReadAllText(Server.MapPath("~/Templates/newEmail.html"));
-
-                content = content.Replace("{{Content}}", "Update Remark");
-                var sessionUser = Session["UserProfile"] as UserProfileVM;
-                string from = ConfigurationManager.AppSettings["FromEmailAddress"].ToString();
-                string host = ConfigurationManager.AppSettings["SMTPHost"].ToString();
-                string port = ConfigurationManager.AppSettings["SMTPPort"].ToString();
-                string ssl = ConfigurationManager.AppSettings["EnabledSSL"].ToString();
-                string password = ConfigurationManager.AppSettings["FromEmailPassword"].ToString();
-                string to = string.Empty;
-                if (sessionUser.User.Email.IsEmailFormat())
+                var model = new UploadDAO().UploadData(datasList);
+                if(model.ListUploadKPIVMs.Count > 0)
                 {
-                     to = sessionUser.User.Email.ToSafetyString();
+                    string content = System.IO.File.ReadAllText(Server.MapPath("~/Templates/newEmail.html"));
+                    var html = string.Empty;
+                    foreach (var item in model.ListUploadKPIVMs)
+                    {
+                        html+= @"<tr>
+                            <td valign='top' style='padding:5px; font-family: Arial,sans-serif; font-size: 16px; line-height:20px;'>{{area}}</td>
+                            <td valign='top' style='padding:5px; font-family: Arial,sans-serif; font-size: 16px; line-height:20px;'>{{kpiname}}</td>
+                            <td valign='top' style='padding:5px; font-family: Arial,sans-serif; font-size: 16px; line-height:20px;'>{{week}}</td>
+                            <td valign='top' style='padding:5px; font-family: Arial,sans-serif; font-size: 16px; line-height:20px;'>{{month}}</td>
+                            <td valign='top' style='padding:5px; font-family: Arial,sans-serif; font-size: 16px; line-height:20px;'>{{quarter}}</td>
+                            <td valign='top' style='padding:5px; font-family: Arial,sans-serif; font-size: 16px; line-height:20px;'>{{year}}</td>
+                         </tr>"
+                         .Replace("{{area}}",item.Area)
+                         .Replace("{{kpiname}}", item.KPIName)
+                         .Replace("{{week}}", item.Week.ToSafetyString())
+                         .Replace("{{month}}", item.Month.ToSafetyString())
+                         .Replace("{{quarter}}", item.Quarter.ToSafetyString())
+                         .Replace("{{year}}", item.Year.ToSafetyString());
+
+                    }
+                    content = content.Replace("{{{html-template}}}", html);
+                    var sessionUser = Session["UserProfile"] as UserProfileVM;
+                    string from = ConfigurationManager.AppSettings["FromEmailAddress"].ToString();
+                    string host = ConfigurationManager.AppSettings["SMTPHost"].ToString();
+                    string port = ConfigurationManager.AppSettings["SMTPPort"].ToString();
+                    string ssl = ConfigurationManager.AppSettings["EnabledSSL"].ToString();
+                    string password = ConfigurationManager.AppSettings["FromEmailPassword"].ToString();
+                    string to = sessionUser.User.Email;
+                    if (sessionUser.User.Email.IsEmailFormat())
+                    {
+                        to = sessionUser.User.Email.ToSafetyString();
+                    }
+
+                    string subject = ConfigurationManager.AppSettings["FromEmailDisplayName"].ToString();
+                    MailUtility mail = new MailUtility(from, password);
+                    mail.To = to;
+                    mail.Content = content;
+                    mail.Port = port.ToInt();
+
+                    mail.Server = host;
+                    mail.SSl = ssl.ToBool();
+                    mail.Subject = subject;
+                    try
+                    {
+                        mail.Send();
+                    }
+                    catch (Exception ex)
+                    {
+                        var message = ex.Message;
+                        throw;
+                    }
+
+                    return Json(model.Status, JsonRequestBehavior.AllowGet);
                 }
-
-                string subject = ConfigurationManager.AppSettings["FromEmailDisplayName"].ToString();
-                MailUtility mail = new MailUtility(from, password);
-                mail.To = to;
-                mail.Content = content;
-                mail.Port = port.ToInt();
-                mail.Server = host;
-                mail.SSl = ssl.ToBool();
-                mail.Subject = subject;
-                mail.Send();
-
-                return Json(new UploadDAO().UploadData(datasList), JsonRequestBehavior.AllowGet);
+                return Json(model.Status, JsonRequestBehavior.AllowGet);
             }
             return Json(false, JsonRequestBehavior.AllowGet);
         }
@@ -119,7 +151,7 @@ namespace KPI.Web.Controllers
                 Dt.Columns.Add("Update Time", typeof(object));
                 Dt.Columns.Add("Remark", typeof(string));
                 foreach (var item in model)
-                {                  
+                {
                     if (currentWeek - item.PeriodValueW >= 1)
                     {
                         for (int i = item.PeriodValueW.Value; i <= currentWeek; i++)
@@ -132,23 +164,23 @@ namespace KPI.Web.Controllers
                     {
                         for (int i = item.PeriodValueM.Value; i <= currentMonth; i++)
                         {
-                            Dt.Rows.Add(item.KPILevelCode + "M", item.KPIName, item.Value, item.PeriodValueM++, item.Year, item.Area, item.UploadTimeM.Value.ToSafetyString().Split(' ')[0], item.Remark);
+                            Dt.Rows.Add(item.KPILevelCode + "M", item.KPIName, item.Value, item.PeriodValueM++, item.Year, item.Area, item.UploadTimeM.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
                         }
                     }
 
-                    if (currentQuarter - item.PeriodValueQ > 1 )
+                    if (currentQuarter - item.PeriodValueQ > 1)
                     {
                         for (int i = item.PeriodValueQ.Value; i < currentQuarter; i++)
                         {
-                            Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, item.Value, item.PeriodValueQ++, item.Year, item.Area, item.UploadTimeQ.ToSafetyString().Split(' ')[0], item.Remark);
+                            Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, item.Value, item.PeriodValueQ++, item.Year, item.Area, item.UploadTimeQ.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
                         }
                     }
 
-                    if (currentQuarter - item.PeriodValueQ == 1 )
+                    if (currentQuarter - item.PeriodValueQ == 1)
                     {
                         if (tt <= 30)
                         {
-                            Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, item.Value, currentQuarter, item.Year, item.Area, item.UploadTimeQ.ToSafetyString().Split(' ')[0], item.Remark);
+                            Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, item.Value, currentQuarter, item.Year, item.Area, item.UploadTimeQ.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
                         }
                     }
 
@@ -156,7 +188,7 @@ namespace KPI.Web.Controllers
                     {
                         for (int i = item.PeriodValueY.Value; i <= currentYear; i++)
                         {
-                            Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, item.Value, item.PeriodValueY, item.Year++, item.Area, item.UploadTimeY.ToSafetyString().Split(' ')[0], item.Remark);
+                            Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, item.Value, item.PeriodValueY, item.Year++, item.Area, item.UploadTimeY.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
                         }
                     }
                     if (currentYear - item.PeriodValueY == 1)
@@ -186,11 +218,13 @@ namespace KPI.Web.Controllers
                     return Json("", JsonRequestBehavior.AllowGet);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                var message = ex.Message;
+
                 return Json("", JsonRequestBehavior.AllowGet);
             }
+
+
         }
 
         public ActionResult Download()

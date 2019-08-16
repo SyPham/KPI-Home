@@ -44,7 +44,7 @@ namespace KPI.Model.helpers
 
                 return true;
             }
-            catch (SmtpException smex)
+            catch (SmtpException)
             {
 
                 return false;
