@@ -46,6 +46,10 @@ namespace KPI.Web.Controllers
             ViewBag.List2 = compare.list2;
             ViewBag.List3 = compare.list3;
             ViewBag.List4 = compare.list4;
+            if (compare.Period == "W") ViewBag.PeriodText = "Weekly";
+            if (compare.Period == "M") ViewBag.PeriodText = "Monthly";
+            if (compare.Period == "Q") ViewBag.PeriodText = "Quarterly";
+            if (compare.Period == "Y") ViewBag.PeriodText = "Yearly";
             ViewBag.Standard = standard;
             ViewBag.Unit = unit;
             return View();

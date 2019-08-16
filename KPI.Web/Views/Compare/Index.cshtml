@@ -13,6 +13,8 @@
     var kpiname = list1.kpiname;
     var standard = (int)ViewBag.Standard;
     var unit = (string)ViewBag.Unit;
+    var periodText = (string)ViewBag.PeriodText;
+
 }
 
 @Html.Raw(BreadCrumb.Display())
@@ -95,7 +97,7 @@
         }
             var densityCanvas = document.getElementById("lineChart");
             Chart.defaults.global.defaultFontFamily = "Lato";
-            Chart.defaults.global.defaultFontSize = 18;
+            Chart.defaults.global.defaultFontSize = 12;
 
             var standards = [];
             for (var i = 0; i < @Html.Raw(Json.Encode(@list1.datasets).Length); i++) {
@@ -123,7 +125,8 @@
             };
 
             var list2= {
-                label:   "@Html.Raw(@list2.label)",
+                label: "@Html.Raw(@list2.label)",
+                 
                 data:  @Html.Raw(Json.Encode(@list2.datasets)),
                 backgroundColor: Samples.color(2),
                 borderColor: Samples.color(2),
@@ -192,10 +195,23 @@
                             font: {
                                 weight: 'bold'
                             },
-                            formatter: Math.round
+                         formatter: Math.round,
+                             display: function (context) {
+                                console.log(context.dataset.label)
+                                return context.dataset.label !=="Standard"; // display labels with an odd index
+                            }
                         }
+                },
+                    title: {
+                    display: true,
+                        text: "KPI Compare Chart - @kpiname - @periodText",
+                        fontSize: 16,
+                        fontColor: 'black'
                     },
-            elements: {
+                elements: {
+                point:{
+                        radius: 0
+                    },
                 line: {
                     tension: 0.2
                 }
@@ -215,7 +231,8 @@
                         scaleLabel: {
                              display: true,
                              labelString: '@unit',
-                             fontSize: 20
+                            fontSize: 16,
+                          fontStyle:'inherit'
                           }
                     }],
                     xAxes: [{
@@ -231,7 +248,9 @@
                     ,
                      scaleLabel: {
                         display: true,
-                        labelString: labelString
+                         labelString: labelString,
+                         fontSize: 16,
+                          fontStyle:'inherit'
                       }
                     }]
 
@@ -251,7 +270,7 @@
             <!-- LINE CHART -->
             <div class="box box-widget">
                 <div class="box-header with-border">
-                    <h3 class="box-title" style="font-weight:bold">KPI Chart</h3>
+                    <h3 class="box-title" style="font-weight:bold">KPI Compare Chart  - @kpiname - @periodText</h3>
 
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse">
@@ -262,6 +281,8 @@
                     </div>
                 </div>
                 <div class="box-body">
+                    <button type="button" class="btn bg-maroon margin pull-right"><i class="fa fa-star"></i> <span>Standard : </span><span class="standard text-bold" style="">@standard</span></button>
+
                     <div class="chart">
                         <canvas id="lineChart" style="height:250px"></canvas>
                     </div>

@@ -15,5 +15,7 @@ namespace KPI.Model.ViewModel
 
         public int Standard { get; set; }
         public string Unit { get; set; }
+
+        public string Period { get; set; }
     }
 }

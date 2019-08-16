@@ -4,7 +4,7 @@
 @{
     ViewBag.Title = "Chart";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    var datasets = ViewBag.Datasets as int?[];
+    var datasets = ViewBag.Datasets as int[];
     var dataremarks = (List<KPI.Model.ViewModel.Dataremark>)ViewBag.Dataremarks;
     var labels = ViewBag.Labels as string[];
     var label = ViewBag.Label as string;
@@ -153,17 +153,18 @@
             }
             //---------------------------------------------------------------------------------
             //Config charts
-            var listData = {
+            var listStandard= {
                 label: "Standard",
                 backgroundColor: Samples.color(0),
                 borderColor: Samples.color(0),
                 data: standards,
-                datalabels: {
-                    align: 'center',
-                    anchor: 'center'
-                }
+                //datalabels: {
+                //    align: 'center',
+                //    anchor: 'center'
+                //}
+
             };
-            var listStandard = {
+            var listData = {
                 label: label,
                 backgroundColor: Samples.color(1),
                 borderColor: Samples.color(1),
@@ -189,18 +190,25 @@
                             font: {
                                 weight: 'bold'
                             },
-                            formatter: Math.round
+                            formatter: Math.round,
+                            display: function (context) {
+                                console.log(context.dataset.label)
+                                return context.dataset.label !=="Standard"; // display labels with an odd index
+                            }
                         }
                     }
-                    ,
+                   ,
                      title: {
                     display: true,
-                        text: "@label - @kpiname",
-                        fontSize: 16,
+                        text: "KPI Chart - @label - @kpiname",
+                        fontSize: 20,
                         fontColor: 'black'
 
                     },
-                    elements: {
+                elements: {
+                         point:{
+                        radius: 0
+                    },
                         line: {
                             tension: 0.2
                         }
@@ -218,6 +226,8 @@
                      scaleLabel: {
                         display: true,
                          labelString: unit,
+                         fontSize: 16,
+                          fontStyle:'normal'
                       }
                 }],
                 xAxes: [{
@@ -231,7 +241,9 @@
                     ,
                      scaleLabel: {
                         display: true,
-                        labelString: labelString
+                         labelString: labelString,
+                         fontSize: 16,
+                          fontStyle:'normal'
                       }
                 }]
             }
@@ -385,7 +397,7 @@ var chartperiodController = {
         var year = chartperiodController.getUrlParameter('year');
         var start = chartperiodController.getUrlParameter('start');
         var end = chartperiodController.getUrlParameter('end');
-         var period = chartperiodController.getUrlParameter('period');
+        var period = chartperiodController.getUrlParameter('period');
         if (year == "0" && start === "0" && end === "0") {
 
             var d = new Date();
@@ -564,7 +576,6 @@ var chartperiodController = {
          });
         $('#btnCompare').off('click').on('click', function (e) {
              chartperiodController.loadDataProvide();
-
          });
     },
     search() {

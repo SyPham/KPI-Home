@@ -15,6 +15,7 @@ using KPI.Web.Models;
 using System.Drawing;
 using MvcBreadCrumbs;
 using KPI.Model.ViewModel;
+using System.Configuration;
 
 namespace KPI.Web.Controllers
 {
@@ -64,8 +65,32 @@ namespace KPI.Web.Controllers
                         datasList.Add(item);
                     }
                 }
+                string content = System.IO.File.ReadAllText(Server.MapPath("~/Templates/newEmail.html"));
 
-                return Json(new UploadDAO().Add(datasList), JsonRequestBehavior.AllowGet);
+                content = content.Replace("{{Content}}", "Update Remark");
+                var sessionUser = Session["UserProfile"] as UserProfileVM;
+                string from = ConfigurationManager.AppSettings["FromEmailAddress"].ToString();
+                string host = ConfigurationManager.AppSettings["SMTPHost"].ToString();
+                string port = ConfigurationManager.AppSettings["SMTPPort"].ToString();
+                string ssl = ConfigurationManager.AppSettings["EnabledSSL"].ToString();
+                string password = ConfigurationManager.AppSettings["FromEmailPassword"].ToString();
+                string to = string.Empty;
+                if (sessionUser.User.Email.IsEmailFormat())
+                {
+                     to = sessionUser.User.Email.ToSafetyString();
+                }
+
+                string subject = ConfigurationManager.AppSettings["FromEmailDisplayName"].ToString();
+                MailUtility mail = new MailUtility(from, password);
+                mail.To = to;
+                mail.Content = content;
+                mail.Port = port.ToInt();
+                mail.Server = host;
+                mail.SSl = ssl.ToBool();
+                mail.Subject = subject;
+                mail.Send();
+
+                return Json(new UploadDAO().UploadData(datasList), JsonRequestBehavior.AllowGet);
             }
             return Json(false, JsonRequestBehavior.AllowGet);
         }
@@ -94,27 +119,18 @@ namespace KPI.Web.Controllers
                 Dt.Columns.Add("Update Time", typeof(object));
                 Dt.Columns.Add("Remark", typeof(string));
                 foreach (var item in model)
-                {
-
-                    if (currentWeek - item.PeriodValueW == 1)
+                {                  
+                    if (currentWeek - item.PeriodValueW >= 1)
                     {
-                        Dt.Rows.Add(item.KPILevelCode + "W", item.KPIName, item.Value, currentWeek, item.Year, item.Area, item.UploadTimeW.ToSafetyString(), item.Remark);
-                    }
-                    if (currentWeek - item.PeriodValueW > 1)
-                    {
-                        for (int i = item.PeriodValueW.Value; i < currentWeek; i++)
+                        for (int i = item.PeriodValueW.Value; i <= currentWeek; i++)
                         {
                             Dt.Rows.Add(item.KPILevelCode + "W", item.KPIName, item.Value, item.PeriodValueW++, item.Year, item.Area, item.UploadTimeW.ToSafetyString(), item.Remark);
                         }
                     }
 
-                    if (currentMonth - item.PeriodValueM == 1 )
-                    {
-                        Dt.Rows.Add(item.KPILevelCode + "M", item.KPIName, item.Value, currentMonth, item.Year, item.Area, item.UploadTimeM.Value.ToSafetyString().Split(' ')[0], item.Remark);
-                    }
                     if (currentMonth - item.PeriodValueM > 1)
                     {
-                        for (int i = item.PeriodValueM.Value; i < currentMonth; i++)
+                        for (int i = item.PeriodValueM.Value; i <= currentMonth; i++)
                         {
                             Dt.Rows.Add(item.KPILevelCode + "M", item.KPIName, item.Value, item.PeriodValueM++, item.Year, item.Area, item.UploadTimeM.Value.ToSafetyString().Split(' ')[0], item.Remark);
                         }
@@ -130,7 +146,7 @@ namespace KPI.Web.Controllers
 
                     if (currentQuarter - item.PeriodValueQ == 1 )
                     {
-                        if (tt == 15)
+                        if (tt <= 30)
                         {
                             Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, item.Value, currentQuarter, item.Year, item.Area, item.UploadTimeQ.ToSafetyString().Split(' ')[0], item.Remark);
                         }
@@ -138,7 +154,7 @@ namespace KPI.Web.Controllers
 
                     if (currentYear - item.PeriodValueY > 1)
                     {
-                        for (int i = item.PeriodValueY.Value; i < currentYear; i++)
+                        for (int i = item.PeriodValueY.Value; i <= currentYear; i++)
                         {
                             Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, item.Value, item.PeriodValueY, item.Year++, item.Area, item.UploadTimeY.ToSafetyString().Split(' ')[0], item.Remark);
                         }
@@ -147,7 +163,7 @@ namespace KPI.Web.Controllers
                     {
                         if (currentMonth == 12)
                         {
-                            Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, item.Value, item.PeriodValueY, item.Year++, item.Area, item.UploadTimeY.ToSafetyString().Split(' ')[0], item.Remark);
+                            Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, item.Value, item.PeriodValueY, currentYear, item.Area, item.UploadTimeY.ToSafetyString().Split(' ')[0], item.Remark);
                         }
                     }
 

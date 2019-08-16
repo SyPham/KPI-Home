@@ -320,7 +320,9 @@ namespace KPI.Model.DAO
         {
             var model = new DataCompareVM();
             obj = obj.ToSafetyString();
+          
             var value = obj.Split('-');
+            model.Period = value[1].Split(',')[1];
             var size = value.Length;
             if (size == 2)
             {
@@ -330,6 +332,7 @@ namespace KPI.Model.DAO
                 var period2 = value[1].Split(',')[1];
                 model.list1 = Compare(kpilevelcode1, period1);
                 model.list2 = Compare(kpilevelcode2, period2);
+               
                 return model;
             }
             else if (size == 3)

@@ -40,6 +40,8 @@ namespace KPI.Web.Controllers
             ViewBag.Label = model.label;
             ViewBag.KPIName = model.kpiname;
             ViewBag.Period = model.period;
+            
+
             ViewBag.KPILevelCode = model.kpilevelcode;
             ViewBag.StatusFavorite = model.statusfavorite == true ? "true" : "false";
             ViewBag.Standard = model.Standard;

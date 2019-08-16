@@ -12,6 +12,31 @@ namespace KPI.Model.helpers
     public static class CodeUtility
     {
         /// <summary>
+        /// Kiểm tra giá trị value có phải là định dạng email không?
+        /// Nếu là định dạng email, trả về true; Ngược lại, trả về false.
+        /// VD đúng: henry@gmail.com; hello@zing.vn; henry@viettel.vn.
+        /// VD sai: demo@demo@.com; a@gmail.com; toan.gmail.com; gmail.com@; dung   @gmail.com
+        /// </summary>
+        /// <param name="value">Giá trị cần kiểm tra</param>
+        /// <returns>Nếu là định dạng email, trả về true; Ngược lại, trả về false.</returns>
+        public static bool IsEmailFormat(this object value)
+        {
+            if (value == null)
+                return false;
+
+            //Khai báo một mẫu công thức dùng để kiểm tra
+            string pattern = @"^[a-zA-Z0-9_\.]+@[a-zA-Z]+\.[a-zA-Z]+(\.[a-zA-Z]+)*$";
+
+            //Khai báo một item thuộc lớp Regex
+            Regex item = new Regex(pattern);
+
+            //Kiểm tra giá trị value có khớp mẫu công thức không?
+            if (item.IsMatch(value.ToString()) == true)
+                return true;
+            else
+                return false;
+        }
+        /// <summary>
         /// Gets the end of quarter.
         /// </summary>
         /// <param name="date">The date.</param>
@@ -155,17 +180,21 @@ namespace KPI.Model.helpers
                 .Calendar
                 .GetWeekOfYear(date, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
         }
-        public static int GetQuarter(this DateTime date)
+        public static int GetQuarter(this DateTime dt)
         {
-            if (date.Month >= 4 && date.Month <= 6)
-                return 1;
-            else if (date.Month >= 7 && date.Month <= 9)
-                return 2;
-            else if (date.Month >= 10 && date.Month <= 12)
-                return 3;
-            else
-                return 4;
+            return (dt.Month - 1) / 3 + 1;
         }
+        //public static int GetQuarter(this DateTime date)
+        //{
+        //    if (date.Month >= 1 && date.Month <= 3)
+        //        return 1;
+        //    else if (date.Month >= 4 && date.Month <= 6)
+        //        return 2;
+        //    else if (date.Month >= 7 && date.Month <= 9)
+        //        return 3;
+        //    else
+        //        return 4;
+        //}
         /// <summary>
         /// Chuyển value về dạng chuỗi.
         /// Trả về dạng chuỗi của value

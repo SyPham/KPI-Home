@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.IO;
+using System.Configuration;
 
 namespace KPI.Model.DAO
 {
@@ -90,88 +92,233 @@ namespace KPI.Model.DAO
             return true;
         }
 
-        public bool Add(List<ViewModel.UploadDataVM> entity)
+        public object UploadData(List<UploadDataVM> entity)
         {
+            var listAdd = new List<Data>();
+            var listUpdate = new List<Data>();
+            var listDataUpload = new List<UploadKPIVM>();
+            var model = _dbContext.Datas;
             try
             {
                 foreach (var item in entity)
                 {
                     var value = item.KPILevelCode;
                     var code = value.Substring(0, value.Length - 1);
-                    var kind = value.Substring(value.Length - 1, 1);
+                    var period = value.Substring(value.Length - 1, 1);
 
-                    var updateW = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == code && x.Period == kind && x.Week == item.PeriodValue);
-                    var updateM = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == code && x.Period == kind && x.Month == item.PeriodValue);
-                    var updateQ = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == code && x.Period == kind && x.Quarter == item.PeriodValue);
-                    var updateY = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == code && x.Period == kind && x.Year == item.PeriodValue);
+                    var updateW = model.FirstOrDefault(x => x.KPILevelCode == code && x.Period == period && x.Week == item.PeriodValue);
+                    var updateM = model.FirstOrDefault(x => x.KPILevelCode == code && x.Period == period && x.Month == item.PeriodValue);
+                    var updateQ = model.FirstOrDefault(x => x.KPILevelCode == code && x.Period == period && x.Quarter == item.PeriodValue);
+                    var updateY = model.FirstOrDefault(x => x.KPILevelCode == code && x.Period == period && x.Year == item.PeriodValue);
 
-                    if (kind == "W" && updateW == null)
+                    if (period == "W" && updateW == null)
                     {
-                        var dataW = new Data();
-                        dataW.KPILevelCode = code;
-                        dataW.Value = item.Value;
-                        dataW.Week = item.PeriodValue;
-                        dataW.CreateTime = item.CreateTime;
-                        dataW.Period = kind;
-                        _dbContext.Datas.Add(dataW);
-                        _dbContext.SaveChanges();
+                        var dataAdd = new Data();
+                     
+                        dataAdd.KPILevelCode = code;
+                        dataAdd.Value = item.Value;
+                        dataAdd.Week = item.PeriodValue;
+                        dataAdd.CreateTime = item.CreateTime;
+                        dataAdd.Period = period;
+                        listAdd.Add(dataAdd);
+                     
+                       
                     }
-                    else if (kind == "W" && updateW != null)
+                    else if (period == "W" && updateW != null)
                     {
-                        updateW.Value = item.Value;
-                        _dbContext.SaveChanges();
+                        var dataUpdate = new Data();
+                        dataUpdate.KPILevelCode = code;
+                        dataUpdate.Value = item.Value;
+                        dataUpdate.Week = item.PeriodValue;
+                        dataUpdate.CreateTime = item.CreateTime;
+                        dataUpdate.Period = period;
+
+                        listUpdate.Add(dataUpdate);
                     }
-                    else if (kind == "M" && updateM == null)
+                    else if (period == "M" && updateM == null)
                     {
-                        var dataM = new Data();
-                        dataM.KPILevelCode = code;
-                        dataM.Value = item.Value;
-                        dataM.Month = item.PeriodValue;
-                        dataM.CreateTime = item.CreateTime;
-                        dataM.Period = kind;
-                        _dbContext.Datas.Add(dataM);
-                        _dbContext.SaveChanges();
+                        var dataAdd = new Data();
+                        dataAdd.KPILevelCode = code;
+                        dataAdd.Value = item.Value;
+                        dataAdd.Week = item.PeriodValue;
+                        dataAdd.CreateTime = item.CreateTime;
+                        dataAdd.Period = period;
+                        listAdd.Add(dataAdd);
+
                     }
-                    else if (kind == "M" && updateM != null)
+                    else if (period == "M" && updateM != null)
                     {
-                        updateM.Value = item.Value;
-                        _dbContext.SaveChanges();
+                        var dataUpdate = new Data();
+                        dataUpdate.KPILevelCode = code;
+                        dataUpdate.Value = item.Value;
+                        dataUpdate.Week = item.PeriodValue;
+                        dataUpdate.CreateTime = item.CreateTime;
+                        dataUpdate.Period = period;
+
+                        listUpdate.Add(dataUpdate);
                     }
-                    else if (kind == "Q" && updateM == null)
+                    else if (period == "Q" && updateM == null)
                     {
-                        var dataQ = new Data();
-                        dataQ.KPILevelCode = code;
-                        dataQ.Value = item.Value;
-                        dataQ.Quarter = item.PeriodValue;
-                        dataQ.CreateTime = item.CreateTime;
-                        dataQ.Period = kind;
+                        var dataAdd = new Data();
+                        dataAdd.KPILevelCode = code;
+                        dataAdd.Value = item.Value;
+                        dataAdd.Week = item.PeriodValue;
+                        dataAdd.CreateTime = item.CreateTime;
+                        dataAdd.Period = period;
+                        listAdd.Add(dataAdd);
+
+
                     }
-                    else if (kind == "Q" && updateM != null)
+                    else if (period == "Q" && updateM != null)
                     {
-                        updateQ.Value = item.Value;
-                        _dbContext.SaveChanges();
+                        var dataUpdate = new Data();
+                        dataUpdate.KPILevelCode = code;
+                        dataUpdate.Value = item.Value;
+                        dataUpdate.Week = item.PeriodValue;
+                        dataUpdate.CreateTime = item.CreateTime;
+                        dataUpdate.Period = period;
+
+                        listUpdate.Add(dataUpdate);
                     }
-                    else if (kind == "Y" && updateY != null)
+                    else if (period == "Y" && updateY == null)
                     {
-                        var dataY = new Data();
-                        dataY.KPILevelCode = code;
-                        dataY.Value = item.Value;
-                        dataY.CreateTime = item.CreateTime;
-                        dataY.Year = item.Year;
-                        dataY.Period = kind;
+                        var dataAdd = new Data();
+                        dataAdd.KPILevelCode = code;
+                        dataAdd.Value = item.Value;
+                        dataAdd.Week = item.PeriodValue;
+                        dataAdd.CreateTime = item.CreateTime;
+                        dataAdd.Period = period;
+                        listAdd.Add(dataAdd);
                     }
-                    else if (kind == "Y" && updateM != null)
+                    else if (period == "Y" && updateM != null)
                     {
-                        updateY.Value = item.Value;
-                        _dbContext.SaveChanges();
+                        var dataUpdate = new Data();
+                        dataUpdate.KPILevelCode = code;
+                        dataUpdate.Value = item.Value;
+                        dataUpdate.Week = item.PeriodValue;
+                        dataUpdate.CreateTime = item.CreateTime;
+                        dataUpdate.Period = period;
+
+                        listUpdate.Add(dataUpdate);
                     }
                 }
-                return true;
+                if (listAdd.Count() > 0)
+                {
+                    _dbContext.Datas.AddRange(listAdd);
+                    _dbContext.SaveChanges();
+                    var modelKPILevel = _dbContext.KPILevels;
+                    var kpis = _dbContext.KPIs;
+                    var levels = _dbContext.Levels;
+                    foreach (var item in listAdd)
+                    {
+                        var standard = modelKPILevel.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode);
+                        if (item.Week < standard.WeeklyStandard)
+                        {
+                            var dataUploadKPIVM = new UploadKPIVM()
+                            {
+                                KPILevelCode = item.KPILevelCode,
+                                Area = levels.FirstOrDefault(x=>x.ID== standard.LevelID).Name,
+                                KPIName = kpis.FirstOrDefault(x => x.ID == standard.KPIID).Name,
+                                Week = item.Week,
+                                Month=item.Month,
+                                Quarter=item.Quarter,
+                                Year=item.Year
+                            };
+                            listDataUpload.Add(dataUploadKPIVM);
+                        }
+                        if (item.Month < standard.MonthlyStandard)
+                        {
+                            var dataUploadKPIVM = new UploadKPIVM()
+                            {
+                                KPILevelCode = item.KPILevelCode,
+                                Area = levels.FirstOrDefault(x => x.ID == standard.LevelID).Name,
+                                KPIName = kpis.FirstOrDefault(x => x.ID == standard.KPIID).Name,
+                                Week = item.Week,
+                                Month = item.Month,
+                                Quarter = item.Quarter,
+                                Year = item.Year
+                            };
+                            listDataUpload.Add(dataUploadKPIVM);
+                        }
+                        if (item.Quarter < standard.QuarterlyStandard)
+                        {
+                            var dataUploadKPIVM = new UploadKPIVM()
+                            {
+                                KPILevelCode = item.KPILevelCode,
+                                Area = levels.FirstOrDefault(x => x.ID == standard.LevelID).Name,
+                                KPIName = kpis.FirstOrDefault(x => x.ID == standard.KPIID).Name,
+                                Week = item.Week,
+                                Month = item.Month,
+                                Quarter = item.Quarter,
+                                Year = item.Year
+                            };
+                            listDataUpload.Add(dataUploadKPIVM);
+                        }
+                        if (item.Year < standard.YearlyStandard)
+                        {
+                            var dataUploadKPIVM = new UploadKPIVM()
+                            {
+                                KPILevelCode = item.KPILevelCode,
+                                Area = levels.FirstOrDefault(x => x.ID == standard.LevelID).Name,
+                                KPIName = kpis.FirstOrDefault(x => x.ID == standard.KPIID).Name,
+                                Week = item.Week,
+                                Month = item.Month,
+                                Quarter = item.Quarter,
+                                Year = item.Year
+                            };
+                            listDataUpload.Add(dataUploadKPIVM);
+                        }
+                    }
+                }
+                  
+                if (listUpdate.Count() > 0)
+                {
+                    foreach (var item in listUpdate)
+                    {
+                        if (item.Period == "W")
+                        {
+                            var dataW = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Period == item.Period && x.Week == item.Week);
+                            dataW.Value = item.Value;
+                            _dbContext.SaveChanges();
+                        }
+                        if (item.Period == "M")
+                        {
+                            var dataW = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Period == item.Period && x.Month == item.Month);
+                            dataW.Value = item.Value;
+                            _dbContext.SaveChanges();
+                        }
+                        if (item.Period == "Q")
+                        {
+                            var dataW = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Period == item.Period && x.Quarter == item.Quarter);
+                            dataW.Value = item.Value;
+                            _dbContext.SaveChanges();
+                        }
+                        if (item.Period == "Y")
+                        {
+                            var dataW = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Period == item.Period && x.Year == item.Year);
+                            dataW.Value = item.Value;
+                            _dbContext.SaveChanges();
+                        }
+                    }
+                }
+                if (listDataUpload.Count > 0)
+                {
+                    return new object
+                    {
+
+                    };
+                }
+                return new object {
+
+                };
             }
             catch (Exception ex)
             {
                 var message = ex.Message;
-                return false;
+                return new
+                {
+                    status = false
+                };
             }
 
         }
@@ -222,10 +369,10 @@ namespace KPI.Model.DAO
                          select new KPIUpLoadVM
                          {
                              KPIName = _dbContext.KPIs.FirstOrDefault(x => x.ID == item.KPIID).Name,
-                             StateW = _dbContext.KPILevels.FirstOrDefault(k => k.KPILevelCode == item.KPILevelCode).WeeklyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode).Week > 0 ? true : false,
-                             StateM = _dbContext.KPILevels.FirstOrDefault(k => k.KPILevelCode == item.KPILevelCode).MonthlyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode).Month > 0 ? true : false,
-                             StateQ = _dbContext.KPILevels.FirstOrDefault(k => k.KPILevelCode == item.KPILevelCode).QuarterlyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode).Quarter > 0 ? true : false,
-                             StateY = _dbContext.KPILevels.FirstOrDefault(k => k.KPILevelCode == item.KPILevelCode).YearlyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode).Year > 0 ? true : false
+                             StateW = item.WeeklyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode).Week > 0 ? true : false,
+                             StateM = item.MonthlyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode).Month > 0 ? true : false,
+                             StateQ = item.QuarterlyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode).Quarter > 0 ? true : false,
+                             StateY = item.YearlyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode).Year > 0 ? true : false
                          });
             int totalRow = model.Count();
             model = model.OrderByDescending(x => x.KPIName)
@@ -238,8 +385,36 @@ namespace KPI.Model.DAO
             };
             return vm;
         }
-
         public List<DataExportVM> DataExport(int userid)
+        {
+            var model = (from u in _dbContext.Users
+                         join l in _dbContext.Levels on u.LevelID equals l.ID
+                         join item in _dbContext.KPILevels on l.ID equals item.LevelID
+                         where u.ID == userid && item.Checked == true
+                         select new DataExportVM
+                         {
+                             Area = l.Name,
+                             KPILevelCode=item.KPILevelCode,
+                             KPIName = _dbContext.KPIs.FirstOrDefault(x => x.ID == item.KPIID).Name,
+                             StateW = (bool?)item.WeeklyChecked ?? false,
+                             StateM = (bool?)item.MonthlyChecked ?? false,
+                             StateQ = (bool?)item.QuarterlyChecked ?? false,
+                             StateY = (bool?)item.YearlyChecked ?? false,
+
+                             PeriodValueW = (int?)_dbContext.Datas.Select(x => x.Week).Max() ?? 0,
+                             PeriodValueM = (int?)_dbContext.Datas.Select(x => x.Month).Max() ?? 0,
+                             PeriodValueQ = (int?)_dbContext.Datas.Select(x => x.Quarter).Max() ?? 0,
+                             PeriodValueY = (int?)_dbContext.Datas.Select(x => x.Year).Max() ?? 0,
+
+                             UploadTimeW = item.Weekly,
+                             UploadTimeM = item.Monthly,
+                             UploadTimeQ = item.Quarterly,
+                             UploadTimeY = item.Yearly,
+                         });
+            return model.ToList();
+        }
+        //group by, join sample
+        public List<DataExportVM> DataExport2(int userid)
         {
             var currentYear = DateTime.Now.Year;
             var currentWeek = DateTime.Now.GetIso8601WeekOfYear();
@@ -276,25 +451,25 @@ namespace KPI.Model.DAO
                              g.Key.MonthlyChecked,
                              g.Key.QuarterlyChecked,
                              g.Key.YearlyChecked,
-                             
+
                              PeriodValueW = g.Select(x => x.joi.Week).Max(),
                              PeriodValueM = g.Select(x => x.joi.Month).Max(),
                              PeriodValueQ = g.Select(x => x.joi.Quarter).Max(),
                              PeriodValueY = g.Select(x => x.joi.Year).Max(),
                          }).AsEnumerable()
                          .Select(x => new DataExportVM
-                          {
-                              Value = 0,
-                              Year =currentYear,
-                              KPILevelCode = x.KPILevelCode,
-                              KPIName = x.KPIName,
-                              Area = x.Area,
-                              Remark = string.Empty,
-                              PeriodValueW = x.PeriodValueW,
-                              PeriodValueM = x.PeriodValueM,
-                              PeriodValueQ = x.PeriodValueQ,
-                              PeriodValueY = x.PeriodValueY,
-                          });
+                         {
+                             Value = 0,
+                             Year = currentYear,
+                             KPILevelCode = x.KPILevelCode,
+                             KPIName = x.KPIName,
+                             Area = x.Area,
+                             Remark = string.Empty,
+                             PeriodValueW = x.PeriodValueW,
+                             PeriodValueM = x.PeriodValueM,
+                             PeriodValueQ = x.PeriodValueQ,
+                             PeriodValueY = x.PeriodValueY,
+                         });
 
             return model.ToList();
         }
