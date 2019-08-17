@@ -21,6 +21,7 @@ namespace KPI.Model.helpers
             mail.Subject = subject;
             mail.Body = content;
             mail.IsBodyHtml = true;
+          
 
             //Nhờ người đưa thư
             SmtpClient smtpServer = new SmtpClient(server);
@@ -29,6 +30,8 @@ namespace KPI.Model.helpers
             smtpServer.Port = port; //Do quy định
             smtpServer.Credentials = new NetworkCredential(from, password);
             smtpServer.EnableSsl = ssl;
+            smtpServer.UseDefaultCredentials = true;
+            
 
             //Gửi thư
             try

@@ -227,7 +227,7 @@ namespace KPI.Model.DAO
         /// <returns>Danh sách KPILevel có checked bằng true</returns>
         public object LoadDataForUser(int levelID, int categoryID, int page, int pageSize = 3)
         {
-            //lay tuan hien tai cua nam
+            //Lấy các tuần tháng quý năm hiện tại
             var weekofyear = DateTime.Now.GetIso8601WeekOfYear();
             var monthofyear = DateTime.Now.Month;
             var quarterofyear = DateTime.Now.GetQuarterOfYear();
@@ -236,29 +236,15 @@ namespace KPI.Model.DAO
             var currentdate = DateTime.Now.Date;
             var dt = new DateTime(2019, 8, 1);
             var value = DateTime.Compare(currentdate, dt);
-            //bool StatusUploadDatM= _dbContext.Datas.Where(a =>
-            //                    a.KPILevelCode == "1G010001PO" &&
-            //                    a.KPIKind == "M")
-            //                    .Max(x => x.Month) <= monthofyear ? (DateTime.Compare(currentdate, dt) < 0 ? true : false) : false;
-            //bool StatusUploadDataW = _dbContext.Datas.Where(a =>
-            //                  a.KPILevelCode == "1G010001PO" &&
-            //                  a.KPIKind == "W")
-            //                  .Max(x => x.Week) <= weekofyear ? (2 < currentweekday ? true : false) : false;
-            //bool StatusUploadDataW = weekofyear - _dbContext.Datas.Where(a =>
-            //                     a.KPILevelCode == "2G010002PO" &&
-            //                     a.KPIKind == "W")
-            //                    .Max(x => x.Week) > 1 ? false :
-            //                    (weekofyear - _dbContext.Datas.Where(a =>
-            //                    a.KPILevelCode == "2G010002PO" &&
-            //                    a.KPIKind == "W")
-            //                    .Max(x => x.Week) == 1) ? 2 < currentweekday : true;
             try
             {
+                //Lấy ra danh sách data từ trong db
+                var datas = _dbContext.Datas;
                 var model = from kpiLevel in _dbContext.KPILevels
                             where kpiLevel.LevelID == levelID && kpiLevel.Checked == true
                             join kpi in _dbContext.KPIs on kpiLevel.KPIID equals kpi.ID
                             join level in _dbContext.Levels on kpiLevel.LevelID equals level.ID
-                            select new ViewModel.KPILevelVM
+                            select new KPILevelVM
                             {
                                 ID = kpiLevel.ID,
                                 KPILevelCode = kpiLevel.KPILevelCode,
@@ -275,6 +261,7 @@ namespace KPI.Model.DAO
                                 Yearly = kpiLevel.Yearly,
 
                                 Checked = kpiLevel.Checked,
+
                                 WeeklyChecked = kpiLevel.WeeklyChecked,
                                 MonthlyChecked = kpiLevel.MonthlyChecked,
                                 QuarterlyChecked = kpiLevel.QuarterlyChecked,
@@ -282,10 +269,10 @@ namespace KPI.Model.DAO
                                 CheckedPeriod = kpiLevel.CheckedPeriod,
 
                                 //true co du lieu false khong co du lieu
-                                StatusEmptyDataW = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == kpiLevel.KPILevelCode && x.Period == (kpiLevel.WeeklyChecked == true ? "W" : "")) != null ? true : false,
-                                StatusEmptyDataM = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == kpiLevel.KPILevelCode && x.Period == (kpiLevel.MonthlyChecked == true ? "M" : "")) != null ? true : false,
-                                StatusEmptyDataQ = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == kpiLevel.KPILevelCode && x.Period == (kpiLevel.QuarterlyChecked == true ? "Q" : "")) != null ? true : false,
-                                StatusEmptyDataY = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == kpiLevel.KPILevelCode && x.Period == (kpiLevel.YearlyChecked == true ? "Y" : "")) != null ? true : false,
+                                StatusEmptyDataW = datas.FirstOrDefault(x => x.KPILevelCode == kpiLevel.KPILevelCode && x.Period == (kpiLevel.WeeklyChecked == true ? "W" : "")) != null ? true : false,
+                                StatusEmptyDataM = datas.FirstOrDefault(x => x.KPILevelCode == kpiLevel.KPILevelCode && x.Period == (kpiLevel.MonthlyChecked == true ? "M" : "")) != null ? true : false,
+                                StatusEmptyDataQ = datas.FirstOrDefault(x => x.KPILevelCode == kpiLevel.KPILevelCode && x.Period == (kpiLevel.QuarterlyChecked == true ? "Q" : "")) != null ? true : false,
+                                StatusEmptyDataY = datas.FirstOrDefault(x => x.KPILevelCode == kpiLevel.KPILevelCode && x.Period == (kpiLevel.YearlyChecked == true ? "Y" : "")) != null ? true : false,
 
                                 TimeCheck = kpiLevel.TimeCheck,
                                 CreateTime = kpiLevel.CreateTime,
@@ -293,41 +280,17 @@ namespace KPI.Model.DAO
                                 CategoryID = kpi.CategoryID,
                                 KPIName = kpi.Name,
                                 LevelCode = level.Code,
-                                //neu < 1 thi dung, 
-                                StatusUploadDataW = weekofyear - _dbContext.Datas.Where(a =>
-                                 a.KPILevelCode == kpiLevel.KPILevelCode &&
-                                 a.Period == (kpiLevel.WeeklyChecked == true ? "W" : ""))
-                                .Max(x => x.Week) > 1 ? false :
-                                ((weekofyear - _dbContext.Datas.Where(a =>
-                                a.KPILevelCode == kpiLevel.KPILevelCode &&
-                                a.Period == (kpiLevel.WeeklyChecked == true ? "W" : ""))
-                                .Max(x => x.Week)) == 1 ? (kpiLevel.Weekly < currentweekday ? true : false) : false),
+                                //Nếu tuần hiện tại - tuần MAX trong bảng DATA > 1 return false,
+                                //ngược lại nếu == 1 thi kiểm tra thứ trong bảng KPILevel, 
+                                //Nếu thứ nhỏ hơn thứ hiện tại thì return true,
+                                //ngược lại reutrn false
+                                StatusUploadDataW = weekofyear - datas.Where(a => a.KPILevelCode == kpiLevel.KPILevelCode && a.Period == "W").Max(x => x.Week) > 1 ? false : ((weekofyear - datas.Where(a => a.KPILevelCode == kpiLevel.KPILevelCode && a.Period == "W").Max(x => x.Week)) == 1 ? (kpiLevel.Weekly < currentweekday ? true : false) : false),
 
-                                StatusUploadDataM = monthofyear - _dbContext.Datas.Where(a =>
-                                a.KPILevelCode == kpiLevel.KPILevelCode &&
-                                a.Period == (kpiLevel.MonthlyChecked == true ? "M" : ""))
-                                .Max(x => x.Month) > 1 ? false : monthofyear - _dbContext.Datas.Where(a =>
-                                  a.KPILevelCode == kpiLevel.KPILevelCode &&
-                                  a.Period == (kpiLevel.MonthlyChecked == true ? "M" : ""))
-                                .Max(x => x.Month) == 1 ? (DateTime.Compare(currentdate, kpiLevel.Monthly.Value) < 0 ? true : false) : false,
+                                StatusUploadDataM =  monthofyear - datas.Where(a => a.KPILevelCode == kpiLevel.KPILevelCode && a.Period == "M").Max(x => x.Month) > 1 ? false : monthofyear - datas.Where(a => a.KPILevelCode == kpiLevel.KPILevelCode && a.Period == "M").Max(x => x.Month) == 1 ? (DateTime.Compare(currentdate, kpiLevel.Monthly.Value) < 0 ? true : false) : false,
 
-                                StatusUploadDataQ =
-                                quarterofyear - _dbContext.Datas.Where(a =>
-                                  a.KPILevelCode == kpiLevel.KPILevelCode &&
-                                  a.Period == (kpiLevel.QuarterlyChecked == true ? "Q" : ""))
-                                .Max(x => x.Quarter) > 1 ? false : quarterofyear - _dbContext.Datas.Where(a =>
-                                   a.KPILevelCode == kpiLevel.KPILevelCode &&
-                                   a.Period == (kpiLevel.QuarterlyChecked == true ? "Q" : ""))
-                                .Max(x => x.Quarter) == 1 ? (DateTime.Compare(currentdate, kpiLevel.Quarterly.Value) < 0 ? true : false) : false, //true dung han flase tre han
+                                StatusUploadDataQ = quarterofyear - datas.Where(a => a.KPILevelCode == kpiLevel.KPILevelCode && a.Period == "Q").Max(x => x.Quarter) > 1 ? false : quarterofyear - datas.Where(a => a.KPILevelCode == kpiLevel.KPILevelCode && a.Period == "Q").Max(x => x.Quarter) == 1 ? (DateTime.Compare(currentdate, kpiLevel.Quarterly.Value) < 0 ? true : false) : false, //true dung han flase tre han
 
-                                StatusUploadDataY =
-                                year - _dbContext.Datas.Where(a =>
-                                  a.KPILevelCode == kpiLevel.KPILevelCode &&
-                                  a.Period == (kpiLevel.YearlyChecked == true ? "Y" : ""))
-                                .Max(x => x.Year) > 1 ? false : year - _dbContext.Datas.Where(a =>
-                                      a.KPILevelCode == kpiLevel.KPILevelCode &&
-                                      a.Period == (kpiLevel.YearlyChecked == true ? "Y" : ""))
-                                .Max(x => x.Year) == 1 ? (DateTime.Compare(currentdate, kpiLevel.Yearly.Value) < 0 ? true : false) : false,
+                                StatusUploadDataY = year - datas.Where(a => a.KPILevelCode == kpiLevel.KPILevelCode && a.Period == "Y").Max(x => x.Year) > 1 ? false : year - datas.Where(a => a.KPILevelCode == kpiLevel.KPILevelCode && a.Period == "Y").Max(x => x.Year) == 1 ? (DateTime.Compare(currentdate, kpiLevel.Yearly.Value) < 0 ? true : false) : false,
 
                             };
 

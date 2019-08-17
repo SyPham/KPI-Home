@@ -51,6 +51,8 @@
         var standard = "@standard";
         var unit = "@unit";
         $(function () {
+            console.log("Đây là remark");
+            console.log(dataremarks);
             $('.standard').text(standard);
             if (period === "W") {
             //Thêm tiêu đề cho tr:first-child th
@@ -69,7 +71,7 @@
                 $("#tblkpi tr:nth-child(2)").append("<td data-id='"+item.ID+"' onclick='return chartperiodController.Remark("+item.ID+")' >" + item.Value + "</td>");
             });
 
-        var lastRemark = dataremarks[dataremarks.length - 1];
+        var lastRemark = dataremarks[dataremarks.length - 1]==undefined?"":dataremarks[dataremarks.length - 1];
                 console.log(lastRemark.ID)
                 $('#lastRemark').val(lastRemark.Remark);
                 $('.lastRemark').text(lastRemark.ID);
@@ -93,7 +95,7 @@
                 $("#tblkpi tr:nth-child(2)").append("<td data-id='"+item.ID+"' onclick='return chartperiodController.Remark("+item.ID+")'  >" + item.Value + "</td>");
             });
 
-             var lastRemark = dataremarks[dataremarks.length - 1];
+        var lastRemark = dataremarks[dataremarks.length - 1]==undefined?"":dataremarks[dataremarks.length - 1];
 
              $('#lastRemark').val(lastRemark.Remark);
             $('.lastRemarkLabel').text("Month " + lastRemark.Month + " : ");
@@ -155,8 +157,8 @@
             //Config charts
             var listStandard= {
                 label: "Standard",
-                backgroundColor: Samples.color(0),
-                borderColor: Samples.color(0),
+                backgroundColor: Samples.color(6),
+                borderColor: Samples.color(6),
                 data: standards,
                 //datalabels: {
                 //    align: 'center',
@@ -897,13 +899,13 @@ var chartperiodController = {
                     <button type="button" data-toggle="modal" data-target="#modal-group" class="btn bg-navy margin btnLike pull-right" id="btnCompare"><i class="fa fa-adjust"></i> Compare</button>
                     @if (@statusfavorite == "false")
                     {
-                        <button type="button" class="btn btn-info margin btnLike pull-right" id="btnLike"><i class="fa fa-heart"></i> Add Favourite</button>
+                        <button type="button" class="btn btn-primary margin btnLike pull-right" id="btnLike"><i class="fa fa-heart"></i> Add Favourite</button>
                     }
                     else
                     {
                         <button type="button" class="btn btn-default  margin btnLike pull-right disabled" disabled id="btnLike"><i class="fa fa-heart"></i> Added Favourite</button>
                     }
-                    <button type="button" class="btn bg-maroon margin pull-right"><i class="fa fa-star"></i> <span>Standard : </span><span class="standard text-bold" style="">0</span></button>
+                    <button type="button" class="btn margin pull-right" style="background-color:#379F7A;color:#fff"><i class="fa fa-star"></i> <span>Standard : </span><span class="standard text-bold" style="">0</span></button>
 
                     <div class="form-inline" style="display:none" id="searchMonth">
                         <label class="my-1 mr-2" for="startMonth">Year</label>
@@ -982,7 +984,7 @@ var chartperiodController = {
                                 }
                             }
                         </select>
-                        <button type="button" class="btn bg-green margin" id="btnClearSearch"><i class="fa fa-remove"></i> Clear search</button>
+                        <button type="button" class="btn btn-warning margin" id="btnClearSearch"><i class="fa fa-remove"></i> Reset search</button>
                     </div>
                     @* Quarter *@
                     <div class="form-inline" style="display:none" id="searchQuarter">

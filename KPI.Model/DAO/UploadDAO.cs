@@ -138,7 +138,7 @@ namespace KPI.Model.DAO
                         var dataAdd = new Data();
                         dataAdd.KPILevelCode = code;
                         dataAdd.Value = item.Value;
-                        dataAdd.Week = item.PeriodValue;
+                        dataAdd.Month = item.PeriodValue;
                         dataAdd.CreateTime = item.CreateTime;
                         dataAdd.Period = period;
                         listAdd.Add(dataAdd);
@@ -149,7 +149,7 @@ namespace KPI.Model.DAO
                         var dataUpdate = new Data();
                         dataUpdate.KPILevelCode = code;
                         dataUpdate.Value = item.Value;
-                        dataUpdate.Week = item.PeriodValue;
+                        dataUpdate.Month = item.PeriodValue;
                         dataUpdate.CreateTime = item.CreateTime;
                         dataUpdate.Period = period;
 
@@ -160,7 +160,7 @@ namespace KPI.Model.DAO
                         var dataAdd = new Data();
                         dataAdd.KPILevelCode = code;
                         dataAdd.Value = item.Value;
-                        dataAdd.Week = item.PeriodValue;
+                        dataAdd.Quarter = item.PeriodValue;
                         dataAdd.CreateTime = item.CreateTime;
                         dataAdd.Period = period;
                         listAdd.Add(dataAdd);
@@ -172,7 +172,7 @@ namespace KPI.Model.DAO
                         var dataUpdate = new Data();
                         dataUpdate.KPILevelCode = code;
                         dataUpdate.Value = item.Value;
-                        dataUpdate.Week = item.PeriodValue;
+                        dataUpdate.Quarter = item.PeriodValue;
                         dataUpdate.CreateTime = item.CreateTime;
                         dataUpdate.Period = period;
 
@@ -183,7 +183,7 @@ namespace KPI.Model.DAO
                         var dataAdd = new Data();
                         dataAdd.KPILevelCode = code;
                         dataAdd.Value = item.Value;
-                        dataAdd.Week = item.PeriodValue;
+                        dataAdd.Year = item.PeriodValue;
                         dataAdd.CreateTime = item.CreateTime;
                         dataAdd.Period = period;
                         listAdd.Add(dataAdd);
@@ -193,7 +193,7 @@ namespace KPI.Model.DAO
                         var dataUpdate = new Data();
                         dataUpdate.KPILevelCode = code;
                         dataUpdate.Value = item.Value;
-                        dataUpdate.Week = item.PeriodValue;
+                        dataUpdate.Year = item.PeriodValue;
                         dataUpdate.CreateTime = item.CreateTime;
                         dataUpdate.Period = period;
 
@@ -204,6 +204,7 @@ namespace KPI.Model.DAO
                 {
                     _dbContext.Datas.AddRange(listAdd);
                     _dbContext.SaveChanges();
+                    //Gui mail list nay khi update
                     var modelKPILevel = _dbContext.KPILevels;
                     var kpis = _dbContext.KPIs;
                     var levels = _dbContext.Levels;
@@ -257,6 +258,29 @@ namespace KPI.Model.DAO
                             _dbContext.SaveChanges();
                         }
                     }
+                    /////Gui mail khi update
+                    var modelKPILevel = _dbContext.KPILevels;
+                    var kpis = _dbContext.KPIs;
+                    var levels = _dbContext.Levels;
+                    foreach (var item in listUpdate)
+                    {
+                        var standard = modelKPILevel.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode);
+                        if (item.Value < standard.WeeklyStandard)
+                        {
+                            var dataUploadKPIVM = new UploadKPIVM()
+                            {
+                                KPILevelCode = item.KPILevelCode,
+                                Area = levels.FirstOrDefault(x => x.ID == standard.LevelID).Name,
+                                KPIName = kpis.FirstOrDefault(x => x.ID == standard.KPIID).Name,
+                                Week = item.Week,
+                                Month = item.Month,
+                                Quarter = item.Quarter,
+                                Year = item.Year
+                            };
+                            listDataUpload.Add(dataUploadKPIVM);
+                        }
+
+                    }
                 }
                 if (listDataUpload.Count > 0)
                 {
@@ -271,7 +295,7 @@ namespace KPI.Model.DAO
                     return new SendMailVM
                     {
                         ListUploadKPIVMs = listDataUpload,
-                        Status = false,
+                        Status = true,
                     };
                 }
 

@@ -147,6 +147,39 @@ namespace KPI.Model.helpers
             }
             return result;
         }
+        public static string ConvertNumberDayOfWeekToString(this int? dayofweek)
+        {
+            var value = dayofweek;
+            string result;
+            switch (value)
+            {
+                case 2:
+                    result = "Monday";
+                    break;
+                case 3:
+                    result = "Tuesday";
+                    break;
+                case 4:
+                    result = "Wednesday";
+                    break;
+                case 5:
+                    result = "Thursday";
+                    break;
+                case 6:
+                    result = "Friday";
+                    break;
+                case 7:
+                    result = "Saturday";
+                    break;
+                case 8:
+                    result = "Sunday";
+                    break;
+                default:
+                    result = "Not found";
+                    break;
+            }
+            return result;
+        }
         public static int GetQuarterOfYear(this DateTime date)
         {
             if (date.Month >= 4 && date.Month <= 6)
