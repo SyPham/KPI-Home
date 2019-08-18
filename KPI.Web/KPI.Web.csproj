@@ -8053,6 +8053,7 @@
     <Content Include="Scripts\moment-with-locales.min.js" />
     <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\moment.min.js" />
+    <Content Include="Scripts\controllers\Chartjs\chartjs-plugin-annotation.js" />
     <Content Include="Scripts\plugins\css3-animate-it.js" />
     <Content Include="Scripts\plugins\jquery.twbsPagination.js" />
     <Content Include="Scripts\plugins\jquery.ui\images\ui-icons_444444_256x240.png" />

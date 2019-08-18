@@ -34,10 +34,10 @@ namespace KPI.Model.ViewModel
         public string Unit { get; set; }
         public int[] dataids { get; set; }
 
-      
+
         public List<Dataremark> Dataremarks { get; set; }
     }
-    public  class Dataremark 
+    public  class Dataremark
     {
         public int ID { get; set; }
         public string KPILevelCode { get; set; }

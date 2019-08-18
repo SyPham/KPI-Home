@@ -17,7 +17,7 @@
         $.ui.fancytree.debugLevel = 3; // silence debug output
 
         function logEvent(event, data, msg) {
-        //var args = $.isArray(args) ? args.join(", ") :
+            //var args = $.isArray(args) ? args.join(", ") :
             msg = msg ? ": " + msg : "";
             $.ui.fancytree.info("Event('" + event.type + "', node=" + data.node + ")" + msg);
         }
@@ -67,7 +67,7 @@
                     //return false;
                 },
                 lazyLoad: function (event, data) {
-                    data.result = { url: "/GetListTreeClient/"+$('#user').data('userid'), debugDelay: 100 };
+                    data.result = { url: "/GetListTreeClient/" + $('#user').data('userid'), debugDelay: 100 };
                 },
                 renderColumns: function (event, data) {
                     var node = data.node,
@@ -116,37 +116,41 @@
                     var code = $(this).parent().children('.code').text();
                     kpiController.loadDataKPILevel(true, code);
                 });
-
+                 var date = new Date();
                 $('#tblkpilevel .week').off('click').on('click', function (e) {
 
                     //e.preventDefault();
 
+                    let year = date.getFullYear();
                     var kpilevelcode = $(this).data('kpilevelcode');
                     var period = $(this).data('period');
-                    window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&period=" + period+"&year=0&start=0&end=0";
+                    window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&period=" + period + "&year=" + year + "&start=0&end=0";
                 })
                 $('#tblkpilevel .month').off('click').on('click', function (e) {
                     //e.preventDefault();
                     var kpilevelcode = $(this).data('kpilevelcode');
                     var period = $(this).data('period');
-                    window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&period=" + period+"&year=0&start=0&end=0";
+                     let year = date.getFullYear();
+                    window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&period=" + period + "&year=" + year + "&start=0&end=0";
 
                 })
                 $('#tblkpilevel .quarter').off('click').on('click', function (e) {
                     //e.preventDefault();
                     var kpilevelcode = $(this).data('kpilevelcode');
                     var period = $(this).data('period');
-                    window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&period=" + period+"&year=0&start=0&end=0";
+                     let year = date.getFullYear();
+                    window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&period=" + period + "&year=" + year + "&start=0&end=0";
 
                 })
                 $('#tblkpilevel .year').off('click').on('click', function (e) {
                     //e.preventDefault();
                     var kpilevelcode = $(this).data('kpilevelcode');
                     var period = $(this).data('period');
-                    window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&period=" + period+"&year=0&start=0&end=0";
+                     let year = date.getFullYear();
+                    window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&period=" + period + "&year=" + year + "&start=0&end=0";
 
                 })
-               
+
             },
             loadDataCategory: function () {
                 $.ajax({
@@ -354,10 +358,10 @@
                 <div class="box-header with-border">
                     <h3 class="box-title">KPI Chart</h3>
                     @*@if (@Session["UserName"] != null)
-                    {
-                        <span style="display:none" class="userid">@Session["UserID"].ToString()</span>
+                        {
+                            <span style="display:none" class="userid">@Session["UserID"].ToString()</span>
 
-                    }*@
+                        }*@
 
                     <div class="box-tools pull-right">
                         @*<button type="button" class="btn btn-box-tool" data-widget="collapse">

@@ -38,47 +38,50 @@ namespace KPI.Model.DAO
                 var label = _dbContext.Levels.FirstOrDefault(x => x.ID == item.LevelID).Name.ToSafetyString();
                 //datasets chartjs
                 var model = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode);
-               
+
                 var unit = _dbContext.KPIs.FirstOrDefault(x => x.ID == item.KPIID).Unit;
                 var unitName = _dbContext.Units.FirstOrDefault(x => x.ID == unit).Name.ToSafetyString();
                 if (period == "W".ToUpper())
                 {
-                    if (year == null && start == null && end == null || year == 0 && start == 0 && end == 0)
+                    //Tạo ra 1 mảng tuần mặc định bằng 0
+                    int[] datasets = new int[53];
+
+                    //labels của chartjs mặc định có 53 phần tử = 0
+                    string[] labels = new string[53];
+
+                    var Dataremarks = new List<Dataremark>();
+
+                    if (year > 0 && start == 0 && end == 0)
                     {
                         model = model.Where(x => x.CreateTime.Year == currentYear && x.Week >= 1 && x.Week <= currentWeek);
                     }
                     if (year > 0 && start > 0 && end > 0)
                     {
                         model = model.Where(x => x.CreateTime.Year == year && x.Week >= start && x.Week <= end);
-                    }
 
-                    //Tạo ra 1 mảng tuần mặc định bằng 0
-                    int[] datasets = new int[53];
 
-                    var listValueWeekly = model.Where(x => x.Period == "W").OrderBy(x => x.Week).Select(x => new { x.Week, x.Value }).ToList();
-                    foreach (var weekly in listValueWeekly)
-                    {
-                        int valueWeek = weekly.Week;
-                        datasets[valueWeek] = weekly.Value;
-                    }
-
-                    var Dataremarks = model
-                        .Where(x => x.Period == "W")
-                        .OrderBy(x => x.Week)
-                        .Select(x => new Dataremark
+                        var listValueWeekly = model.Where(x => x.Period == "W").OrderBy(x => x.Week).Select(x => new { x.Week, x.Value }).ToList();
+                        foreach (var weekly in listValueWeekly)
                         {
-                            ID = x.ID,
-                            Value = x.Value,
-                            Remark = x.Remark,
-                            Week = x.Week
-                        }).ToList();
-                    //labels của chartjs mặc định có 53 phần tử = 0 
-                    string[] labels = new string[53];
+                            int valueWeek = weekly.Week;
+                            datasets[valueWeek - 1] = weekly.Value;
+                        }
+
+                        Dataremarks = model
+                           .Where(x => x.Period == "W")
+                           .OrderBy(x => x.Week)
+                           .Select(x => new Dataremark
+                           {
+                               ID = x.ID,
+                               Value = x.Value,
+                               Remark = x.Remark,
+                               Week = x.Week
+                           }).ToList();
+                    }
                     for (int i = 0; i < labels.Length; i++)
                     {
-                        labels[i] = (i+1).ToString();
+                        labels[i] = (i + 1).ToString();
                     }
-                     
                     return new ChartVM
                     {
                         Unit = unitName,
@@ -95,42 +98,46 @@ namespace KPI.Model.DAO
                 }
                 else if (period == "M".ToUpper())
                 {
-                    if (year == null && start == null && end == null || year == 0 && start == 0 && end == 0)
+                    int[] datasets = new int[12];
+                    //data: labels chartjs
+                    string[] labels = new string[12];
+
+                    var Dataremarks = new List<Dataremark>();
+                    if (year >= 0 && start == 0 && end == 0)
                     {
                         model = model.Where(x => x.CreateTime.Year == currentYear && x.Month >= 1 && x.Month <= currentMonth);
                     }
                     if (year > 0 && start > 0 && end > 0)
                     {
                         model = model.Where(x => x.CreateTime.Year == year && x.Month >= start && x.Month <= end);
-                    }
-                    //model = model.Where(x => x.CreateTime.Year == year && x.Month >= 1 && x.Month <= currentMonth);
-                    var Dataremarks = model
-                       .Where(x => x.Period == "M")
-                       .OrderBy(x => x.Month)
-                       .Select(x => new Dataremark
-                       {
-                           ID = x.ID,
-                           Value = x.Value,
-                           Remark = x.Remark,
-                           Month = x.Month
-                       }).ToList();
 
-                    var datasetsM = model.Where(x => x.Period == "M").OrderBy(x => x.Month).Select(x => new { x.Value, x.Month}).ToList();
-                    int[] datasets = new int[12];
-                    foreach (var month in datasetsM)
-                    {
-                        int monthValue = month.Month;
-                        datasets[monthValue] = month.Value;
+                        Dataremarks = model
+                          .Where(x => x.Period == "M")
+                          .OrderBy(x => x.Month)
+                          .Select(x => new Dataremark
+                          {
+                              ID = x.ID,
+                              Value = x.Value,
+                              Remark = x.Remark,
+                              Month = x.Month
+                          }).ToList();
+
+                        var datasetsM = model.Where(x => x.Period == "M").OrderBy(x => x.Month).Select(x => new { x.Value, x.Month }).ToList();
+
+                        foreach (var month in datasetsM)
+                        {
+                            int monthValue = month.Month;
+                            datasets[monthValue - 1] = month.Value;
+                        }
                     }
-                    //data: labels chartjs
-                    string[] labels = new string[12];
+
 
                     for (int i = 1; i <= 12; i++)
                     {
                         switch (i)
                         {
                             case 1:
-                                labels[i-1] = "Jan";
+                                labels[i - 1] = "Jan";
                                 break;
                             case 2:
                                 labels[i - 1] = "Feb"; break;
@@ -159,7 +166,7 @@ namespace KPI.Model.DAO
                         }
                     }
 
-                   
+
                     return new ChartVM
                     {
                         Unit = unitName,
@@ -176,6 +183,10 @@ namespace KPI.Model.DAO
                 }
                 else if (period == "Q".ToUpper())
                 {
+                    var Dataremarks = new List<Dataremark>();
+                    int[] datasets = new int[4];
+
+
                     if (year == null && start == null && end == null || year == 0 && start == 0 && end == 0)
                     {
                         model = model.Where(x => x.CreateTime.Year == currentYear && x.Quarter >= 1 && x.Quarter <= currentQuarter);
@@ -183,38 +194,38 @@ namespace KPI.Model.DAO
                     if (year > 0 && start > 0 && end > 0)
                     {
                         model = model.Where(x => x.CreateTime.Year == year && x.Quarter >= start && x.Quarter <= end);
-                    }
+
                     //model = model.Where(x => x.CreateTime.Year == year && x.Quater >= 1 && x.Quater <= currentQuarter);
-                    var datasetsQ = model.Where(x => x.Period == "Q").OrderBy(x => x.Quarter).Select(x =>new { x.Quarter, x.Value }).ToList();
-                    int[] datasets = new int[4];
+                    var datasetsQ = model.Where(x => x.Period == "Q").OrderBy(x => x.Quarter).Select(x => new { x.Quarter, x.Value }).ToList();
                     foreach (var quarter in datasetsQ)
                     {
                         int quarterValue = quarter.Quarter;
-                        datasets[quarterValue] = quarter.Value;
+                        datasets[quarterValue - 1] = quarter.Value;
                     }
-                    var Dataremarks = model
-                      .Where(x => x.Period == "Q")
-                      .OrderBy(x => x.Quarter)
-                      .Select(x => new Dataremark
-                      {
-                          ID = x.ID,
-                          Value = x.Value,
-                          Remark = x.Remark,
-                          Quater = x.Quarter
-                      }).ToList();
+                    Dataremarks = model
+                     .Where(x => x.Period == "Q")
+                     .OrderBy(x => x.Quarter)
+                     .Select(x => new Dataremark
+                     {
+                         ID = x.ID,
+                         Value = x.Value,
+                         Remark = x.Remark,
+                         Quater = x.Quarter
+                     }).ToList();
+                }
                     string[] labels = new string[4];
                     for (int i = 1; i <= 4; i++)
                     {
                         switch (i)
                         {
                             case 1:
-                                labels[i-1] = "Quarter 1"; break;
+                                labels[i - 1] = "Quarter 1"; break;
                             case 2:
-                                labels[i-1] = "Quarter 2"; break;
+                                labels[i - 1] = "Quarter 2"; break;
                             case 3:
-                                labels[i-1] = "Quarter 3"; break;
+                                labels[i - 1] = "Quarter 3"; break;
                             case 4:
-                                labels[i-1] = "Quarter 4"; break;
+                                labels[i - 1] = "Quarter 4"; break;
                         }
                     }
                     return new ChartVM
@@ -251,7 +262,7 @@ namespace KPI.Model.DAO
                     //data: labels chartjs
                     var listlabels = model.Where(x => x.Period == "Y").OrderBy(x => x.Year).Select(x => x.Year).ToArray();
                     var labels = Array.ConvertAll(listlabels, x => x.ToSafetyString());
-                   
+
                     return new ChartVM
                     {
                         Unit = unitName,

@@ -51,8 +51,6 @@
         var standard = "@standard";
         var unit = "@unit";
         $(function () {
-            console.log("Đây là remark");
-            console.log(dataremarks);
             $('.standard').text(standard);
             if (period === "W") {
             //Thêm tiêu đề cho tr:first-child th
@@ -72,7 +70,6 @@
             });
 
         var lastRemark = dataremarks[dataremarks.length - 1]==undefined?"":dataremarks[dataremarks.length - 1];
-                console.log(lastRemark.ID)
                 $('#lastRemark').val(lastRemark.Remark);
                 $('.lastRemark').text(lastRemark.ID);
                 $('.lastRemarkLabel').text("Week " + lastRemark.Week + " : ");
@@ -154,34 +151,41 @@
                 standards.push(standard);
             }
             //---------------------------------------------------------------------------------
-            //Config charts
-            var listStandard= {
-                label: "Standard",
-                backgroundColor: Samples.color(6),
-                borderColor: Samples.color(6),
-                data: standards,
-                //datalabels: {
-                //    align: 'center',
-                //    anchor: 'center'
-                //}
-
-            };
             var listData = {
                 label: label,
-                backgroundColor: Samples.color(1),
-                borderColor: Samples.color(1),
                 data: datasets,
                 datalabels: {
                     align: 'center',
-                    anchor: 'center'
+                    anchor: 'center',
+
+                 listeners: {
+                    click: function(context) {
+                      // Receives `click` events only for labels of the first dataset.
+                         // The clicked label index is available in `context.dataIndex`.
+                         console.log('label ' + context.dataIndex + ' has been clicked!');
+                    }
+                }
                 }
             };
             var options = {
-                 elements: {
-                        line: {
-                            tension: 0
-                        }
-                    },
+
+                annotation: {
+                  annotations: [{
+                    type: 'line',
+                    mode: 'horizontal',
+                    scaleID: 'y-axis-0',
+                    value: standard,
+                    borderColor: '#09a99f',
+                    borderWidth: 3,
+                    label: {
+                      enabled: true,
+                        content: 'standard',
+                        backgroundColor: '#09a99f',
+                        fontSize: 12,
+                      fontStyle: "bold",
+                    }
+                  }]
+             },
                     plugins: {
                         datalabels: {
                             backgroundColor: function (context) {
@@ -194,8 +198,9 @@
                             },
                             formatter: Math.round,
                             display: function (context) {
-                                console.log(context.dataset.label)
-                                return context.dataset.label !=="Standard"; // display labels with an odd index
+                                if (context.dataset.data[1] !== 0)
+                                    return context.dataset.data;
+                                else return false;
                             }
                         }
                     }
@@ -251,129 +256,40 @@
             }
             }
 
-            var chart = new Chart('lineChart', {
+                 var chart = new Chart('lineChart', {
                 type: 'line',
                 data: {
                     labels: labels,
-                    datasets: [listStandard,listData]
+                    datasets: [listData]
                 },
                 options: options
-            });
-            //---------------------------------------------------------------------------------
-            @*var ctx = document.getElementById('lineChart').getContext('2d');
-
-            Chart.defaults.global.defaultFontSize = 14;
-            var myChart = new Chart(ctx, {
-                type:'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                         {
-                        label: "Standard",
-                        data: standards,
-                        fill: "#ffffff",
-                        borderWidth: 2,
-                        borderColor: "#d9534f",
-                        backgroundColor: "#d9534f",
-                        pointBackgroundColor: "#d9534f",
-                        pointRadius: 0,
-                    },
-                        {
-                        label: label,
-                        data: datasets,
-                        fill: "#ffffff",
-                        borderWidth: 2,
-                        borderColor: "#269abc",
-                        backgroundColor: "#269abc",
-                        pointBackgroundColor: "#269abc"
-                    },
-
-                    ]
-                },
-                options: {
-                    elements: {
-                    point:{
-                        radius: 0
-                    }
-                },
-                 layout: {
-                padding: {
-                    left: 0,
-                    right: 20,
-                    top: 0,
-                    bottom: 0
+                 });
+            var chartdatasets = chart.data.datasets[0].data
+            var m;
+            for (var i = chartdatasets.length; i > 0; i--) {
+                if (chartdatasets[i] > 0) {
+                    m = chartdatasets[i];
+                    break;
+                } else {
+                    m = 0;
                 }
-            },
-             title: {
-            display: true,
-                text: "@label - @kpiname",
-                fontSize: 16,
-                fontColor: 'black'
+            }
 
-            },
-            plugins: {
-                datalabels: {
-                    display: false
+                if (m < standard) {
+                    chart.data.datasets[0].borderColor = "red";
+                     chart.data.datasets[0].backgroundColor="red";
+                     chart.update();
+                }else if(m===0){
+                    chart.data.datasets[0].borderColor = "red";
+                    chart.data.datasets[0].backgroundColor="red";
+                     chart.update();
+                } else {
+                    chart.data.datasets[0].borderColor = "green";
+                    chart.data.datasets[0].backgroundColor="green";
+                     chart.update();
                 }
-            },
-            elements: {
-                line: {
-                    tension: 0.2
-                }
-            },
-            scales: {
-                yAxes: [{
-                    display: true,
-                    position: "left",
-                    ticks: {
-                        beginAtZero: true,
-                        padding: 10,
-                        fontSize: 14,
-                        max: 100
-                    },
-                     scaleLabel: {
-                        display: true,
-                         labelString: unit,
-                      }
-                }],
-                xAxes: [{
-                    gridLines: {
-                        display: true,
-                        tickMarkLength: 8
-                    },
-                    ticks: {
-                        fontSize: 14,
-                    }
-                    ,
-                     scaleLabel: {
-                        display: true,
-                        labelString: labelString
-                      }
-                }]
-            },
-            animation: {
-                onComplete() {
-                    var chartInstance = this.chart,
-                    ctx = chartInstance.ctx;
-                    ctx.fillStyle = "#269abc";
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'bottom';
 
-                    this.data.datasets.forEach(function (dataset, i) {
-                        if (i !== 0) {
-                             var meta = chartInstance.controller.getDatasetMeta(i);
-                        meta.data.forEach(function (bar, index) {
-                            var data = dataset.data[index];
-                            ctx.fillText(data, bar._model.x, bar._model.y-5);
-                        });
-                        }
 
-                    });
-                }
-            },
-            //poitDot: true
-        }
-    });*@
         chartperiodController.init();
 });
 var chartperiodlConfig = {
@@ -400,43 +316,43 @@ var chartperiodController = {
         var start = chartperiodController.getUrlParameter('start');
         var end = chartperiodController.getUrlParameter('end');
         var period = chartperiodController.getUrlParameter('period');
-        if (year == "0" && start === "0" && end === "0") {
-
+        if (Number(year) === 2019 && Number(start) === 0 && Number(end) === 0) {
+            $("#fromDateEndDate").hide();
             var d = new Date();
             var currenyear = d.getFullYear();
             year = currenyear;
-            start = 1;
-            end = 52;
+            start = 0;
+            end = 0;
             if (period === "W") {
                 $("#weekOfYear").val(currenyear);
-                $("#startWeek").val(1);
-                $("#endWeek").val(52);
+                $("#startWeek").val(0);
+                $("#endWeek").val(0);
 
             }
 
             if (period === "M") {
                 $("#monthOfYear").val(currenyear);
-                $("#startMonth").val(1);
-                $("#endMonth").val(12);
+                $("#startMonth").val(0);
+                $("#endMonth").val(0);
                  year = currenyear;
-                    start = 1;
-                    end = 12;
+                    start = 0;
+                    end = 0;
             }
             if (period === "Q") {
                 $("#quarterOfYear").val(currenyear);
-                $("#startQuarter").val(1);
-                $("#endQuarter").val(4);
+                $("#startQuarter").val(0);
+                $("#endQuarter").val(0);
                  year = currenyear;
-                    start = 1;
-                    end = 4;
+                    start =0;
+                    end = 0;
             }
             if (period === "Y") {
                 $("#weekOfYear").val(currenyear);
                 $("#startYear").val(currenyear);
                 $("#endYear").val(currenyear);
-                 year = currenyear;
-                start = currenyear;
-                end = currenyear;
+                    year = currenyear;
+                    start = currenyear;
+                    end = currenyear;
             }
         }
         else {
@@ -533,9 +449,11 @@ var chartperiodController = {
 
         }
         $('#btnClearSearch').off('click').on('click', function () {
-        var kpilevelcode = chartperiodController.getUrlParameter('kpilevelcode');
-        var period = chartperiodController.getUrlParameter('period');
-           window.location.href = "/ChartPeriod/?kpilevelcode="+kpilevelcode+"&period="+period+"&year=0&start=0&end=0)";
+             let kpilevelcode = chartperiodController.getUrlParameter('kpilevelcode');
+            let period = chartperiodController.getUrlParameter('period');
+             let d = new Date();
+            let currenyear = d.getFullYear();
+           window.location.href = "/ChartPeriod/?kpilevelcode="+kpilevelcode+"&period="+period+"&year="+currenyear+"&start=0&end=0";
 
         })
 
@@ -619,7 +537,7 @@ var chartperiodController = {
                 chartperiodController.loadDataComment();
             },
             error: function (errormessage) {
-                console.log(errormessage.responseText);
+                //console.log(errormessage.responseText);
             }
         });
     },
@@ -647,7 +565,7 @@ var chartperiodController = {
                 chartperiodController.loadDataComment();
             },
             error: function (errormessage) {
-                console.log(errormessage.responseText);
+                //console.log(errormessage.responseText);
             }
         });
     },
@@ -697,13 +615,12 @@ var chartperiodController = {
                 });
             },
             error: function (errormessage) {
-                console.log(errormessage.responseText);
+                //console.log(errormessage.responseText);
             }
         });
     },
     Remark(id) {
         $.post("/ChartPeriod/Remark", { dataid: id }, function (result) {
-            console.log(result);
             //$("#remark").val(result.Remark);
                 $(".lastRemark").text(id);
 
@@ -755,7 +672,6 @@ var chartperiodController = {
             contentType: "application/json;charset=utf-8",
             dataType: "json",
             success: function (data) {
-        console.log(data.listCompare);
              var count = 1;
              var html = '';
              var template = $('#tblcomparechart-template').html();
@@ -781,7 +697,6 @@ var chartperiodController = {
                     if (old.indexOf($(this).val()) == -1) {
                         old += code + '-';
                          $('.arrcompare').text(old);
-                    console.log(old);
                     }
 
                 });
@@ -798,7 +713,7 @@ var chartperiodController = {
 
             },
             error: function (errormessage) {
-                console.log(errormessage.responseText);
+                //console.log(errormessage.responseText);
             }
         });
     },
@@ -811,7 +726,6 @@ var chartperiodController = {
             },
             dataType: "json",
             success: function (res) {
-                console.log(res);
                 var data = res.data;
                 var total = res.total;
 
@@ -847,7 +761,6 @@ var chartperiodController = {
 
             },
             error: function (err) {
-                console.log(err);
             }
         });
     },
@@ -896,16 +809,16 @@ var chartperiodController = {
                 <div class="box-body">
 
 
-                    <button type="button" data-toggle="modal" data-target="#modal-group" class="btn bg-navy margin btnLike pull-right" id="btnCompare"><i class="fa fa-adjust"></i> Compare</button>
+                    <button type="button" data-toggle="modal" data-target="#modal-group"  style="background-color:#135043;color:#fff" class="btn margin btnLike pull-right" id="btnCompare"><i class="fa fa-adjust"></i> Compare</button>
                     @if (@statusfavorite == "false")
                     {
-                        <button type="button" class="btn btn-primary margin btnLike pull-right" id="btnLike"><i class="fa fa-heart"></i> Add Favourite</button>
+                        <button type="button" class="btn margin btnLike pull-right" id="btnLike" style="background-color:#060247;color:#fff"><i class="fa fa-heart"></i> Add Favourite</button>
                     }
                     else
                     {
                         <button type="button" class="btn btn-default  margin btnLike pull-right disabled" disabled id="btnLike"><i class="fa fa-heart"></i> Added Favourite</button>
                     }
-                    <button type="button" class="btn margin pull-right" style="background-color:#379F7A;color:#fff"><i class="fa fa-star"></i> <span>Standard : </span><span class="standard text-bold" style="">0</span></button>
+                    <button type="button" class="btn margin pull-right" style="background-color:#09a99f;color:#fff"><i class="fa fa-star"></i> <span>Standard : </span><span class="standard text-bold" style="">0</span></button>
 
                     <div class="form-inline" style="display:none" id="searchMonth">
                         <label class="my-1 mr-2" for="startMonth">Year</label>
@@ -950,6 +863,8 @@ var chartperiodController = {
                             <option value="11">Nov</option>
                             <option value="12">Dec</option>
                         </select>
+                        <button type="button" class="btn btn-warning margin" id="btnClearSearch"><i class="fa fa-remove"></i> Reset search</button>
+
                     </div>
 
                     @* week *@
