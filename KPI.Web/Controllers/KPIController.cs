@@ -53,9 +53,9 @@ namespace KPI.Web.Controllers
             return Json(new KPILevelDAO().AddComment(entity), JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult LoadDataComment(string kpilevelcode)
+        public JsonResult LoadDataComment(int dataid)
         {
-            return Json(new KPILevelDAO().ListComments(kpilevelcode), JsonRequestBehavior.AllowGet);
+            return Json(new KPILevelDAO().ListComments(dataid), JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult AddFavourite(Model.EF.Favourite entity)

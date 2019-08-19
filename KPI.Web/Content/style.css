@@ -147,7 +147,7 @@ thead tr th {
 
 .parent-search{
     position:relative;
-  
+
 
 }
     .parent-search .search-box {
@@ -217,7 +217,7 @@ thead tr th {
             background-color: #022598 !important;
         }
 .warning-data{
-    
+
 }
 
 /*.led-box {
@@ -242,4 +242,20 @@ thead tr th {
 
 #comment-list .wrapper {
     background-color: #fff !important;
+}
+
+.comment-wrapper .panel-body {
+    max-height: 100%;
+    overflow: auto;
+}
+
+.comment-wrapper .media-list .media img {
+    width: 64px;
+    height: 64px;
+    border: 2px solid #e5e7e8;
+}
+
+.comment-wrapper .media-list .media {
+    border-bottom: 1px dashed #efefef;
+    margin-bottom: 25px;
 }

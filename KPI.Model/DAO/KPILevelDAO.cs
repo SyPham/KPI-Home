@@ -281,7 +281,7 @@ namespace KPI.Model.DAO
                                 KPIName = kpi.Name,
                                 LevelCode = level.Code,
                                 //Nếu tuần hiện tại - tuần MAX trong bảng DATA > 1 return false,
-                                //ngược lại nếu == 1 thi kiểm tra thứ trong bảng KPILevel, 
+                                //ngược lại nếu == 1 thi kiểm tra thứ trong bảng KPILevel,
                                 //Nếu thứ nhỏ hơn thứ hiện tại thì return true,
                                 //ngược lại reutrn false
                                 StatusUploadDataW = weekofyear - datas.Where(a => a.KPILevelCode == kpiLevel.KPILevelCode && a.Period == "W").Max(x => x.Week) > 1 ? false : ((weekofyear - datas.Where(a => a.KPILevelCode == kpiLevel.KPILevelCode && a.Period == "W").Max(x => x.Week)) == 1 ? (kpiLevel.Weekly < currentweekday ? true : false) : false),
@@ -412,15 +412,8 @@ namespace KPI.Model.DAO
         {
             try
             {
-
                 _dbContext.Comments.Add(entity);
                 _dbContext.SaveChanges();
-                //var seencmt = new SeenComment();
-                //seencmt.CommentID = entity.ID;
-                //seencmt.UserID = entity.UserID;
-                //seencmt.Status = true;
-                //_dbContext.SeenComments.Add(seencmt);
-                //_dbContext.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -454,25 +447,18 @@ namespace KPI.Model.DAO
                 return false;
             }
         }
-        public object ListComments(string kpilevelcode)
+        public object ListComments(int dataid)
         {
             //Cat chuoi
-            var value = kpilevelcode.ToSafetyString().Split(','); //Chuoi nhan tu client bao gom kpilevelcode, period, userid
-            var code = value[0].Substring(0, value[0].Length - 1).ToSafetyString(); //KPILevelCode
-            var period = value[0].Substring(value[0].Length - 1, 1).ToUpper().ToSafetyString();
-            var userid = value[1].ToInt();
 
             //lay tat ca comment cua kpi
-            var listcmts = _dbContext.Comments.Where(x => x.KPILevelCode == code && x.Period == period).ToList();
+            var listcmts = _dbContext.Comments.Where(x => x.DataID == dataid).ToList();
 
             //Tong tat ca cac comment cua kpi
             var totalcomment = listcmts.Count();
 
-            //Tong cmt cua userid da xem kpi
-            var totalseencomment = _dbContext.SeenComments.Where(x => x.UserID == userid).Count();
-
             //Lay ra tat ca cac comment cua kpi(userid nao post comment len thi mac dinh userid do da xem comment cua chinh minh roi)
-            var data = _dbContext.Comments.Where(x => x.KPILevelCode == code && x.Period == period)
+            var data = _dbContext.Comments.Where(x => x.DataID == dataid)
                .Select(x => new CommentVM
                {
                    CommentID = x.ID,
@@ -487,46 +473,10 @@ namespace KPI.Model.DAO
                .OrderByDescending(x => x.CommentedDate)
                .ToList();
 
-            //
-            if (totalcomment > totalseencomment)
-            {
-                //Neu userid nao ma chua xem comment thi hien thi la chua xem
-                data = data.Select(x => new CommentVM
-                {
-                    CommentID = x.CommentID,
-                    UserID = x.UserID,
-                    CommentMsg = x.CommentMsg,
-                    KPILevelCode = x.KPILevelCode,
-                    CommentedDate = x.CommentedDate,
-                    FullName = _dbContext.Users.FirstOrDefault(a => a.ID == x.UserID).FullName,
-                    Period = x.Period,
-                    //read=true la da xem, nguoc lai la chua xem
-                    Read = _dbContext.SeenComments.FirstOrDefault(a => a.UserID == userid && a.CommentID == x.CommentID) == null ? false : true
-                })
-              .OrderByDescending(x => x.CommentedDate)
-              .ToList();
-
-                foreach (var item in listcmts)
-                {
-                    //Neu userid xem comment roi thi luu vao lich su la da xem
-                    if (_dbContext.SeenComments.FirstOrDefault(x => x.UserID == userid && x.CommentID == item.ID) == null)
-                    {
-                        var seencomment = new SeenComment()
-                        {
-                            CommentID = item.ID,
-                            UserID = userid
-                        };
-                        _dbContext.SeenComments.Add(seencomment);
-                        _dbContext.SaveChanges();
-                    }
-
-                }
-            }
-
             return new
             {
                 data,
-                total = _dbContext.Comments.Where(x => x.KPILevelCode == code && x.Period == period).Count()
+                total = _dbContext.Comments.Where(x => x.DataID == dataid).Count()
             };
 
         }
@@ -539,7 +489,7 @@ namespace KPI.Model.DAO
             var period = value[0].Substring(value[0].Length - 1, 1).ToUpper().ToSafetyString();
             var userid = value[1].ToInt();
             var data = _dbContext.Comments
-               .Where(x => x.KPILevelCode == code && x.Period == period)
+               .Where(x => x.KPILevelCode == code)
                .Select(x => new CommentVM
                {
                    CommentMsg = x.CommentMsg,
@@ -555,7 +505,7 @@ namespace KPI.Model.DAO
             return new
             {
                 data,
-                total = _dbContext.Comments.Where(x => x.KPILevelCode == code && x.Period == period).Count()
+                total = _dbContext.Comments.Where(x => x.KPILevelCode == code).Count()
             };
 
 

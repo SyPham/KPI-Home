@@ -349,7 +349,11 @@ namespace KPI.Model.DAO
         public object Remark(int dataid)
         {
             var model = _dbContext.Datas.FirstOrDefault(x => x.ID == dataid);
-            return model;
+            return new
+            {
+               model= model,
+               users= _dbContext.Users.ToList()
+             };
         }
         public DataCompareVM Compare(string obj)
         {
@@ -462,15 +466,9 @@ namespace KPI.Model.DAO
             return commentVM;
         }
 
-        public object SearchUsers(int userid)
+        public List<User> SearchUsers()
         {
-            var listComment = _dbContext.Users.Where(x => x.ID == userid).Select(x => new UserArray
-            {
-                id = x.ID,
-                fullname = x.FullName,
-                email = x.Email,
-                profile_picture_url = "/Scripts/plugins/jquery-comments/user-icon.png"
-            });
+            var listComment = _dbContext.Users.ToList();
             return listComment;
         }
         public object GetComments(int dataid)

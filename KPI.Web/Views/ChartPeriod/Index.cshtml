@@ -319,12 +319,12 @@ var chartperiodlConfig = {
 var chartperiodController = {
     init() {
 
-        chartperiodController.loadDataComment();
         chartperiodController.loadDataProvide();
-         chartperiodController.registerEvent();
+        chartperiodController.registerEvent();
+
     },
     registerEvent() {
-       
+
         $('#lastRemark').off('keypress').on('keypress', function (e) {
             if (e.keyCode === 13) {
                 chartperiodController.UpdateRemark();
@@ -519,11 +519,17 @@ var chartperiodController = {
         $("#tblDataChart tr:nth-child(2) td").on('click', function () {
             var number = Number($(this).text());
             if (number > 0 && number < standard) {
-                
+
                 $('#modal-group-comment-data').modal('show');
                 var id = $(this).data('id');
+                $('.dataid').text(id);
+                 chartperiodController.loadDataComment();
+
                 chartperiodController.Remark(id);
             }
+        });
+        $('.btnComment').off('click').on('click', function () {
+            chartperiodController.addData();
         });
     },
     search() {
@@ -550,8 +556,8 @@ var chartperiodController = {
             return;
         }
         var mObj = {
-            KPILevelCode: "@kpilevelcode@period",
-            CommentMsg: $('#comment').val(),
+            DataID: Number($('.dataid').text()),
+            CommentMsg: $('#example-1').val(),
             UserID: Number($("#user").data('userid'))
         };
         $.ajax({
@@ -561,7 +567,7 @@ var chartperiodController = {
             contentType: "application/json;charset=utf-8",
             dataType: "json",
             success: function (result) {
-                $('#comment').val("");
+                $('#example-1').val("");
                 chartperiodController.loadDataComment();
             },
             error: function (errormessage) {
@@ -648,83 +654,27 @@ var chartperiodController = {
         });
     },
     Remark(id) {
-        $.post("/ChartPeriod/Remark", { dataid: id }, function (result) {
+
+        $.post("/ChartPeriod/Remark", { dataid: id }, function (data) {
+            var result = data.model;
             var userid = $('#user').data('userid');
-            var saveComment = function(data) {
-				
-					// Convert pings to human readable format
-					$(Object.keys(data.pings)).each(function(index, userId) {
-					    var fullname = data.pings[userId];
-					    var pingText = '@@' + fullname;
-					    data.content = data.content.replace(new RegExp('@@' + userId, 'g'), pingText);
-					});
 
-					return data;
-				}
-
-				$('#comments-container').comments({
-					profilePictureURL: '/Scripts/plugins/jquery-comments/user-icon.png',
-					currentUserId: 1,
-					roundProfilePictures: true,
-					textareaRows: 1,
-					enableAttachments: '',
-					enableHashtags: true,
-					enablePinging: true,
-					searchUsers: function(term, success, error) {
-					    setTimeout(function() {
-					        success(usersArray.filter(function(user) {
-					            var containsSearchTerm = user.fullname.toLowerCase().indexOf(term.toLowerCase()) != -1;
-					            var isNotSelf = user.id != 1;
-					            return containsSearchTerm && isNotSelf;
-					        }));
-					    }, 500);
-					},
-					getComments: function(success, error) {
-						$.ajax({
-                            type: 'get',
-                            url: '/ChartPeriod/getComments/',
-                            data: {dataid: id},
-                            success: function (commentsArray) {
-                                console.log(commentsArray)
-                                success(commentsArray)
-                            },
-                            error: error
-                        });
-					},
-                    postComment: function (commentJSON, success, error) {
-                        
-                        $.ajax({
-                            type: 'post',
-                            url: '/ChartPeriod/postComment/',
-                             //data: { commentJSON: commentJSON},
-                            data: { commentJSON: commentJSON,userid:userid,dataid:id },
-                            success: function(comment) {
-                                success(comment)
-                            },
-                            error: error
-                        });
+           var users = data.users;
+                console.log(data)
+            $('#example-1').suggest('@@', {
+                    filter: {
+                      casesensitive: true,
+                      limit: 10
                     },
-                    putComment: function (commentJSON, success, error) {
-                        console.log(commentJSON);
-                        $.ajax({
-                            type: 'post',
-                            url: '/ChartPeriod/putComment/',
-                            data: { commentJSON: commentJSON,userid:userid,dataid:id },
-                            success: function(comment) {
-                                success(comment)
-                            },
-                            error: error
-                        });
-                    },
-					deleteComment: function(commentJSON, success, error) {
-                        $.ajax({
-                            type: 'delete',
-                            url: '/ChartPeriod/deleteComment/' + commentJSON.id,
-                            success: success,
-                            error: error
-                        });
+                  data: users,
+                  map: function(user) {
+                    return {
+                      value: user.Username,
+                      text: '<strong>'+user.Username+'</strong> <small>'+user.FullName+'</small>'
                     }
-				});
+                  }
+                })
+
             //Khi chon vao data thi hien thi modal
 
             //Hien thi tat ca comment cua data len modal
@@ -735,7 +685,6 @@ var chartperiodController = {
 
             //server tra ve commentsArray
 
-            console.log(result);
             //$("#remark").val(result.Remark);
                 $(".lastRemark").text(id);
 
@@ -838,7 +787,7 @@ var chartperiodController = {
             url: '/ChartPeriod/LoadDataComment',
             type: "GET",
             data: {
-                kpilevelcode: "@kpilevelcode@period,"+$("#user").data('userid'),
+                dataid: Number($(".dataid").text()),
             },
             dataType: "json",
             success: function (res) {
@@ -853,27 +802,24 @@ var chartperiodController = {
                     var date = new Date(nowDate);
                     var result = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getUTCSeconds();
 
-                    html += '<div class="box-comment">';
-                    html += '<img class="img-circle img-sm" src="/Content/dist/img/default-50x50.gif" alt="User Image">';
-                    html += '<div class="comment-text">';
-                    html += '<span class="username">';
-                    html += item.FullName;
-                    html += '<span class="text-muted pull-right">'+result+'</span>';
-                    html += '</span>';
-                    if (item.Read===true) {
-                        html += item.CommentMsg
-                    }
-                    else {
-                          html += item.CommentMsg
-                    html += ' <span class="badge bg-green">new</span>';
-                    }
-
-                    html += '</div>';
-                    html += '</div>';
+                     html +=' <li class="media">';
+                     html += '<a href="#" class="pull-left">';
+                     html += '    <img src="https://bootdey.com/img/Content/user_1.jpg" alt="" class="img-circle">';
+                     html += '</a>';
+                     html += '<div class="media-body">';
+                     html += '<span class="text-muted pull-right">';
+                     html += '    <small class="text-muted">'+result+'</small>';
+                     html += '</span>';
+                     html += '<strong class="text-success">'+item.FullName+'</strong>';
+                     html += '<p>';
+                     html += item.CommentMsg +'</a>.';
+                     html += '</p>';
+                     html +=    '</div>';
+                     html +='</li >';
 
                 });
-                $('#boxComments').empty();
-                $('#boxComments').append(html);
+                $('#media-list').empty();
+                $('#media-list').append(html);
 
             },
             error: function (err) {

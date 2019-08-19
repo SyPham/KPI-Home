@@ -12,6 +12,7 @@ namespace KPI.Model.EF
         public string CommentMsg { get; set; }
         public int UserID { get; set; }
         public string KPILevelCode { get; set; }
+        public int DataID { get; set; }
         private DateTime? commentedDate = null;
         public DateTime CommentedDate
         {

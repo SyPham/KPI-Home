@@ -41,7 +41,6 @@ namespace KPI.Web.Controllers
             ViewBag.Label = model.label;
             ViewBag.KPIName = model.kpiname;
             ViewBag.Period = model.period;
-            
 
             ViewBag.KPILevelCode = model.kpilevelcode;
             ViewBag.StatusFavorite = model.statusfavorite == true ? "true" : "false";
@@ -53,14 +52,11 @@ namespace KPI.Web.Controllers
 
         public JsonResult AddComment(Model.EF.Comment entity)
         {
-            var value = entity.KPILevelCode;
-            entity.KPILevelCode = value.Substring(0, value.Length - 1);
-            entity.Period = value.Substring(value.Length - 1, 1).ToUpper();
             return Json(new KPILevelDAO().AddComment(entity), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult LoadDataComment(string kpilevelcode)
+        public JsonResult LoadDataComment(int dataid)
         {
-            return Json(new KPILevelDAO().ListComments(kpilevelcode), JsonRequestBehavior.AllowGet);
+            return Json(new KPILevelDAO().ListComments(dataid), JsonRequestBehavior.AllowGet);
         }
         public JsonResult Remark(int dataid)
         {
@@ -88,7 +84,8 @@ namespace KPI.Web.Controllers
         }
         public ActionResult SearchUsers()
         {
-            return View();
+            return Json(new DataChartDAO().SearchUser(), JsonRequestBehavior.AllowGet);
+
         }
         public ActionResult PostComment(CommentsChartVM commentJSON,int userid, int dataid)
         {

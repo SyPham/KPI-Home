@@ -8462,6 +8462,8 @@
     <Content Include="Scripts\plugins\jqueryfancytree\jquery.fancytree.table.js" />
     <Content Include="Scripts\plugins\jqueryfancytree\jquery.fancytree.wide.js" />
     <Content Include="Scripts\plugins\jqueryfancytree\ui.fancytree.css" />
+    <Content Include="Scripts\plugins\jssuggest\bootstrap-suggest.css" />
+    <Content Include="Scripts\plugins\jssuggest\bootstrap-suggest.js" />
     <Content Include="Scripts\plugins\mustache.js" />
     <Content Include="Scripts\plugins\node_modules\jquery.fancytree\dist\jquery.fancytree-all-deps.js" />
     <Content Include="Scripts\plugins\node_modules\jquery.fancytree\dist\jquery.fancytree-all-deps.min.js" />
