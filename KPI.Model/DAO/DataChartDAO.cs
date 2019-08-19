@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using KPI.Model.EF;
 using KPI.Model.helpers;
 using KPI.Model.ViewModel;
 
@@ -195,24 +196,24 @@ namespace KPI.Model.DAO
                     {
                         model = model.Where(x => x.CreateTime.Year == year && x.Quarter >= start && x.Quarter <= end);
 
-                    //model = model.Where(x => x.CreateTime.Year == year && x.Quater >= 1 && x.Quater <= currentQuarter);
-                    var datasetsQ = model.Where(x => x.Period == "Q").OrderBy(x => x.Quarter).Select(x => new { x.Quarter, x.Value }).ToList();
-                    foreach (var quarter in datasetsQ)
-                    {
-                        int quarterValue = quarter.Quarter;
-                        datasets[quarterValue - 1] = quarter.Value;
+                        //model = model.Where(x => x.CreateTime.Year == year && x.Quater >= 1 && x.Quater <= currentQuarter);
+                        var datasetsQ = model.Where(x => x.Period == "Q").OrderBy(x => x.Quarter).Select(x => new { x.Quarter, x.Value }).ToList();
+                        foreach (var quarter in datasetsQ)
+                        {
+                            int quarterValue = quarter.Quarter;
+                            datasets[quarterValue - 1] = quarter.Value;
+                        }
+                        Dataremarks = model
+                         .Where(x => x.Period == "Q")
+                         .OrderBy(x => x.Quarter)
+                         .Select(x => new Dataremark
+                         {
+                             ID = x.ID,
+                             Value = x.Value,
+                             Remark = x.Remark,
+                             Quater = x.Quarter
+                         }).ToList();
                     }
-                    Dataremarks = model
-                     .Where(x => x.Period == "Q")
-                     .OrderBy(x => x.Quarter)
-                     .Select(x => new Dataremark
-                     {
-                         ID = x.ID,
-                         Value = x.Value,
-                         Remark = x.Remark,
-                         Quater = x.Quarter
-                     }).ToList();
-                }
                     string[] labels = new string[4];
                     for (int i = 1; i <= 4; i++)
                     {
@@ -423,6 +424,187 @@ namespace KPI.Model.DAO
                 return false;
             }
         }
+        public object SearchUser()
+        {
+            return "";
+        }
+        public object LoadCommentChart(int dataid)
+        {
+            var commentVM = new CommentChartVM();
+            var userArray = _dbContext.Users.Select(x => new UserArray
+            {
+                id = x.ID,
+                fullname = x.FullName,
+                email = x.Email,
+                profile_picture_url = "/Scripts/plugins/jquery-comments/user-icon.png"
+            }).ToList();
+            commentVM.userArray = userArray;
 
+            var commentChart = _dbContext.CommentCharts
+                .Where(x => x.DataID == dataid).FirstOrDefault(x => x.DataID == dataid);
+
+            var commentsArray = _dbContext.CommentChartDetails
+            .Select(x => new CommentsArray
+            {
+                //id = x.ID,
+                //parent = x.Parent,
+                //content = x.Content,
+                //pings = x.Pings.Split(','),
+                //creator = x.Creator,
+                //created_by_admin = x.CreatedByAdmin,
+                //created_by_current_user = x.CreatedByCurrentUser,
+                //upvote_count = x.UpvoteCount,
+                //user_has_upvoted = x.userHasUpvoted,
+                //is_new = x.IsNew
+            }).ToList();
+            commentVM.commentsArray = commentsArray;
+
+            return commentVM;
+        }
+
+        public object SearchUsers(int userid)
+        {
+            var listComment = _dbContext.Users.Where(x => x.ID == userid).Select(x => new UserArray
+            {
+                id = x.ID,
+                fullname = x.FullName,
+                email = x.Email,
+                profile_picture_url = "/Scripts/plugins/jquery-comments/user-icon.png"
+            });
+            return listComment;
+        }
+        public object GetComments(int dataid)
+        {
+            string[] pings = { };
+            var listComment = _dbContext.CommentChartDetails
+            .Where(x => x.DataID == dataid).Select(x => new
+            {
+                id = x.ID,
+                created = x.Created,
+                creator = x.Creator,
+                modified = x.Modified,
+                parent = x.Parent,
+                content = x.Content,
+                pings = x.Pings,
+                fullname = x.FullName,
+                profile_picture_url = x.ProfilePictureUrl,
+                created_by_current_user = x.CreatedByCurrentUser,
+                created_by_admin = x.CreatedByAdmin,
+                upvote_count = x.UpvoteCount,
+                user_has_upvoted = x.userHasUpvoted,
+                is_new = x.IsNew,
+            }).AsEnumerable().Select(a => new CommentsArray
+            {
+                id = a.id,
+                created = a.created.ToString("MM/dd/yyyy"),
+                creator = a.creator,
+                modified = a.modified.ToString("MM/dd/yyyy"),
+                parent = a.parent,
+                content = a.content,
+                pings = a.pings == "" ? new string[0] { } : a.pings.Split(';').Select(n => Convert.ToString(n)).ToArray(),
+                fullname = a.fullname,
+                profile_picture_url = a.profile_picture_url,
+                created_by_current_user = a.created_by_current_user,
+                created_by_admin = a.created_by_admin,
+                upvote_count = a.upvote_count,
+                user_has_upvoted = a.user_has_upvoted,
+                is_new = a.is_new,
+            });
+
+            return listComment.ToList();
+        }
+        public bool PostComment(CommentsChartVM commentsChartVM, int userid, int dataid)
+        {
+            var user = _dbContext.Users.FirstOrDefault(x => x.ID == userid);
+            var item = new CommentChartDetail();
+            item.UserID = userid;
+            item.DataID = dataid;
+            //item.ID = commentsChartVM.id.ToInt();
+
+            item.FullName = user.FullName.ToSafetyString();
+            item.ProfilePictureUrl = "/Scripts/plugins/jquery-comments/user-icon.png";
+            item.Parent = commentsChartVM.parent.ToInt();
+            item.Content = commentsChartVM.content.ToSafetyString();
+            item.Pings = string.Join(",", commentsChartVM.pings.ToSafetyString());
+            item.Creator = commentsChartVM.creator.ToInt();
+            item.CreatedByAdmin = commentsChartVM.created_by_admin;
+            item.CreatedByCurrentUser = commentsChartVM.created_by_current_user.ToBool();
+            item.UpvoteCount = commentsChartVM.upvote_count.ToInt();
+            item.userHasUpvoted = commentsChartVM.user_has_upvoted.ToBool();
+
+            item.Modified = Convert.ToDateTime(commentsChartVM.modified).Date;
+            item.Created = Convert.ToDateTime(commentsChartVM.created).Date;
+            item.IsNew = commentsChartVM.is_new;
+
+            try
+            {
+                _dbContext.CommentChartDetails.Add(item);
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+        }
+        public bool PutComment(CommentsChartVM commentsChartVM, int userid, int dataid)
+        {
+            var user = _dbContext.Users.FirstOrDefault(x => x.ID == userid);
+            var ID = commentsChartVM.id.ToInt();
+            var item = _dbContext.CommentChartDetails.FirstOrDefault(x => x.ID == ID && x.UserID == userid && x.DataID == dataid);
+            //var item = new CommentChartDetail();
+            item.UserID = userid;
+            item.DataID = dataid;
+            //item.ID = commentsChartVM.id.ToInt();
+
+            item.FullName = user.FullName.ToSafetyString();
+            item.ProfilePictureUrl = "/Scripts/plugins/jquery-comments/user-icon.png";
+            item.Parent = commentsChartVM.parent.ToInt();
+            item.Content = commentsChartVM.content.ToSafetyString();
+            item.Pings = string.Join(",", commentsChartVM.pings.ToSafetyString());
+            item.Creator = commentsChartVM.creator.ToInt();
+            item.CreatedByAdmin = commentsChartVM.created_by_admin;
+            item.CreatedByCurrentUser = commentsChartVM.created_by_current_user.ToBool();
+            item.UpvoteCount = commentsChartVM.upvote_count.ToInt();
+            item.userHasUpvoted = commentsChartVM.user_has_upvoted.ToBool();
+
+           // item.Modified = Convert.ToDateTime(commentsChartVM.modified).ToDateTime();
+            item.Created = Convert.ToDateTime(commentsChartVM.created).ToDateTime();
+            item.IsNew = commentsChartVM.is_new;
+
+            try
+            {
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+        public bool DeleteComment(int id)
+        {
+            try
+            {
+                var item = _dbContext.Datas.FirstOrDefault(x => x.ID == id);
+                _dbContext.Datas.Remove(item);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+
+        }
+        public bool UpvoteComment()
+        {
+            return false;
+        }
+        public bool UploadAttachments()
+        {
+            return false;
+        }
     }
 }

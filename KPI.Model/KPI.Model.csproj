@@ -65,6 +65,8 @@
     <Compile Include="Abstract\ILink.cs" />
     <Compile Include="Abstract\Inheritance .cs" />
     <Compile Include="Abstract\Link.cs" />
+    <Compile Include="EF\CommentChart.cs" />
+    <Compile Include="EF\CommentChartDetail.cs" />
     <Compile Include="helpers\ConfigHelper.cs" />
     <Compile Include="DAO\FavouriteDAO.cs" />
     <Compile Include="DAO\DataChartDAO.cs" />
@@ -97,7 +99,7 @@
     <Compile Include="helpers\MailUtility.cs" />
     <Compile Include="helpers\PagedData.cs" />
     <Compile Include="helpers\Pagination.cs" />
-    <Compile Include="helpers\KPIDbContext.cs" />
+    <Compile Include="KPIDbContext.cs" />
     <Compile Include="helpers\MailHelper.cs" />
     <Compile Include="Migrations\201908140629059_Initial.cs" />
     <Compile Include="Migrations\201908140629059_Initial.Designer.cs">
@@ -111,8 +113,41 @@
     <Compile Include="Migrations\201908160848535_addEmailtblUser.Designer.cs">
       <DependentUpon>201908160848535_addEmailtblUser.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201908190307198_AddCommentChart.cs" />
+    <Compile Include="Migrations\201908190307198_AddCommentChart.Designer.cs">
+      <DependentUpon>201908190307198_AddCommentChart.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908190317053_AddCommentChartDetail.cs" />
+    <Compile Include="Migrations\201908190317053_AddCommentChartDetail.Designer.cs">
+      <DependentUpon>201908190317053_AddCommentChartDetail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908190402080_AddCommentChartDetail1.cs" />
+    <Compile Include="Migrations\201908190402080_AddCommentChartDetail1.Designer.cs">
+      <DependentUpon>201908190402080_AddCommentChartDetail1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908190443168_AddCommentChartDetail2.cs" />
+    <Compile Include="Migrations\201908190443168_AddCommentChartDetail2.Designer.cs">
+      <DependentUpon>201908190443168_AddCommentChartDetail2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908190511158_AddCommentChartDetail3.cs" />
+    <Compile Include="Migrations\201908190511158_AddCommentChartDetail3.Designer.cs">
+      <DependentUpon>201908190511158_AddCommentChartDetail3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908190523225_AddCommentChart1.cs" />
+    <Compile Include="Migrations\201908190523225_AddCommentChart1.Designer.cs">
+      <DependentUpon>201908190523225_AddCommentChart1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908190550558_AddCommentChart2.cs" />
+    <Compile Include="Migrations\201908190550558_AddCommentChart2.Designer.cs">
+      <DependentUpon>201908190550558_AddCommentChart2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908190635162_AddCommentChart3.cs" />
+    <Compile Include="Migrations\201908190635162_AddCommentChart3.Designer.cs">
+      <DependentUpon>201908190635162_AddCommentChart3.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModel\CommentChartVM.cs" />
     <Compile Include="ViewModel\DataExportVM.cs" />
     <Compile Include="ViewModel\LevelVM.cs" />
     <Compile Include="ViewModel\UploadKPIVM.cs" />
@@ -146,6 +181,30 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201908160848535_addEmailtblUser.resx">
       <DependentUpon>201908160848535_addEmailtblUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908190307198_AddCommentChart.resx">
+      <DependentUpon>201908190307198_AddCommentChart.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908190317053_AddCommentChartDetail.resx">
+      <DependentUpon>201908190317053_AddCommentChartDetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908190402080_AddCommentChartDetail1.resx">
+      <DependentUpon>201908190402080_AddCommentChartDetail1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908190443168_AddCommentChartDetail2.resx">
+      <DependentUpon>201908190443168_AddCommentChartDetail2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908190511158_AddCommentChartDetail3.resx">
+      <DependentUpon>201908190511158_AddCommentChartDetail3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908190523225_AddCommentChart1.resx">
+      <DependentUpon>201908190523225_AddCommentChart1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908190550558_AddCommentChart2.resx">
+      <DependentUpon>201908190550558_AddCommentChart2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908190635162_AddCommentChart3.resx">
+      <DependentUpon>201908190635162_AddCommentChart3.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

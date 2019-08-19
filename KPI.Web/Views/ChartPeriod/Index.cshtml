@@ -43,6 +43,7 @@
                         type: 'error'
                     });
              }
+
         var labels =@Html.Raw(Json.Encode(labels));
         var dataremarks =@Html.Raw(Json.Encode(dataremarks));
         var label = "@label";
@@ -54,19 +55,24 @@
             $('.standard').text(standard);
             if (period === "W") {
             //Thêm tiêu đề cho tr:first-child th
-                $("#tblkpi tr:first-child").append("<th>Week</th>");
+                $("#tblDataChart tr:first-child").append("<th>Week</th>");
 
             //Thêm dữ liệu tr từ tuần 1 đến tuần còn lại
             $.each(labels, function (key, item) {
-                $("#tblkpi tr:first-child").append("<th >" + item + "</th>");
+                $("#tblDataChart tr:first-child").append("<th>" + item + "</th>");
             });
 
             //Thêm tiêu đề cho tr:nth-child(2) th
-            $("#tblkpi tr:nth-child(2)").append("<th >"+unit+"</th>");
+            $("#tblDataChart tr:nth-child(2)").append("<th >"+unit+"</th>");
 
              //Thêm dữ liệu cho tr:nth-child(2) td
+            $.each(labels, function (key, item) {
+                $("#tblDataChart tr:nth-child(2)").append("<td data-id='' class='unselectable'>0</td>");
+            });
+
             $.each(dataremarks, function (key, item) {
-                $("#tblkpi tr:nth-child(2)").append("<td data-id='"+item.ID+"' onclick='return chartperiodController.Remark("+item.ID+")' >" + item.Value + "</td>");
+                $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Week - 1) + "')").text(item.Value);
+                $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Week - 1) + "')").attr('data-id', item.ID);
             });
 
         var lastRemark = dataremarks[dataremarks.length - 1]==undefined?"":dataremarks[dataremarks.length - 1];
@@ -77,73 +83,87 @@
         }
     else if (period === "M") {
             //Thêm tiêu đề cho tr:first-child th
-            $("#tblkpi tr:first-child").append("<th >Month</th>");
+            $("#tblDataChart tr:first-child").append("<th >Month</th>");
 
             //Thêm dữ liệu tr từ tháng 1 đến tháng còn lại
             $.each(labels, function (key, item) {
-                $("#tblkpi tr:first-child").append("<th >" + item + "</th>");
+                $("#tblDataChart tr:first-child").append("<th >" + item + "</th>");
             });
 
             //Thêm tiêu đề cho tr:nth-child(2) th
-                $("#tblkpi tr:nth-child(2)").append("<th >Percentage</th>");
+                $("#tblDataChart tr:nth-child(2)").append("<th >Percentage</th>");
 
-            //Thêm dữ liệu cho tr:nth-child(2) td
+
+             //Thêm dữ liệu cho tr:nth-child(2) td
+            $.each(labels, function (key, item) {
+                $("#tblDataChart tr:nth-child(2)").append("<td>0</td>");
+            });
+
             $.each(dataremarks, function (key, item) {
-                $("#tblkpi tr:nth-child(2)").append("<td data-id='"+item.ID+"' onclick='return chartperiodController.Remark("+item.ID+")'  >" + item.Value + "</td>");
+               $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Month-1) + "')").text(item.Value);
             });
 
         var lastRemark = dataremarks[dataremarks.length - 1]==undefined?"":dataremarks[dataremarks.length - 1];
 
              $('#lastRemark').val(lastRemark.Remark);
             $('.lastRemarkLabel').text("Month " + lastRemark.Month + " : ");
-            //Hiển thị ngày tháng dưới chartjs
-            $("#fromDateEndDateM").show();
+
         }
     else if (period=== "Q") {
              //Thêm tiêu đề cho tr:first-child th
-            $("#tblkpi tr:first-child").append("<th >Quarter</th>");
+            $("#tblDataChart tr:first-child").append("<th >Quarter</th>");
 
             //Thêm dữ liệu tr từ quý 1 đến tháng còn lại
             $.each(labels, function (key, item) {
-                $("#tblkpi tr:first-child").append("<th >" + item + "</th>");
+                $("#tblDataChart tr:first-child").append("<th >" + item + "</th>");
         });
 
             //Thêm tiêu đề cho tr:nth-child(2) th
-            $("#tblkpi tr:nth-child(2)").append("<th >Percentage</th>");
+            $("#tblDataChart tr:nth-child(2)").append("<th >Percentage</th>");
 
-            //Thêm dữ liệu cho tr:nth-child(2) td
-            $.each(dataremarks, function (key, item) {
-                $("#tblkpi tr:nth-child(2)").append("<td data-id='"+item.ID+"' onclick='return chartperiodController.Remark("+item.ID+")'>" + item.Value + "</td>");
+
+             //Thêm dữ liệu cho tr:nth-child(2) td
+            $.each(labels, function (key, item) {
+                $("#tblDataChart tr:nth-child(2)").append("<td>0</td>");
             });
 
-            var lastRemark = dataremarks[dataremarks.length - 1];
-             $('#lastRemark').val(lastRemark.Remark);
-            $('.lastRemarkLabel').text("Quarter " + lastRemark.Quater + " : ");
+            $.each(dataremarks, function (key, item) {
+               $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Quarter-1) + "')").text(item.Value);
+            });
 
-            //Hiển thị ngày tháng dưới chartjs
-            $("#fromDateEndDateQ").show();
+            //var lastRemark = dataremarks[dataremarks.length - 1];
+            // $('#lastRemark').val(lastRemark.Remark);
+            //$('.lastRemarkLabel').text("Quarter " + lastRemark.Quarter + " : ");
+
+            ////Hiển thị ngày tháng dưới chartjs
+            //$("#fromDateEndDateQ").show();
 
         }
     else if (period === "Y") {
 
              //Thêm tiêu đề cho tr:first-child th
-            $("#tblkpi tr:first-child").append("<th >Year</th>");
+            $("#tblDataChart tr:first-child").append("<th >Year</th>");
 
             //Thêm dữ liệu tr từ quý 1 đến tháng còn lại
             $.each(labels, function (key, item) {
-                $("#tblkpi tr:first-child").append("<th >" + item + "</th>");
+                $("#tblDataChart tr:first-child").append("<th >" + item + "</th>");
             });
 
             //Thêm tiêu đề cho tr:nth-child(2) th
-            $("#tblkpi tr:nth-child(2)").append("<th >Percentage</th>");
+            $("#tblDataChart tr:nth-child(2)").append("<th >Percentage</th>");
+
 
              //Thêm dữ liệu cho tr:nth-child(2) td
-            $.each(dataremarks, function (key, item) {
-                $("#tblkpi tr:nth-child(2)").append("<td data-id='"+item.ID+"' onclick='return chartperiodController.Remark("+item.ID+")'  >" + item.Value + "</td>");
+            $.each(labels, function (key, item) {
+                $("#tblDataChart tr:nth-child(2)").append("<td>0</td>");
             });
-             var lastRemark = dataremarks[dataremarks.length - 1];
-             $('#lastRemark').val(lastRemark.Remark);
-            $('.lastRemarkLabel').text("Year " + lastRemark.Year + " : " );
+
+            $.each(dataremarks, function (key, item) {
+               $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Year-1) + "')").text(item.Value);
+            });
+            // var lastRemark = dataremarks[dataremarks.length - 1];
+            // $('#lastRemark').val(lastRemark.Remark);
+            //$('.lastRemarkLabel').text("Year " + lastRemark.Year + " : " );
 
         }
             var standards = [];
@@ -304,9 +324,7 @@ var chartperiodController = {
          chartperiodController.registerEvent();
     },
     registerEvent() {
-        $("#tblkpi tr:nth-child(2) td").dblclick(function () {
-            $('#modal-group-comment-data').modal('show');
-        });
+       
         $('#lastRemark').off('keypress').on('keypress', function (e) {
             if (e.keyCode === 13) {
                 chartperiodController.UpdateRemark();
@@ -496,7 +514,17 @@ var chartperiodController = {
          });
         $('#btnCompare').off('click').on('click', function (e) {
              chartperiodController.loadDataProvide();
-         });
+        });
+
+        $("#tblDataChart tr:nth-child(2) td").on('click', function () {
+            var number = Number($(this).text());
+            if (number > 0 && number < standard) {
+                
+                $('#modal-group-comment-data').modal('show');
+                var id = $(this).data('id');
+                chartperiodController.Remark(id);
+            }
+        });
     },
     search() {
           if ("@period" === "W")
@@ -621,30 +649,118 @@ var chartperiodController = {
     },
     Remark(id) {
         $.post("/ChartPeriod/Remark", { dataid: id }, function (result) {
+            var userid = $('#user').data('userid');
+            var saveComment = function(data) {
+				
+					// Convert pings to human readable format
+					$(Object.keys(data.pings)).each(function(index, userId) {
+					    var fullname = data.pings[userId];
+					    var pingText = '@@' + fullname;
+					    data.content = data.content.replace(new RegExp('@@' + userId, 'g'), pingText);
+					});
+
+					return data;
+				}
+
+				$('#comments-container').comments({
+					profilePictureURL: '/Scripts/plugins/jquery-comments/user-icon.png',
+					currentUserId: 1,
+					roundProfilePictures: true,
+					textareaRows: 1,
+					enableAttachments: '',
+					enableHashtags: true,
+					enablePinging: true,
+					searchUsers: function(term, success, error) {
+					    setTimeout(function() {
+					        success(usersArray.filter(function(user) {
+					            var containsSearchTerm = user.fullname.toLowerCase().indexOf(term.toLowerCase()) != -1;
+					            var isNotSelf = user.id != 1;
+					            return containsSearchTerm && isNotSelf;
+					        }));
+					    }, 500);
+					},
+					getComments: function(success, error) {
+						$.ajax({
+                            type: 'get',
+                            url: '/ChartPeriod/getComments/',
+                            data: {dataid: id},
+                            success: function (commentsArray) {
+                                console.log(commentsArray)
+                                success(commentsArray)
+                            },
+                            error: error
+                        });
+					},
+                    postComment: function (commentJSON, success, error) {
+                        
+                        $.ajax({
+                            type: 'post',
+                            url: '/ChartPeriod/postComment/',
+                             //data: { commentJSON: commentJSON},
+                            data: { commentJSON: commentJSON,userid:userid,dataid:id },
+                            success: function(comment) {
+                                success(comment)
+                            },
+                            error: error
+                        });
+                    },
+                    putComment: function (commentJSON, success, error) {
+                        console.log(commentJSON);
+                        $.ajax({
+                            type: 'post',
+                            url: '/ChartPeriod/putComment/',
+                            data: { commentJSON: commentJSON,userid:userid,dataid:id },
+                            success: function(comment) {
+                                success(comment)
+                            },
+                            error: error
+                        });
+                    },
+					deleteComment: function(commentJSON, success, error) {
+                        $.ajax({
+                            type: 'delete',
+                            url: '/ChartPeriod/deleteComment/' + commentJSON.id,
+                            success: success,
+                            error: error
+                        });
+                    }
+				});
+            //Khi chon vao data thi hien thi modal
+
+            //Hien thi tat ca comment cua data len modal
+
+            //
+
+            //server tra ve usersArray
+
+            //server tra ve commentsArray
+
+            console.log(result);
             //$("#remark").val(result.Remark);
                 $(".lastRemark").text(id);
 
-             $("#textarea-remark").toggle(500);
-             if (result.Week != undefined) {
-                 $("#lastRemark").val(result.Remark);
-                 $("#remark").val("Week " + result.Week + " : " + result.Remark);
-                $('.lastRemarkLabel').text("Week " + result.Week + " : ");
-
+             //$("#textarea-remark").toggle(500);
+            if (result.Period === "W") {
+                if (result.Remark !== null) {
+                    $("#lastRemark").val(result.Remark);
+                    $("#remark").val("Week " + result.Week + " : " + result.Remark);
+                    $('.lastRemarkLabel').text("Week " + result.Week + " : ");
+                }
              }
-             if (result.Month != undefined) {
-                 $("#lastRemark").val(result.Remark);
-                 $("#remark").val("Month " + result.Month + " : " + result.Remark);
-                $('.lastRemarkLabel').text("Month " + result.Month + " : ");
-
-
+            if (result.Period === "M") {
+                if (result.Remark !== null) {
+                    $("#lastRemark").val(result.Remark);
+                    $("#remark").val("Month " + result.Month + " : " + result.Remark);
+                    $('.lastRemarkLabel').text("Month " + result.Month + " : ");
+                }
              }
-             if (result.Quater != undefined) {
+             if (result.Period === "Q") {
                  $("#lastRemark").val(result.Remark);
                  $("#remark").val("Quarter " + result.Quater + " : " + result.Remark);
                 $('.lastRemarkLabel').text("Quarter " + result.Quater + " : " );
 
              }
-             if (result.Year != undefined) {
+            if (result.Period === "Y") {
                  $("#lastRemark").val(result.Remark);
                  $("#remark").val("Year " + result.Year + " : " + result.Remark);
                 $('.lastRemarkLabel').text("Year " + result.Year + " : ");
@@ -809,7 +925,7 @@ var chartperiodController = {
                 <div class="box-body">
 
 
-                    <button type="button" data-toggle="modal" data-target="#modal-group"  style="background-color:#135043;color:#fff" class="btn margin btnLike pull-right" id="btnCompare"><i class="fa fa-adjust"></i> Compare</button>
+                    <button type="button" data-toggle="modal" data-target="#modal-group" style="background-color:#135043;color:#fff" class="btn margin btnLike pull-right" id="btnCompare"><i class="fa fa-adjust"></i> Compare</button>
                     @if (@statusfavorite == "false")
                     {
                         <button type="button" class="btn margin btnLike pull-right" id="btnLike" style="background-color:#060247;color:#fff"><i class="fa fa-heart"></i> Add Favourite</button>
@@ -1008,7 +1124,7 @@ var chartperiodController = {
                 <!-- /.box-header -->
                 <div class="box-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered" style="margin-bottom:20px;" id="tblkpi">
+                        <table class="table table-bordered" style="margin-bottom:20px;" id="tblDataChart">
                             <tbody>
                                 <tr></tr>
                                 <tr></tr>
@@ -1016,14 +1132,14 @@ var chartperiodController = {
                         </table>
                     </div>
                 </div>
-                <div class="box-footer" id="textarea-remark">
-                    <div class="form-group">
-                        <span class="lastRemark" style="display:none"></span>
-                        <label for="lastRemark" class="lastRemarkLabel"></label>
-                        <textarea data-dataid="" style="font-weight:bold;color:#0094ff" class="form-control" id="lastRemark"></textarea>
+                @*<div class="box-footer" id="textarea-remark">
+                        <div class="form-group">
+                            <span class="lastRemark" style="display:none"></span>
+                            <label for="lastRemark" class="lastRemarkLabel"></label>
+                            <textarea data-dataid="" style="font-weight:bold;color:#0094ff" class="form-control" id="lastRemark"></textarea>
 
-                    </div>
-                </div>
+                        </div>
+                    </div>*@
             </div>
         </div>
     </div>

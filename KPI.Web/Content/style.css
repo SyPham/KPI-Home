@@ -2,7 +2,9 @@
     height: 300px;
     overflow-y: scroll;
 }
-
+.unselectable {
+    cursor: not-allowed!important;
+}
     #ListKPI .henry {
         margin-top: 10px;
         margin-bottom: 10px;
@@ -196,4 +198,48 @@ thead tr th {
 }
 #tableWorkplace tr td {
     text-align: center;
+}
+
+#tblDataChart tr:nth-child(2) th{
+    color:#022598!important;
+}
+    #tblDataChart tr:nth-child(2) td {
+        cursor: pointer !important;
+        box-shadow: 0 !important;
+        transition: box-shadow .2s !important;
+    }
+
+        #tblDataChart tr:nth-child(2) td:hover {
+            cursor: pointer !important;
+            box-shadow: 0 0 3px #022598 !important;
+            color: #fff !important;
+            font-weight: bold !important;
+            background-color: #022598 !important;
+        }
+.warning-data{
+    
+}
+
+/*.led-box {
+    height: 30px;
+    width: 25%;
+    margin: 10px 0;
+    float: left;
+}*/
+.led-red {
+    margin: 0 auto;
+    width: 24px;
+    height: 24px;
+    background-color: #F00;
+    border-radius: 50%;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #441313 0 -1px 9px, rgba(255, 0, 0, 0.5) 0 2px 12px;
+    -webkit-animation: blinkRed 0.5s infinite;
+    -moz-animation: blinkRed 0.5s infinite;
+    -ms-animation: blinkRed 0.5s infinite;
+    -o-animation: blinkRed 0.5s infinite;
+    animation: blinkRed 0.5s infinite;
+}
+
+#comment-list .wrapper {
+    background-color: #fff !important;
 }

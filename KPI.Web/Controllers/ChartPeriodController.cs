@@ -1,5 +1,6 @@
 ﻿using KPI.Model.DAO;
 using KPI.Model.helpers;
+using KPI.Model.ViewModel;
 using MvcBreadCrumbs;
 using System;
 using System.Collections.Generic;
@@ -78,6 +79,36 @@ namespace KPI.Web.Controllers
             return Json(new DataChartDAO().UpdateRemark(dataid, remark), JsonRequestBehavior.AllowGet);
         }
         public ActionResult Compare()
+        {
+            return View();
+        }
+        public ActionResult GetComments(int dataid)
+        {
+            return Json(new DataChartDAO().GetComments(dataid), JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult SearchUsers()
+        {
+            return View();
+        }
+        public ActionResult PostComment(CommentsChartVM commentJSON,int userid, int dataid)
+        {
+            return Json(new DataChartDAO().PostComment(commentJSON,userid,dataid), JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult PutComment(CommentsChartVM commentJSON, int userid, int dataid)
+        {
+            return Json(new DataChartDAO().PutComment(commentJSON, userid, dataid), JsonRequestBehavior.AllowGet);
+
+        }
+        public ActionResult DeleteComment(int id)
+        {
+            return Json(new DataChartDAO().DeleteComment(id), JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult UpvoteComment()
+        {
+            return View();
+        }
+        public ActionResult UploadAttachments
+()
         {
             return View();
         }
