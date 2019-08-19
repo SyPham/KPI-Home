@@ -78,36 +78,10 @@ namespace KPI.Web.Controllers
         {
             return View();
         }
-        public ActionResult GetComments(int dataid)
-        {
-            return Json(new DataChartDAO().GetComments(dataid), JsonRequestBehavior.AllowGet);
-        }
         public ActionResult SearchUsers()
         {
             return Json(new DataChartDAO().SearchUser(), JsonRequestBehavior.AllowGet);
 
-        }
-        public ActionResult PostComment(CommentsChartVM commentJSON,int userid, int dataid)
-        {
-            return Json(new DataChartDAO().PostComment(commentJSON,userid,dataid), JsonRequestBehavior.AllowGet);
-        }
-        public ActionResult PutComment(CommentsChartVM commentJSON, int userid, int dataid)
-        {
-            return Json(new DataChartDAO().PutComment(commentJSON, userid, dataid), JsonRequestBehavior.AllowGet);
-
-        }
-        public ActionResult DeleteComment(int id)
-        {
-            return Json(new DataChartDAO().DeleteComment(id), JsonRequestBehavior.AllowGet);
-        }
-        public ActionResult UpvoteComment()
-        {
-            return View();
-        }
-        public ActionResult UploadAttachments
-()
-        {
-            return View();
         }
     }
 }

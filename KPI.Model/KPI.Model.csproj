@@ -149,9 +149,12 @@
     <Compile Include="Migrations\201908191731186_update-comment.Designer.cs">
       <DependentUpon>201908191731186_update-comment.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201908191748118_removecommentchartanddetail.cs" />
+    <Compile Include="Migrations\201908191748118_removecommentchartanddetail.Designer.cs">
+      <DependentUpon>201908191748118_removecommentchartanddetail.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ViewModel\CommentChartVM.cs" />
     <Compile Include="ViewModel\DataExportVM.cs" />
     <Compile Include="ViewModel\LevelVM.cs" />
     <Compile Include="ViewModel\UploadKPIVM.cs" />
@@ -212,6 +215,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201908191731186_update-comment.resx">
       <DependentUpon>201908191731186_update-comment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908191748118_removecommentchartanddetail.resx">
+      <DependentUpon>201908191748118_removecommentchartanddetail.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
