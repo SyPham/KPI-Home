@@ -17,7 +17,8 @@
                                     <th class="text-center" style="width:5%">Checkbox</th>
                                     <th class="text-center">Level Number</th>
                                     <th class="text-center">Area</th>
-                                    <th class="text-center">Status</th>
+                                    <th class="text-center">Data Status </th>
+                                    <th class="text-center">Publicity Status</th>
                                 </tr>
                             </thead>
                             <tbody id="tblcomparechart">
@@ -38,20 +39,21 @@
                             </tbody>
                         </table>
                         <script id='tblcomparechart-template' type="text/template">
-                            <tr>
+                            <tr {{{Tooltip}}}>
                                 <td class="text-center">{{No}}</td>
                                 <td class="text-center">
                                     <div class="pretty p-image p-plain">
-                                        <input type="checkbox" value="{{KPILevelCode}}" class="compare" />
+                                        <input type="checkbox" value="{{KPILevelCode}}" {{StatusPublicAttr}} class="compare" />
                                         <div class="state">
                                             <img class="image" src="/Content/icon/004.png">
-                                            <label class="comparelabel" ></label>
+                                            <label class="comparelabel"></label>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="text-center">{{LevelNumber}}</td>
                                 <td class="text-center">{{Area}}</td>
                                 <td class="text-center">{{{Status}}}</td>
+                                <td class="text-center">{{{StatusPublic}}}</td>
                             </tr>
 
                         </script>
@@ -59,7 +61,7 @@
                     <!-- /.box-body -->
 
                     <div class="box-footer">
-                        <ul id="paginationKPILevel" class="pagination pagination-sm no-margin pull-right">
+                        <ul id="pagination" class="pagination pagination-sm no-margin pull-right">
                             <li><a href="#">«</a></li>
                             <li><a href="#">1</a></li>
                             <li><a href="#">2</a></li>
@@ -81,6 +83,7 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
+@* Cai nay khong xai *@
 <div class="modal fade" id="modal-group-comment-datass" style="display: none">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -98,9 +101,9 @@
                             <textarea style="font-weight:bold;color:#ff0000;font-size:16px" class="form-control" rows="20" id="remark"></textarea>
                         </div>
                         <div class="form-group">
-                        <label for="comment">Comment:</label>
-                        <input type="text" name="name" class="form-control comment" value="" />
-                    </div>
+                            <label for="comment">Comment:</label>
+                            <input type="text" name="name" class="form-control comment" value="" />
+                        </div>
                     </div>
                     <!-- /.box-body -->
                     <div class="box-footer">
@@ -114,7 +117,7 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
-
+@* Cai nay khong xai *@
 <div class="modal fade" id="modal-group-comment-datas" style="display: none">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -148,8 +151,8 @@
                         <div class="comment-wrapper">
                             <div class="panel panel-info">
                                 @*<div class="panel-heading">
-                                    Comment panel
-                                </div>*@
+                                        Comment panel
+                                    </div>*@
                                 <div class="panel-body">
                                     <span class="dataid" style="display:none"></span>
                                     <textarea class="form-control" id="example-1" placeholder="write a comment..." rows="3"></textarea>
@@ -158,50 +161,21 @@
                                     <div class="clearfix"></div>
                                     <hr>
                                     <ul class="media-list" id="media-list">
-                                        <li class="media">
-                                            <a href="#" class="pull-left">
-                                                <img src="https://bootdey.com/img/Content/user_1.jpg" alt="" class="img-circle">
-                                            </a>
-                                            <div class="media-body">
-                                                <span class="text-muted pull-right">
-                                                    <small class="text-muted">30 min ago</small>
-                                                </span>
-                                                <strong class="text-success">MartinoMont</strong>
-                                                <p>
-                                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                                    Lorem ipsum dolor sit amet, <a href="#">#consecteturadipiscing </a>.
-                                                </p>
-                                            </div>
-                                        </li>
-                                        <li class="media">
-                                            <a href="#" class="pull-left">
-                                                <img src="https://bootdey.com/img/Content/user_2.jpg" alt="" class="img-circle">
-                                            </a>
-                                            <div class="media-body">
-                                                <span class="text-muted pull-right">
-                                                    <small class="text-muted">30 min ago</small>
-                                                </span>
-                                                <strong class="text-success">LaurenceCorreil</strong>
-                                                <p>
-                                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                                    Lorem ipsum dolor <a href="#">#ipsumdolor </a>adipiscing elit.
-                                                </p>
-                                            </div>
-                                        </li>
-                                        <li class="media">
-                                            <a href="#" class="pull-left">
-                                                <img src="https://bootdey.com/img/Content/user_3.jpg" alt="" class="img-circle">
-                                            </a>
-                                            <div class="media-body">
-                                                <span class="text-muted pull-right">
-                                                    <small class="text-muted">30 min ago</small>
-                                                </span>
-                                                <strong class="text-success">JohnNida</strong>
-                                                <p>
-                                                    Lorem ipsum dolor <a href="#">#sitamet</a> sit amet, consectetur adipiscing elit.
-                                                </p>
-                                            </div>
-                                        </li>
+                                        @*<li class="media">
+                                                <a href="#" class="pull-left">
+                                                    <img src="https://bootdey.com/img/Content/user_1.jpg" alt="" class="img-circle">
+                                                </a>
+                                                <div class="media-body">
+                                                    <span class="text-muted pull-right">
+                                                        <small class="text-muted">30 min ago</small>
+                                                    </span>
+                                                    <strong class="text-success">MartinoMont</strong>
+                                                    <p>
+                                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                                        Lorem ipsum dolor sit amet, <a href="#">#consecteturadipiscing </a>.
+                                                    </p>
+                                                </div>
+                                            </li>*@
                                     </ul>
                                 </div>
                             </div>

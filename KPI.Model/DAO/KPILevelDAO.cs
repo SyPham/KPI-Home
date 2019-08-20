@@ -286,7 +286,7 @@ namespace KPI.Model.DAO
                                 //ngược lại reutrn false
                                 StatusUploadDataW = weekofyear - datas.Where(a => a.KPILevelCode == kpiLevel.KPILevelCode && a.Period == "W").Max(x => x.Week) > 1 ? false : ((weekofyear - datas.Where(a => a.KPILevelCode == kpiLevel.KPILevelCode && a.Period == "W").Max(x => x.Week)) == 1 ? (kpiLevel.Weekly < currentweekday ? true : false) : false),
 
-                                StatusUploadDataM =  monthofyear - datas.Where(a => a.KPILevelCode == kpiLevel.KPILevelCode && a.Period == "M").Max(x => x.Month) > 1 ? false : monthofyear - datas.Where(a => a.KPILevelCode == kpiLevel.KPILevelCode && a.Period == "M").Max(x => x.Month) == 1 ? (DateTime.Compare(currentdate, kpiLevel.Monthly.Value) < 0 ? true : false) : false,
+                                StatusUploadDataM = monthofyear - datas.Where(a => a.KPILevelCode == kpiLevel.KPILevelCode && a.Period == "M").Max(x => x.Month) > 1 ? false : monthofyear - datas.Where(a => a.KPILevelCode == kpiLevel.KPILevelCode && a.Period == "M").Max(x => x.Month) == 1 ? (DateTime.Compare(currentdate, kpiLevel.Monthly.Value) < 0 ? true : false) : false,
 
                                 StatusUploadDataQ = quarterofyear - datas.Where(a => a.KPILevelCode == kpiLevel.KPILevelCode && a.Period == "Q").Max(x => x.Quarter) > 1 ? false : quarterofyear - datas.Where(a => a.KPILevelCode == kpiLevel.KPILevelCode && a.Period == "Q").Max(x => x.Quarter) == 1 ? (DateTime.Compare(currentdate, kpiLevel.Quarterly.Value) < 0 ? true : false) : false, //true dung han flase tre han
 
@@ -324,12 +324,11 @@ namespace KPI.Model.DAO
         }
 
         /// <summary>
-        /// Lấy dữ liệu cho chart js.
+        /// 
         /// </summary>
-        /// <param name="kpiid"></param>
-        /// <param name="kpilevel"></param>
+        /// <param name="kpilevelcode"></param>
         /// <param name="period"></param>
-        /// <returns>Danh sách value theo thời gian</returns>
+        /// <returns></returns>
         public object ListDatas(string kpilevelcode, string period)
         {
             if (!string.IsNullOrEmpty(kpilevelcode) && !string.IsNullOrEmpty(period))
@@ -447,6 +446,11 @@ namespace KPI.Model.DAO
                 return false;
             }
         }
+        /// <summary>
+        /// Lấy ra các danh sách comment theo từng Value của KPILevel
+        /// </summary>
+        /// <param name="dataid">Là giá trị của KPILevel upload</param>
+        /// <returns>Trả về các comment theo dataid</returns>
         public object ListComments(int dataid)
         {
             //Cat chuoi
@@ -510,10 +514,14 @@ namespace KPI.Model.DAO
 
 
         }
-
-        public object LoadDataProvide(string obj)
+        /// <summary>
+        /// Lấy ra danh sách để so sánh chart với nhau.
+        /// </summary>
+        /// <param name="obj">Chuỗi dữ liệu gồm KPIlevelcode, Period của các KPILevel</param>
+        /// <returns>Trả về danh sách so sánh dữ liệu cùng cấp. So sánh tối đa 4 KPILevel</returns>
+        public object LoadDataProvide(string obj, int page, int pageSize)
         {
-            object listCompare = null;
+            var listCompare = new List<CompareVM>();
             var value = obj.ToSafetyString().Split(',');
             var kpilevelcode = value[0].ToSafetyString();
             var period = value[1].ToSafetyString();
@@ -535,11 +543,20 @@ namespace KPI.Model.DAO
                         KPILevelCode = x.KPILevelCode + ",W",
                         LevelNumber = _dbContext.Levels.FirstOrDefault(l => l.ID == x.LevelID).LevelNumber,
                         Area = _dbContext.Levels.FirstOrDefault(l => l.ID == x.LevelID).Name,
-                        Status = _dbContext.Datas.FirstOrDefault(henry => henry.KPILevelCode == x.KPILevelCode) == null ? false : true
-
+                        Status = _dbContext.Datas.FirstOrDefault(henry => henry.KPILevelCode == x.KPILevelCode) == null ? false : true,
+                        StatusPublic = (bool?)x.WeeklyPublic ?? false
                     }).
-                    Where(c => c.LevelNumber == itemlevel)
-                    .ToList();
+                    Where(c => c.LevelNumber == itemlevel).ToList();
+
+                int totalRow = listCompare.Count();
+                listCompare = listCompare.OrderByDescending(x => x.LevelNumber)
+                    .Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+                return new
+                {
+                    total = totalRow,
+                    listCompare
+                };
             }
 
             if (period == "M")
@@ -553,11 +570,21 @@ namespace KPI.Model.DAO
                         KPILevelCode = x.KPILevelCode + ",W",
                         LevelNumber = _dbContext.Levels.FirstOrDefault(l => l.ID == x.LevelID).LevelNumber,
                         Area = _dbContext.Levels.FirstOrDefault(l => l.ID == x.LevelID).Name,
-                        Status = _dbContext.Datas.FirstOrDefault(henry => henry.KPILevelCode == x.KPILevelCode) == null ? false : true
-
+                        Status = _dbContext.Datas.FirstOrDefault(henry => henry.KPILevelCode == x.KPILevelCode) == null ? false : true,
+                        StatusPublic = (bool?)x.MonthlyPublic ?? false
                     }).
                     Where(c => c.LevelNumber == itemlevel)
                     .ToList();
+
+                int totalRow = listCompare.Count();
+                listCompare = listCompare.OrderByDescending(x => x.LevelNumber)
+                    .Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+                return new
+                {
+                    total = totalRow,
+                    listCompare
+                };
             }
 
             if (period == "Q")
@@ -571,11 +598,21 @@ namespace KPI.Model.DAO
                         KPILevelCode = x.KPILevelCode + ",W",
                         LevelNumber = _dbContext.Levels.FirstOrDefault(l => l.ID == x.LevelID).LevelNumber,
                         Area = _dbContext.Levels.FirstOrDefault(l => l.ID == x.LevelID).Name,
-                        Status = _dbContext.Datas.FirstOrDefault(henry => henry.KPILevelCode == x.KPILevelCode) == null ? false : true
-
+                        Status = _dbContext.Datas.FirstOrDefault(henry => henry.KPILevelCode == x.KPILevelCode) == null ? false : true,
+                        StatusPublic = (bool?)x.QuarterlyPublic ?? false
                     }).
                     Where(c => c.LevelNumber == itemlevel)
                     .ToList();
+
+                int totalRow = listCompare.Count();
+                listCompare = listCompare.OrderByDescending(x => x.LevelNumber)
+                    .Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+                return new
+                {
+                    total = totalRow,
+                    listCompare
+                };
             }
 
             if (period == "Y")
@@ -589,11 +626,21 @@ namespace KPI.Model.DAO
                         KPILevelCode = x.KPILevelCode + ",W",
                         LevelNumber = _dbContext.Levels.FirstOrDefault(l => l.ID == x.LevelID).LevelNumber,
                         Area = _dbContext.Levels.FirstOrDefault(l => l.ID == x.LevelID).Name,
-                        Status = _dbContext.Datas.FirstOrDefault(henry => henry.KPILevelCode == x.KPILevelCode) == null ? false : true
-
+                        Status = _dbContext.Datas.FirstOrDefault(henry => henry.KPILevelCode == x.KPILevelCode) == null ? false : true,
+                        StatusPublic = (bool?)x.YearlyPublic ?? false
                     }).
                     Where(c => c.LevelNumber == itemlevel)
                     .ToList();
+
+                int totalRow = listCompare.Count();
+                listCompare = listCompare.OrderByDescending(x => x.LevelNumber)
+                    .Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+                return new
+                {
+                    total = totalRow,
+                    listCompare
+                };
             }
             //Lay tat ca kpilevel cung period
 

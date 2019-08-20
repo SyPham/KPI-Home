@@ -1,4 +1,5 @@
 ﻿$(document).ready(function () {
+    $('[data-toggle="tooltip"]').tooltip(); 
     $('.monthly').datetimepicker({
         format: 'MM/DD/YYYY'
     });

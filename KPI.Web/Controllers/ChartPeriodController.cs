@@ -66,9 +66,9 @@ namespace KPI.Web.Controllers
         {
             return Json(new FavouriteDAO().Add(entity), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult LoadDataProvide(string obj)
+        public JsonResult LoadDataProvide(string obj, int page, int pageSize)
         {
-            return Json(new KPILevelDAO().LoadDataProvide(obj), JsonRequestBehavior.AllowGet);
+            return Json(new KPILevelDAO().LoadDataProvide(obj, page,pageSize), JsonRequestBehavior.AllowGet);
         }
         public JsonResult UpdateRemark(int dataid, string remark)
         {
@@ -78,10 +78,6 @@ namespace KPI.Web.Controllers
         {
             return View();
         }
-        public ActionResult SearchUsers()
-        {
-            return Json(new DataChartDAO().SearchUser(), JsonRequestBehavior.AllowGet);
-
-        }
+        
     }
 }

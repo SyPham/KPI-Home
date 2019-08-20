@@ -166,14 +166,21 @@
             //$('.lastRemarkLabel').text("Year " + lastRemark.Year + " : " );
 
         }
-            var standards = [];
-            for (let i = 0; i < labels.length; i++) {
-                standards.push(standard);
-            }
+            //var standards = [];
+            //for (let i = 0; i < labels.length; i++) {
+                
+            //    standards.push(standard);
+            //}
             //---------------------------------------------------------------------------------
+            for (var i = 0; i < datasets.length; i++) {
+                if (datasets[i] === 0) {
+                    datasets[i] = undefined;
+                }
+            }
             var listData = {
                 label: label,
                 data: datasets,
+                spanGaps: false, //data=undefined thi k draw line
                 datalabels: {
                     align: 'center',
                     anchor: 'center',
@@ -199,7 +206,7 @@
                     borderWidth: 3,
                     label: {
                       enabled: true,
-                        content: 'standard',
+                        //content: 'standard',
                         backgroundColor: '#09a99f',
                         fontSize: 12,
                       fontStyle: "bold",
@@ -230,7 +237,6 @@
                         text: "KPI Chart - @label - @kpiname",
                         fontSize: 20,
                         fontColor: 'black'
-
                     },
                 elements: {
                          point:{
@@ -729,11 +735,16 @@ var chartperiodController = {
             });
         });
     } ,
-    loadDataProvide() {
+    loadDataProvide(changePageSize) {
         var obj="@kpilevelcode,@period";
           $.ajax({
-            url: "/ChartPeriod/LoadDataProvide/?obj="+obj,
-            type: "POST",
+            url: "/ChartPeriod/LoadDataProvide/",
+                data: {
+                obj: obj,
+                page: chartperiodlConfig.pageIndex,
+                pageSize: chartperiodlConfig.pageSize
+            },
+            type: "GET",
             contentType: "application/json;charset=utf-8",
             dataType: "json",
             success: function (data) {
@@ -746,39 +757,65 @@ var chartperiodController = {
                      KPILevelCode: item.KPILevelCode,
                      LevelNumber:item.LevelNumber,
                      Area: item.Area,
-                     Status: item.Status==true?'<span class="label label-success">visible</span>' : '<span class="label bg-danger">not visible</span>'
+                     Tooltip:item.StatusPublic==true?"":'data-toggle="tooltip" title="The publicity is private, not comparable!"',
+                     StatusPublicAttr: item.StatusPublic==true?"":"disabled",
+                     Status: item.Status==true?'<span class="label label-success">visible</span>' : '<span class="label bg-danger">not visible</span>',
+                     StatusPublic: item.StatusPublic==true?'<span class="label label-success">Public</span>' : '<span class="label bg-danger">Private</span>'
+
                  });
                  count++;
              });
                 $('#tblcomparechart').html(html);
+                  chartperiodController.paging(data.total, function () {
+                        chartperiodController.loadDataProvide();
+                    }, changePageSize);
+                chartperiodController.registerEvent();
 
+                ///Lấy tất cả KPILevelCode và period khi click ghép lại thành chuỗi cách nhau bởi dấu (-) để gửi lên server.
                  var old="";
                 $('#comparechart .compare').unbind().change(function (e) {
-
-
                     var code = $(this).val();
-
-
                     if (old.indexOf($(this).val()) == -1) {
                         old += code + '-';
                          $('.arrcompare').text(old);
                     }
-
                 });
+                //Gửi chuỗi ở trên lên server
+                $('#btnCompare-kpilevel').off('click').on('click', function () {
 
-            $('#btnCompare-kpilevel').off('click').on('click', function () {
-
-            var value = $('.arrcompare').text().toString();
-                var obj = value.substring(value.length - 1, 0);
-                   var kpilevelcode = chartperiodController.getUrlParameter('kpilevelcode');
+                    var value = $('.arrcompare').text().toString();
+                    var obj = value.substring(value.length - 1, 0);
+                    var kpilevelcode = chartperiodController.getUrlParameter('kpilevelcode');
                     var period = chartperiodController.getUrlParameter('period');
-                   obj = obj + '-' +kpilevelcode + ',' + period ;
-                window.location.href = "/Compare/?obj=" + obj+";@standard,@unit";
-             })
-
+                        obj = obj + '-' +kpilevelcode + ',' + period ;
+                    window.location.href = "/Compare/?obj=" + obj+";@standard,@unit";
+                 })
             },
             error: function (errormessage) {
                 //console.log(errormessage.responseText);
+            }
+        });
+    } ,
+    paging: function (totalRow, callback, changePageSize) {
+        var totalPage = Math.ceil(totalRow / chartperiodlConfig.pageSize);
+
+        //Unbind pagination if it existed or click change pagesize
+        if ($('#pagination a').length === 0 || changePageSize === true) {
+            $('#pagination').empty();
+            $('#pagination').removeData("twbs-pagination");
+            $('#pagination').unbind("page");
+        }
+
+        $('#pagination').twbsPagination({
+            totalPages: totalPage === 0 ? 1 : totalPage,
+            first: "First",
+            next: "Next",
+            last: "Last",
+            prev: "Previous",
+            visiblePages: 10,
+            onPageClick: function (event, page) {
+                chartperiodlConfig.pageIndex = page;
+                setTimeout(callback, 500);
             }
         });
     },
@@ -800,11 +837,10 @@ var chartperiodController = {
 
                     var nowDate = new Date(parseInt(item.CommentedDate.substr(6)));
                     var date = new Date(nowDate);
-                    var result = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getUTCSeconds();
-
+                    var result = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
                      html +=' <li class="media">';
                      html += '<a href="#" class="pull-left">';
-                     html += '    <img src="https://bootdey.com/img/Content/user_1.jpg" alt="" class="img-circle">';
+                     html += '    <img src="/Scripts/plugins/jquery-comments/user-icon.png" alt="" class="img-circle">';
                      html += '</a>';
                      html += '<div class="media-body">';
                      html += '<span class="text-muted pull-right">';

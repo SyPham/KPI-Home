@@ -291,6 +291,8 @@ namespace KPI.Model.DAO
 
         public ChartVM Compare(string kpilevelcode, string period)
         {
+            
+           
             var model = new ChartVM();
             var item = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == kpilevelcode);
             model.kpiname = _dbContext.KPIs.Find(item.KPIID).Name;
@@ -302,33 +304,106 @@ namespace KPI.Model.DAO
 
             if (period == "W")
             {
-                var datasetsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Week).Select(x => x.Value).ToArray();
-                var labelsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Week).Select(x => x.Week).ToArray();
-                var labels1 = Array.ConvertAll(labelsKPILevel1, x => x.ToSafetyString());
-                model.datasets = datasetsKPILevel1;
-                model.labels = labels1;
+                //Tạo ra 1 mảng tuần mặc định bằng 0
+                int[] datasets = new int[53];
+
+                //labels của chartjs mặc định có 53 phần tử = 0
+                string[] labels = new string[53];
+                for (int i = 0; i < labels.Length; i++)
+                {
+                    labels[i] = (i + 1).ToString();
+                }
+                var datas = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Week).Select(x => new { x.Value, x.Week }).ToList();
+                foreach (var weekly in datas)
+                {
+                    int valueWeek = weekly.Week;
+                    datasets[valueWeek - 1] = weekly.Value;
+                }
+                
+                model.datasets = datasets;
+                model.labels = labels;
                 model.period = period;
+
+                
                 //model.Unit = unitName;
                 //model.Standard = _dbContext.KPILevels.FirstOrDefault(x=>x.KPILevelCode==kpilevelcode && x.WeeklyChecked==true).WeeklyStandard;
             }
             if (period == "M")
             {
-                var datasetsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Month).Select(x => x.Value).ToArray();
-                var labelsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Month).Select(x => x.Month).ToArray();
-                var labels1 = Array.ConvertAll(labelsKPILevel1, x => x.ToSafetyString());
-                model.datasets = datasetsKPILevel1;
-                model.labels = labels1;
+                int[] datasets = new int[12];
+
+                string[] labels = new string[12];
+                for (int i = 1; i <= 12; i++)
+                {
+                    switch (i)
+                    {
+                        case 1:
+                            labels[i - 1] = "Jan";
+                            break;
+                        case 2:
+                            labels[i - 1] = "Feb"; break;
+                        case 3:
+                            labels[i - 1] = "Mar"; break;
+                        case 4:
+                            labels[i - 1] = "Apr"; break;
+                        case 5:
+                            labels[i - 1] = "May";
+                            break;
+                        case 6:
+                            labels[i - 1] = "Jun"; break;
+                        case 7:
+                            labels[i - 1] = "Jul"; break;
+                        case 8:
+                            labels[i - 1] = "Aug"; break;
+                        case 9:
+                            labels[i - 1] = "Sep";
+                            break;
+                        case 10:
+                            labels[i - 1] = "Oct"; break;
+                        case 11:
+                            labels[i - 1] = "Nov"; break;
+                        case 12:
+                            labels[i - 1] = "Dec"; break;
+                    }
+                }
+
+                var datas = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Month).Select(x => new { x.Month, x.Value }).ToList();
+                foreach (var monthly in datas)
+                {
+                    int valueMonth = monthly.Month;
+                    datasets[valueMonth - 1] = monthly.Value;
+                }
+                model.datasets = datasets;
+                model.labels = labels;
                 model.period = period;
-                //model.Unit = unitName;
-                //model.Standard = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == kpilevelcode && x.MonthlyChecked == true).MonthlyStandard;
             }
             if (period == "Q")
             {
-                var datasetsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Quarter).Select(x => x.Value).ToArray();
-                var labelsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Quarter).Select(x => x.Quarter).ToArray();
-                var labels1 = Array.ConvertAll(labelsKPILevel1, x => x.ToSafetyString());
-                model.datasets = datasetsKPILevel1;
-                model.labels = labels1;
+                int[] datasets = new int[4];
+
+                string[] labels = new string[4];
+                var datas = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Quarter).Select(x =>new { x.Quarter, x.Value }).ToList();
+                foreach (var quarterly in datas)
+                {
+                    int valueMonth = quarterly.Quarter;
+                    datasets[valueMonth - 1] = quarterly.Value;
+                }
+                for (int i = 1; i <= 4; i++)
+                {
+                    switch (i)
+                    {
+                        case 1:
+                            labels[i - 1] = "Quarter 1"; break;
+                        case 2:
+                            labels[i - 1] = "Quarter 2"; break;
+                        case 3:
+                            labels[i - 1] = "Quarter 3"; break;
+                        case 4:
+                            labels[i - 1] = "Quarter 4"; break;
+                    }
+                }
+                model.datasets = datasets;
+                model.labels = labels;
                 model.period = period;
                 model.Unit = unitName;
                 model.Standard = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == kpilevelcode && x.QuarterlyChecked == true).QuarterlyStandard;
@@ -427,10 +502,6 @@ namespace KPI.Model.DAO
             {
                 return false;
             }
-        }
-        public object SearchUser()
-        {
-            return "";
         }
 
         public List<User> SearchUsers()

@@ -21,65 +21,72 @@
 @section Scripts{
     <script>
 
+        var listData1 = @Html.Raw(Json.Encode(list1)),
+            listData2 = @Html.Raw(Json.Encode(list2)),
+            listData3 = @Html.Raw(Json.Encode(list3)),
+            listData4 = @Html.Raw(Json.Encode(list4));
 
-
+        console.log(listData1);
+        console.log(listData2);
+        console.log(listData3);
+        console.log(listData4);
         $(function () {
 
              var labelString;
         if ("@period" === "W"){
             labelString = " Weeks in year ";
-            if (@Html.Raw(Json.Encode(@list1.datasets.Length)) !== 0) {
+            if (listData1.datasets.length !== 0) {
                 $("#tblkpi tr:first-child").append("<th>Week</th>");
-                $.each(@Html.Raw(Json.Encode(@list1.labels)), function (key, item) {
+                $.each(listData1.labels, function (key, item) {
                     $("#tblkpi tr:first-child").append("<th >" + item + "</th>");
                 });
 
-                $("#tblkpi tr:nth-child(2)").append("<th >"+@Html.Raw(Json.Encode(@list1.label))+"</th>");
-                $.each(@Html.Raw(Json.Encode(@list1.datasets)), function (key, item) {
+                $("#tblkpi tr:nth-child(2)").append("<th >"+listData1.label+"</th>");
+                $.each(listData1.datasets, function (key, item) {
                     $("#tblkpi tr:nth-child(2)").append("<td>" + item + "</td>");
                 });
             }
-            if (@Html.Raw(Json.Encode(@list2.datasets.Length)) !== 0) {
-                 $("#tblkpi tr:nth-child(3)").append("<th >"+@Html.Raw(Json.Encode(@list2.label))+"</th>");
-                $.each(@Html.Raw(Json.Encode(@list2.datasets)), function (key, item) {
+            if (listData2.datasets.length !== 0) {
+                 $("#tblkpi tr:nth-child(3)").append("<th >"+listData2.label+"</th>");
+                $.each(listData2.datasets, function (key, item) {
                     $("#tblkpi tr:nth-child(3)").append("<td>" + item + "</td>");
                 });
             }
-            if (@Html.Raw(Json.Encode(@list3.datasets.Length)) !== 0) {
-                    $("#tblkpi tr:nth-child(4)").append("<th >"+@Html.Raw(Json.Encode(@list3.label))+"</th>");
-                $.each(@Html.Raw(Json.Encode(@list3.datasets)), function (key, item) {
+            if (listData3.datasets.length !== 0) {
+                    $("#tblkpi tr:nth-child(4)").append("<th >"+listData3.label+"</th>");
+                $.each(listData3.datasets, function (key, item) {
                     $("#tblkpi tr:nth-child(4)").append("<td>" + item + "</td>");
                 });
             }
-            if (@Html.Raw(Json.Encode(@list4.datasets.Length)) !== 0) {
-                    $("#tblkpi tr:nth-child(5)").append("<th >"+@Html.Raw(Json.Encode(@list4.label))+"</th>");
-                $.each(@Html.Raw(Json.Encode(@list4.datasets)), function (key, item) {
+            if (listData4.datasets.length !== 0) {
+                    $("#tblkpi tr:nth-child(5)").append("<th >"+listData4.label+"</th>");
+                $.each(listData4.datasets, function (key, item) {
                     $("#tblkpi tr:nth-child(5)").append("<td>" + item + "</td>");
                 });
             }
 
-        console.log(@Html.Raw(Json.Encode(@list3.datasets.Length)))
+        console.log(listData3.datasets.length)
         }
 
         if ("@period" === "M") {
             labelString = "Months in year";
                 $("#tblkpi tr:first-child").append("<th >Month</th>");
-            $.each(@Html.Raw(Json.Encode(@list1.labels)), function (key, item) {
+            $.each(listData1.labels, function (key, item) {
                 $("#tblkpi tr:first-child").append("<th >" + item + "</th>");
             });
-            $("#tblkpi tr:nth-child(2)").append("<th >"+@Html.Raw(Json.Encode(@list1.label))+"</th>");
-            $.each(@Html.Raw(Json.Encode(@list1.datasets)), function (key, item) {
+            $("#tblkpi tr:nth-child(2)").append("<th >"+listData1.label+"</th>");
+            $.each(listData1.datasets, function (key, item) {
                 $("#tblkpi tr:nth-child(2)").append("<td>" + item + "</td>");
             });
         }
         if ("@period" === "Q") {
             labelString = "Quarters in year";
                 $("#tblkpi tr:first-child").append("<th >Quarter</th>");
-            $.each(@Html.Raw(Json.Encode(@list1.labels)), function (key, item) {
+            $.each(listData1.labels, function (key, item) {
                 $("#tblkpi tr:first-child").append("<th >" + item + "</th>");
             });
-            $("#tblkpi tr:nth-child(2)").append("<th >"+@Html.Raw(Json.Encode(@list1.label))+"</th>");
-            $.each(@Html.Raw(Json.Encode(@list1.datasets)), function (key, item) {
+            $("#tblkpi tr:nth-child(2)").append("<th >"+listData1.label+"</th>");
+            $.each(listData1.datasets, function (key, item) {
                 $("#tblkpi tr:nth-child(2)").append("<td>" + item + "</td>");
             });
         }
@@ -87,11 +94,11 @@
         if ("@period" === "Y") {
             labelString = "Year";
                 $("#tblkpi tr:first-child").append("<th >Year</th>");
-            $.each(@Html.Raw(Json.Encode(@list1.labels)), function (key, item) {
+            $.each(listData1.labels, function (key, item) {
                 $("#tblkpi tr:first-child").append("<th >" + item + "</th>");
             });
-            $("#tblkpi tr:nth-child(2)").append("<th >"+@Html.Raw(Json.Encode(@list1.label))+"</th>");
-            $.each(@Html.Raw(Json.Encode(@list1.datasets)), function (key, item) {
+            $("#tblkpi tr:nth-child(2)").append("<th >"+listData1.label+"</th>");
+            $.each(listData1.datasets, function (key, item) {
                 $("#tblkpi tr:nth-child(2)").append("<td>" + item + "</td>");
             });
         }
@@ -105,19 +112,40 @@
             }
             var standard = {
                 label:  "Standard",
-                backgroundColor: Samples.color(0),
-                borderColor: Samples.color(0),
+                backgroundColor: Samples.color(2),
+                borderColor: Samples.color(2),
                 data: standards,
                 datalabels: {
                     align: 'center',
                     anchor: 'center'
                 }
             }
+             for (var i = 0; i < listData1.datasets.length; i++) {
+                if (listData1.datasets[i] === 0) {
+                    listData1.datasets[i] = undefined;
+                }
+            }
+             for (var i = 0; i < listData2.datasets.length; i++) {
+                if (listData2.datasets[i] === 0) {
+                    listData2.datasets[i] = undefined;
+                }
+            }
+             for (var i = 0; i < listData3.datasets.length; i++) {
+                if (listData3.datasets[i] === 0) {
+                    listData3.datasets[i] = undefined;
+                }
+            }
+             for (var i = 0; i < listData4.datasets.length; i++) {
+                if (listData4.datasets[i] === 0) {
+                    listData4.datasets[i] = undefined;
+                }
+            }
             var list1 = {
-                label:  "@Html.Raw(@list1.label)",
-                backgroundColor: Samples.color(1),
-                borderColor: Samples.color(1),
-                data: @Html.Raw(Json.Encode(@list1.datasets)),
+                label: "@Html.Raw(@list1.label)",
+                spanGaps: false, //data=undefined thi k draw line
+                backgroundColor: Samples.color(3),
+                borderColor: Samples.color(3),
+                data: listData1.datasets,
                 datalabels: {
                     align: 'center',
                     anchor: 'center'
@@ -126,10 +154,10 @@
 
             var list2= {
                 label: "@Html.Raw(@list2.label)",
-                 
-                data:  @Html.Raw(Json.Encode(@list2.datasets)),
-                backgroundColor: Samples.color(2),
-                borderColor: Samples.color(2),
+                 spanGaps: false, //data=undefined thi k draw line
+                data:  listData2.datasets,
+                backgroundColor: Samples.color(4),
+                borderColor: Samples.color(4),
                 datalabels: {
                     align: 'center',
                     anchor: 'center'
@@ -137,8 +165,9 @@
             };
 
             var list3 = {
-                label:  "@Html.Raw(@list3.label)",
-                data:  @Html.Raw(Json.Encode(@list3.datasets)),
+                label: "@Html.Raw(@list3.label)",
+                spanGaps: false, //data=undefined thi k draw line
+                data:  listData3.datasets,
                  backgroundColor: Samples.color(3),
                 borderColor: Samples.color(3),
                 datalabels: {
@@ -148,8 +177,9 @@
             };
 
             var list4= {
-                label:   "@Html.Raw(@list4.label)",
-                data:  @Html.Raw(Json.Encode(@list4.datasets)),
+                label: "@Html.Raw(@list4.label)",
+                spanGaps: false, //data=undefined thi k draw line
+                data:  listData4.datasets,
                   backgroundColor: Samples.color(4),
                 borderColor: Samples.color(4),
                 datalabels: {
@@ -165,7 +195,7 @@
              if (list4.data.length === 0) {
 
                   compareData = {
-                    labels: @Html.Raw(Json.Encode(@list1.labels)),
+                    labels: listData1.labels,
                     datasets: [standard,list1, list2, list3]
                     };
              }
@@ -173,14 +203,14 @@
              if (list3.data.length=== 0&&list4.data.length=== 0) {
 
                    compareData = {
-                    labels: @Html.Raw(Json.Encode(@list1.labels)),
+                    labels: listData1.labels,
                     datasets: [standard,list1, list2]
                     };
             }
               if(list1.data.length!== 0&&list2.data.length!== 0&&list3.data.length!== 0&&list4.data.length!== 0) {
 
                    compareData = {
-                    labels: @Html.Raw(Json.Encode(@list1.labels)),
+                    labels: listData1.labels,
                     datasets: [standard,list1, list2,list3, list4]
                     };
             }
@@ -281,7 +311,7 @@
                     </div>
                 </div>
                 <div class="box-body">
-                    <button type="button" class="btn bg-maroon margin pull-right"><i class="fa fa-star"></i> <span>Standard : </span><span class="standard text-bold" style="">@standard</span></button>
+                    <button type="button" class="btn margin pull-right" style="background-color:#09a99f;color:#fff"><i class="fa fa-star"></i> <span>Standard : </span><span class="standard text-bold" style="">@standard</span></button>
 
                     <div class="chart">
                         <canvas id="lineChart" style="height:250px"></canvas>
@@ -290,7 +320,7 @@
             </div>
 
         </div>
-        <div class="col-md-12">
+        <div class="col-md-12" style="display:none">
             <div class="col-md-12">
                 <div class="box box-widget">
                     <div class="box-header with-border">

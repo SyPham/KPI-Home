@@ -12,5 +12,7 @@ namespace KPI.Model.ViewModel
         public string Area { get; set; }
         public bool Status { get; set; }
         public string KPILevelCode { get; set; }
+        public bool StatusPublic { get; set; }
+
     }
 }
