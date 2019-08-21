@@ -21,6 +21,8 @@ namespace KPI.Model.helpers
             mail.Subject = subject;
             mail.Body = content;
             mail.IsBodyHtml = true;
+            mail.BodyEncoding = System.Text.Encoding.UTF8;
+            mail.Priority = MailPriority.High;
           
 
             //Nhờ người đưa thư

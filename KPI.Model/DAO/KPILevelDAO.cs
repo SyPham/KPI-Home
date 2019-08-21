@@ -413,6 +413,13 @@ namespace KPI.Model.DAO
             {
                 _dbContext.Comments.Add(entity);
                 _dbContext.SaveChanges();
+
+                var seenComment = new SeenComment();
+                seenComment.CommentID = entity.ID;
+                seenComment.UserID = entity.UserID;
+                seenComment.Status = true;
+                _dbContext.SeenComments.Add(seenComment);
+                _dbContext.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -421,14 +428,14 @@ namespace KPI.Model.DAO
             }
 
         }
-        public bool AddCommentHistory(int userid)
+        public bool AddCommentHistory(int userid, int dataid)
         {
             try
             {
-                var comments = _dbContext.Comments.ToList();
+                var comments = _dbContext.Comments.Where(x=>x.DataID== dataid).ToList();
                 foreach (var comment in comments)
                 {
-                    var item = _dbContext.SeenComments.FirstOrDefault(x => x.UserID == comment.UserID && x.UserID == comment.ID);
+                    var item = _dbContext.SeenComments.FirstOrDefault(x => x.UserID == userid && x.CommentID == comment.ID);
                     if (item == null)
                     {
                         var seencmt = new SeenComment();
@@ -451,7 +458,7 @@ namespace KPI.Model.DAO
         /// </summary>
         /// <param name="dataid">Là giá trị của KPILevel upload</param>
         /// <returns>Trả về các comment theo dataid</returns>
-        public object ListComments(int dataid)
+        public object ListComments(int dataid,int userid)
         {
             //Cat chuoi
 
@@ -460,6 +467,12 @@ namespace KPI.Model.DAO
 
             //Tong tat ca cac comment cua kpi
             var totalcomment = listcmts.Count();
+
+            //Lay ra tat ca lich su cmt
+            var seenCMT = _dbContext.SeenComments;
+
+            //Lay ra tat ca lich su cmt
+            var user = _dbContext.Users;
 
             //Lay ra tat ca cac comment cua kpi(userid nao post comment len thi mac dinh userid do da xem comment cua chinh minh roi)
             var data = _dbContext.Comments.Where(x => x.DataID == dataid)
@@ -470,9 +483,9 @@ namespace KPI.Model.DAO
                    CommentMsg = x.CommentMsg,
                    KPILevelCode = x.KPILevelCode,
                    CommentedDate = x.CommentedDate,
-                   FullName = _dbContext.Users.FirstOrDefault(a => a.ID == x.UserID).FullName,
+                   FullName = user.FirstOrDefault(a => a.ID == x.UserID).FullName,
                    Period = x.Period,
-                   Read = true
+                   Read = seenCMT.FirstOrDefault(a => a.CommentID == x.ID && a.UserID == userid) == null ? true : false
                })
                .OrderByDescending(x => x.CommentedDate)
                .ToList();
@@ -649,6 +662,7 @@ namespace KPI.Model.DAO
                 listCompare
             };
         }
+       
     }
 }
 

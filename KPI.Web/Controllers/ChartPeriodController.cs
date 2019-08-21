@@ -54,9 +54,13 @@ namespace KPI.Web.Controllers
         {
             return Json(new KPILevelDAO().AddComment(entity), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult LoadDataComment(int dataid)
+        public JsonResult LoadDataComment(int dataid,int userid)
         {
-            return Json(new KPILevelDAO().ListComments(dataid), JsonRequestBehavior.AllowGet);
+            return Json(new KPILevelDAO().ListComments(dataid,userid), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult AddCommentHistory(int userid, int dataid)
+        {
+            return Json(new KPILevelDAO().AddCommentHistory(userid, dataid), JsonRequestBehavior.AllowGet);
         }
         public JsonResult Remark(int dataid)
         {

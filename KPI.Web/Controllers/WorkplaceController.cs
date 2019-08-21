@@ -16,6 +16,7 @@ using System.Drawing;
 using MvcBreadCrumbs;
 using KPI.Model.ViewModel;
 using System.Configuration;
+using System.Net.Mail;
 
 namespace KPI.Web.Controllers
 {
@@ -102,17 +103,31 @@ namespace KPI.Web.Controllers
                     }
 
                     string subject = ConfigurationManager.AppSettings["FromEmailDisplayName"].ToString();
-                    MailUtility mail = new MailUtility(from, password);
-                    mail.To = to;
-                    mail.Content = content;
-                    mail.Port = port.ToInt();
 
-                    mail.Server = host;
-                    mail.SSl = ssl.ToBool();
-                    mail.Subject = subject;
+                    MailMessage mail = new MailMessage();
+                    mail.To.Add(to.ToString());
+                    mail.From = new MailAddress("Peter.Tran@shc.ssbshoes.com", "KPI.App");
+                    mail.Subject = "Thông báo từ KPI System";
+                    mail.Body = content;
+                    mail.IsBodyHtml = true;
+                    mail.BodyEncoding = System.Text.Encoding.UTF8;
+                    mail.Priority = MailPriority.High;
+                   
+                    //MailUtility mail = new MailUtility(from, password);
+                    //mail.To = to;
+                    //mail.Content = content;
+                    //mail.Port = port.ToInt();
+
+                    //mail.Server = host;
+                    //mail.SSl = ssl.ToBool();
+                    //mail.Subject = subject;
                     try
                     {
-                        mail.Send();
+                        using (var smtp = new SmtpClient())
+                        {
+                            smtp.Send(mail);
+                        }
+
                     }
                     catch (Exception ex)
                     {

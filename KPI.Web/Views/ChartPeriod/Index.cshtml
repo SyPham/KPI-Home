@@ -79,7 +79,10 @@
                 $('#lastRemark').val(lastRemark.Remark);
                 $('.lastRemark').text(lastRemark.ID);
                 $('.lastRemarkLabel').text("Week " + lastRemark.Week + " : ");
-            $("#fromDateEndDate").show();
+                $("#fromDateEndDate").show();
+
+            
+               
         }
     else if (period === "M") {
             //Thêm tiêu đề cho tr:first-child th
@@ -107,7 +110,7 @@
 
              $('#lastRemark').val(lastRemark.Remark);
             $('.lastRemarkLabel').text("Month " + lastRemark.Month + " : ");
-
+                
         }
     else if (period=== "Q") {
              //Thêm tiêu đề cho tr:first-child th
@@ -137,7 +140,7 @@
 
             ////Hiển thị ngày tháng dưới chartjs
             //$("#fromDateEndDateQ").show();
-
+            
         }
     else if (period === "Y") {
 
@@ -164,11 +167,11 @@
             // var lastRemark = dataremarks[dataremarks.length - 1];
             // $('#lastRemark').val(lastRemark.Remark);
             //$('.lastRemarkLabel').text("Year " + lastRemark.Year + " : " );
-
+               
         }
             //var standards = [];
             //for (let i = 0; i < labels.length; i++) {
-                
+
             //    standards.push(standard);
             //}
             //---------------------------------------------------------------------------------
@@ -189,7 +192,7 @@
                     click: function(context) {
                       // Receives `click` events only for labels of the first dataset.
                          // The clicked label index is available in `context.dataIndex`.
-                         console.log('label ' + context.dataIndex + ' has been clicked!');
+                         //console.log('label ' + context.dataIndex + ' has been clicked!');
                     }
                 }
                 }
@@ -221,7 +224,8 @@
                             borderRadius: 4,
                             color: 'white',
                             font: {
-                                weight: 'bold'
+                                weight: 'bold',
+                                size:12
                             },
                             formatter: Math.round,
                             display: function (context) {
@@ -253,13 +257,13 @@
                     ticks: {
                         beginAtZero: true,
                         padding: 10,
-                        fontSize: 14,
+                        fontSize: 12,
                         //max: 100
                     },
                      scaleLabel: {
                         display: true,
                          labelString: unit,
-                         fontSize: 16,
+                         fontSize: 12,
                           fontStyle:'normal'
                       }
                 }],
@@ -269,13 +273,13 @@
                         tickMarkLength: 8
                     },
                     ticks: {
-                        fontSize: 14,
+                        fontSize: 12,
                     }
                     ,
                      scaleLabel: {
                         display: true,
                          labelString: labelString,
-                         fontSize: 16,
+                         fontSize: 12,
                           fontStyle:'normal'
                       }
                 }]
@@ -315,8 +319,8 @@
                      chart.update();
                 }
 
-
-        chartperiodController.init();
+            chartperiodController.init();
+            //
 });
 var chartperiodlConfig = {
     pageSize: 6,
@@ -481,24 +485,24 @@ var chartperiodController = {
 
         })
 
-        $('#comment').unbind('keypress').on('keypress', function (e) {
-            if (e.keyCode == 13) {
+        //$('#comment').unbind('keypress').on('keypress', function (e) {
+        //    if (e.keyCode == 13) {
 
-                chartperiodController.addData();
-                $('#boxComments').empty();
-                chartperiodController.loadDataComment();
-            }
+        //        chartperiodController.addData();
+        //        $('#boxComments').empty();
+        //        chartperiodController.loadDataComment();
+        //    }
 
-        });
-        $('#btnComment').off('click').on('click', function (e) {
-            if (e.keyCode === 13) {
+        //});
+        //$('#btnComment').off('click').on('click', function (e) {
+        //    if (e.keyCode === 13) {
 
-                chartperiodController.addData();
-                $('#boxComments').empty();
-                chartperiodController.loadDataComment();
+        //        chartperiodController.addData();
+        //        $('#boxComments').empty();
+        //        chartperiodController.loadDataComment();
 
-            }
-        });
+        //    }
+        //});
          $('#btnLike').off('click').on('click', function (e) {
 
                 chartperiodController.addFavourite();
@@ -521,21 +525,33 @@ var chartperiodController = {
         $('#btnCompare').off('click').on('click', function (e) {
              chartperiodController.loadDataProvide();
         });
-
-        $("#tblDataChart tr:nth-child(2) td").on('click', function () {
+        
+        
+        $("#tblDataChart tr:nth-child(2) td").off('click').on('click', function () {
             var number = Number($(this).text());
             if (number > 0 && number < standard) {
 
                 $('#modal-group-comment-data').modal('show');
                 var id = $(this).data('id');
                 $('.dataid').text(id);
-                 chartperiodController.loadDataComment();
-
+                
                 chartperiodController.Remark(id);
+
+                //Khi tao ra table roi thi moi load data
+                chartperiodController.loadDataComment();
+               
             }
         });
+        $('#modal-group-comment-data').unbind().on('hidden.bs.modal', function () {
+            console.log("da add comment");
+            var userid = $('#user').data('userid');
+            var dataid  =Number($('.dataid').text())
+            chartperiodController.AddCommentHistory(userid,dataid);
+          // do something…
+        })
+       
         $('.btnComment').off('click').on('click', function () {
-            chartperiodController.addData();
+            chartperiodController.addData(); 
         });
     },
     search() {
@@ -563,39 +579,11 @@ var chartperiodController = {
         }
         var mObj = {
             DataID: Number($('.dataid').text()),
-            CommentMsg: $('#example-1').val(),
+            CommentMsg: $('#comment').val(),
             UserID: Number($("#user").data('userid'))
         };
         $.ajax({
             url: "/ChartPeriod/AddComment",
-            data: JSON.stringify(mObj),
-            type: "POST",
-            contentType: "application/json;charset=utf-8",
-            dataType: "json",
-            success: function (result) {
-                $('#example-1').val("");
-                chartperiodController.loadDataComment();
-            },
-            error: function (errormessage) {
-                //console.log(errormessage.responseText);
-            }
-        });
-    },
-    addDataHistory() {
-        if ($('#comment').val() == "") {
-            Swal.fire({
-                title: 'Warning!',
-                text: 'Please enter message!',
-                type: 'warning',
-                confirmButtonText: 'OK'
-            });
-            return;
-        }
-        var mObj = {
-            UserID: Number($("#user").data('userid'))
-        };
-        $.ajax({
-            url: "/ChartPeriod/AddCommentHistory",
             data: JSON.stringify(mObj),
             type: "POST",
             contentType: "application/json;charset=utf-8",
@@ -608,6 +596,34 @@ var chartperiodController = {
                 //console.log(errormessage.responseText);
             }
         });
+    //},
+    //addDataHistory() {
+    //    if ($('#comment').val() == "") {
+    //        Swal.fire({
+    //            title: 'Warning!',
+    //            text: 'Please enter message!',
+    //            type: 'warning',
+    //            confirmButtonText: 'OK'
+    //        });
+    //        return;
+    //    }
+    //    var mObj = {
+    //        UserID: Number($("#user").data('userid'))
+    //    };
+    //    $.ajax({
+    //        url: "/ChartPeriod/AddCommentHistory",
+    //        data: JSON.stringify(mObj),
+    //        type: "POST",
+    //        contentType: "application/json;charset=utf-8",
+    //        dataType: "json",
+    //        success: function (result) {
+    //            $('#comment').val("");
+    //            chartperiodController.loadDataComment();
+    //        },
+    //        error: function (errormessage) {
+    //            //console.log(errormessage.responseText);
+    //        }
+    //    });
     },
     getUrlParameter: function(sParam) {
     var sPageURL = window.location.search.substring(1),
@@ -666,8 +682,8 @@ var chartperiodController = {
             var userid = $('#user').data('userid');
 
            var users = data.users;
-                console.log(data)
-            $('#example-1').suggest('@@', {
+                //console.log(data)
+            $('#comment').suggest('@@', {
                     filter: {
                       casesensitive: true,
                       limit: 10
@@ -676,20 +692,10 @@ var chartperiodController = {
                   map: function(user) {
                     return {
                       value: user.Username,
-                      text: '<strong>'+user.Username+'</strong> <small>'+user.FullName+'</small>'
+                      text: '<strong>Username: '+user.Username+' - </strong> <small>Full name :'+user.FullName+'</small>'
                     }
                   }
                 })
-
-            //Khi chon vao data thi hien thi modal
-
-            //Hien thi tat ca comment cua data len modal
-
-            //
-
-            //server tra ve usersArray
-
-            //server tra ve commentsArray
 
             //$("#remark").val(result.Remark);
                 $(".lastRemark").text(id);
@@ -733,6 +739,18 @@ var chartperiodController = {
                 type: 'success',
                 confirmButtonText: 'OK'
             });
+        });
+    },
+     AddCommentHistory(userid,dataid) {
+        //var userid = Number($('#user').data("userid"));
+         $.post("/ChartPeriod/AddCommentHistory", { userid: userid, dataid: dataid }, function (result) {
+             console.log("data add comment" + result);
+            //Swal.fire({
+            //    title: 'Success!',
+            //    text: 'Add successfully!',
+            //    type: 'success',
+            //    confirmButtonText: 'OK'
+            //});
         });
     } ,
     loadDataProvide(changePageSize) {
@@ -825,10 +843,13 @@ var chartperiodController = {
             type: "GET",
             data: {
                 dataid: Number($(".dataid").text()),
+                userid: Number($("#user").data('userid')),
             },
             dataType: "json",
             success: function (res) {
                 var data = res.data;
+                console.log("Lay ra tat ca comment");
+                console.log(data);
                 var total = res.total;
 
                 $('.total-comments').text(total);
@@ -846,17 +867,20 @@ var chartperiodController = {
                      html += '<span class="text-muted pull-right">';
                      html += '    <small class="text-muted">'+result+'</small>';
                      html += '</span>';
-                     html += '<strong class="text-success">'+item.FullName+'</strong>';
+                     html += '<strong class="text-success">' + item.FullName + '</strong>';
+                     if (item.Read) {
+                         html += '<span class="label bg-green"> new</span>';
+                     }
+                     html +='';
                      html += '<p>';
                      html += item.CommentMsg +'</a>.';
                      html += '</p>';
                      html +=    '</div>';
                      html +='</li >';
-
                 });
                 $('#media-list').empty();
                 $('#media-list').append(html);
-
+              
             },
             error: function (err) {
             }
