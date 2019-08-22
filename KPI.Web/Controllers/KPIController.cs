@@ -19,6 +19,11 @@ namespace KPI.Web.Controllers
             BreadCrumb.SetLabel("Period");
             return View();
         }
+        public ActionResult Chat()
+        {
+           
+            return View();
+        }
         public ActionResult Period(string kpilevelcode, string period)
         {
             return Json(new KPILevelDAO().ListDatas(kpilevelcode, period), JsonRequestBehavior.AllowGet);

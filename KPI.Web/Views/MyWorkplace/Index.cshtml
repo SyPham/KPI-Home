@@ -202,8 +202,7 @@
             },
             loadTree: function () {
                 $.ui.fancytree.getTree("#treetable").reload().done();
-            }
-            ,
+            },
             LoadDataUser: function (changePageSize, code, teamid) {
                 if (teamid === "" || teamid === 0 || teamid === undefined) {
                     teamid = Number($('#box .kpi-name .code').text());

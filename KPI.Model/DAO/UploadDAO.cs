@@ -351,17 +351,19 @@ namespace KPI.Model.DAO
 
         public object UpLoadKPILevel(int userid, int page, int pageSize)
         {
+            var datas = _dbContext.Datas;
             var model = (from u in _dbContext.Users
                          join l in _dbContext.Levels on u.LevelID equals l.ID
                          join item in _dbContext.KPILevels on l.ID equals item.LevelID
+                         join kpi in _dbContext.KPIs on item.KPIID equals kpi.ID
                          where u.ID == userid && item.Checked == true
                          select new KPIUpLoadVM
                          {
-                             KPIName = _dbContext.KPIs.FirstOrDefault(x => x.ID == item.KPIID).Name,
-                             StateW = item.WeeklyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode).Week > 0 ? true : false,
-                             StateM = item.MonthlyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode).Month > 0 ? true : false,
-                             StateQ = item.QuarterlyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode).Quarter > 0 ? true : false,
-                             StateY = item.YearlyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode).Year > 0 ? true : false
+                             KPIName = kpi.Name,
+                             StateW = item.WeeklyChecked == true && datas.Where(x => x.KPILevelCode == item.KPILevelCode).Max(x=>x.Week) > 0 ? true : false,
+                             StateM = item.MonthlyChecked == true && datas.Where(x => x.KPILevelCode == item.KPILevelCode).Max(x => x.Month) > 0 ? true : false,
+                             StateQ = item.QuarterlyChecked == true && datas.Where(x => x.KPILevelCode == item.KPILevelCode).Max(x => x.Quarter) > 0 ? true : false,
+                             StateY = item.YearlyChecked == true && datas.Where(x => x.KPILevelCode == item.KPILevelCode).Max(x => x.Year) > 0 ? true : false
                          });
             int totalRow = model.Count();
             model = model.OrderByDescending(x => x.KPIName)
@@ -378,31 +380,32 @@ namespace KPI.Model.DAO
         {
             var model = (from u in _dbContext.Users
                          join l in _dbContext.Levels on u.LevelID equals l.ID
-                         join item in _dbContext.KPILevels on l.ID equals item.LevelID
-                         where u.ID == userid && item.Checked == true
+                         join kpiLevel in _dbContext.KPILevels on l.ID equals kpiLevel.LevelID
+                         where u.ID == userid && kpiLevel.Checked == true
                          select new DataExportVM
                          {
                              Area = l.Name,
-                             KPILevelCode = item.KPILevelCode,
-                             KPIName = _dbContext.KPIs.FirstOrDefault(x => x.ID == item.KPIID).Name,
-                             StateW = (bool?)item.WeeklyChecked ?? false,
-                             StateM = (bool?)item.MonthlyChecked ?? false,
-                             StateQ = (bool?)item.QuarterlyChecked ?? false,
-                             StateY = (bool?)item.YearlyChecked ?? false,
+                             KPILevelCode = kpiLevel.KPILevelCode,
+                             KPIName = _dbContext.KPIs.FirstOrDefault(x => x.ID == kpiLevel.KPIID).Name,
+                             StateW = (bool?)kpiLevel.WeeklyChecked ?? false,
+                             StateM = (bool?)kpiLevel.MonthlyChecked ?? false,
+                             StateQ = (bool?)kpiLevel.QuarterlyChecked ?? false,
+                             StateY = (bool?)kpiLevel.YearlyChecked ?? false,
 
-                             PeriodValueW = (int?)_dbContext.Datas.Where(x=>x.KPILevelCode==item.KPILevelCode).Max(x => x.Week) ?? 0,
-                             PeriodValueM = (int?)_dbContext.Datas.Where(x=>x.KPILevelCode==item.KPILevelCode).Max(x => x.Month) ?? 0,
-                             PeriodValueQ = (int?)_dbContext.Datas.Where(x=>x.KPILevelCode==item.KPILevelCode).Max(x => x.Quarter) ?? 0,
-                             PeriodValueY = (int?)_dbContext.Datas.Where(x => x.KPILevelCode == item.KPILevelCode).Max(x => x.Year) ?? 0,
+                             PeriodValueW = (int?)_dbContext.Datas.Where(x=>x.KPILevelCode==kpiLevel.KPILevelCode).Max(x => x.Week) ?? 0,
+                             PeriodValueM = (int?)_dbContext.Datas.Where(x=>x.KPILevelCode==kpiLevel.KPILevelCode).Max(x => x.Month) ?? 0,
+                             PeriodValueQ = (int?)_dbContext.Datas.Where(x=>x.KPILevelCode==kpiLevel.KPILevelCode).Max(x => x.Quarter) ?? 0,
+                             PeriodValueY = (int?)_dbContext.Datas.Where(x => x.KPILevelCode == kpiLevel.KPILevelCode).Max(x => x.Year) ?? 0,
 
-                             UploadTimeW = item.Weekly,
-                             UploadTimeM = item.Monthly,
-                             UploadTimeQ = item.Quarterly,
-                             UploadTimeY = item.Yearly,
+                             UploadTimeW = kpiLevel.Weekly,
+                             UploadTimeM = kpiLevel.Monthly,
+                             UploadTimeQ = kpiLevel.Quarterly,
+                             UploadTimeY = kpiLevel.Yearly,
                          });
             return model.ToList();
         }
         //group by, join sample
+        //This is a sample
         public List<DataExportVM> DataExport2(int userid)
         {
             var currentYear = DateTime.Now.Year;
@@ -594,10 +597,11 @@ namespace KPI.Model.DAO
                 Levels = GetTree(list, x.ID)
             }).ToList();
         }
-
-        public object MyWorkplace(int levelId, int page, int pageSize)
+        public object KPIRelated(int levelId, int page, int pageSize)
         {
             var obj = _dbContext.KPILevels.Where(x => x.LevelID == levelId && x.Checked == true).ToList();
+            var kpiName = _dbContext.KPIs;
+            var datas = _dbContext.Datas;
             var list = new List<KPIUpLoadVM>();
             if (obj != null)
             {
@@ -605,11 +609,46 @@ namespace KPI.Model.DAO
                 {
                     var data = new KPIUpLoadVM()
                     {
-                        KPIName = _dbContext.KPIs.FirstOrDefault(x => x.ID == item.KPIID).Name,
-                        StateW = item.WeeklyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Week > 0) != null ? true : false,
-                        StateM = item.MonthlyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Month > 0) != null ? true : false,
-                        StateQ = item.QuarterlyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Quarter > 0) != null ? true : false,
-                        StateY = item.YearlyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Year > 0) != null ? true : false
+                        KPIName = kpiName.FirstOrDefault(x => x.ID == item.KPIID).Name,
+                        StateW = item.WeeklyChecked == true && datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Week > 0) != null ? true : false,
+                        StateM = item.MonthlyChecked == true && datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Month > 0) != null ? true : false,
+                        StateQ = item.QuarterlyChecked == true && datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Quarter > 0) != null ? true : false,
+                        StateY = item.YearlyChecked == true && datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Year > 0) != null ? true : false
+
+                    };
+                    list.Add(data);
+                }
+                var total = list.Count();
+                list = list.OrderBy(x => x.KPIName).Skip((page - 1) * pageSize).Take(pageSize).ToList();
+                return new
+                {
+                    model = list,
+                    total,
+                    status = true
+                };
+            }
+            return new
+            {
+                status = false
+            };
+        }
+        public object MyWorkplace(int levelId, int page, int pageSize)
+        {
+            var obj = _dbContext.KPILevels.Where(x => x.LevelID == levelId && x.Checked == true).ToList();
+            var kpiName = _dbContext.KPIs;
+            var datas = _dbContext.Datas;
+            var list = new List<KPIUpLoadVM>();
+            if (obj != null)
+            {
+                foreach (var item in obj)
+                {
+                    var data = new KPIUpLoadVM()
+                    {
+                        KPIName = kpiName.FirstOrDefault(x => x.ID == item.KPIID).Name,
+                        StateW = item.WeeklyChecked == true && datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Week > 0) != null ? true : false,
+                        StateM = item.MonthlyChecked == true && datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Month > 0) != null ? true : false,
+                        StateQ = item.QuarterlyChecked == true && datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Quarter > 0) != null ? true : false,
+                        StateY = item.YearlyChecked == true && datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Year > 0) != null ? true : false
 
                     };
                     list.Add(data);

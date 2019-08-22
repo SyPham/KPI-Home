@@ -70,7 +70,12 @@
                 $("#tblDataChart tr:nth-child(2)").append("<td data-id='' class='unselectable'>0</td>");
             });
 
-            $.each(dataremarks, function (key, item) {
+                $.each(dataremarks, function (key, item) {
+                    if (item.Value < standard) {
+                        $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Week - 1) + "')").addClass("active-td");
+                    }
+                    $("#tblDataChart tr:nth-child(2)").children("td").addClass("text-center");
+
                 $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Week - 1) + "')").text(item.Value);
                 $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Week - 1) + "')").attr('data-id', item.ID);
             });
@@ -101,9 +106,16 @@
             $.each(labels, function (key, item) {
                 $("#tblDataChart tr:nth-child(2)").append("<td>0</td>");
             });
+                console.log(dataremarks);
+                $.each(dataremarks, function (key, item) {
+                  if (item.Value < standard) {
+                      $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Month - 1) + "')").addClass("active-td");
+                    }
+                    $("#tblDataChart tr:nth-child(2), #tblDataChart tr:nth-child(1)").children("td,th").addClass("text-center");
 
-            $.each(dataremarks, function (key, item) {
-               $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Month-1) + "')").text(item.Value);
+                $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Month - 1) + "')").text(item.Value);
+                $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Month - 1) + "')").attr('data-id', item.ID);
+
             });
 
         var lastRemark = dataremarks[dataremarks.length - 1]==undefined?"":dataremarks[dataremarks.length - 1];
@@ -130,16 +142,16 @@
                 $("#tblDataChart tr:nth-child(2)").append("<td>0</td>");
             });
 
-            $.each(dataremarks, function (key, item) {
-               $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Quarter-1) + "')").text(item.Value);
+                $.each(dataremarks, function (key, item) {
+                   if (item.Value < standard) {
+                       $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Quarter - 1) + "')").addClass("active-td");
+                    }
+                $("#tblDataChart tr:nth-child(2), #tblDataChart tr:nth-child(1)").children("td,th").addClass("text-center");
+                $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Quarter - 1) + "')").text(item.Value);
+                $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Quarter - 1) + "')").attr('data-id', item.ID);
+
             });
 
-            //var lastRemark = dataremarks[dataremarks.length - 1];
-            // $('#lastRemark').val(lastRemark.Remark);
-            //$('.lastRemarkLabel').text("Quarter " + lastRemark.Quarter + " : ");
-
-            ////Hiển thị ngày tháng dưới chartjs
-            //$("#fromDateEndDateQ").show();
             
         }
     else if (period === "Y") {
@@ -161,19 +173,20 @@
                 $("#tblDataChart tr:nth-child(2)").append("<td>0</td>");
             });
 
-            $.each(dataremarks, function (key, item) {
-               $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Year-1) + "')").text(item.Value);
+                $.each(dataremarks, function (key, item) {
+                 $("#tblDataChart tr:nth-child(2), #tblDataChart tr:nth-child(1)").children("td,th").addClass("text-center");
+
+                 if (item.Value < standard) {
+                       $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Year - 1) + "')").addClass("active-td ");
+                    }
+                $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Year - 1) + "')").text(item.Value);
+                $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Year - 1) + "')").attr('data-id', item.ID);
+
             });
-            // var lastRemark = dataremarks[dataremarks.length - 1];
-            // $('#lastRemark').val(lastRemark.Remark);
-            //$('.lastRemarkLabel').text("Year " + lastRemark.Year + " : " );
-               
+ 
         }
             //var standards = [];
-            //for (let i = 0; i < labels.length; i++) {
 
-            //    standards.push(standard);
-            //}
             //---------------------------------------------------------------------------------
             for (var i = 0; i < datasets.length; i++) {
                 if (datasets[i] === 0) {
@@ -337,7 +350,7 @@ var chartperiodController = {
 
         $('#lastRemark').off('keypress').on('keypress', function (e) {
             if (e.keyCode === 13) {
-                chartperiodController.UpdateRemark();
+                chartperiodController.updateRemark();
             }
         });
         var year = chartperiodController.getUrlParameter('year');
@@ -485,24 +498,6 @@ var chartperiodController = {
 
         })
 
-        //$('#comment').unbind('keypress').on('keypress', function (e) {
-        //    if (e.keyCode == 13) {
-
-        //        chartperiodController.addData();
-        //        $('#boxComments').empty();
-        //        chartperiodController.loadDataComment();
-        //    }
-
-        //});
-        //$('#btnComment').off('click').on('click', function (e) {
-        //    if (e.keyCode === 13) {
-
-        //        chartperiodController.addData();
-        //        $('#boxComments').empty();
-        //        chartperiodController.loadDataComment();
-
-        //    }
-        //});
          $('#btnLike').off('click').on('click', function (e) {
 
                 chartperiodController.addFavourite();
@@ -535,7 +530,7 @@ var chartperiodController = {
                 var id = $(this).data('id');
                 $('.dataid').text(id);
                 
-                chartperiodController.Remark(id);
+                chartperiodController.remark(id);
 
                 //Khi tao ra table roi thi moi load data
                 chartperiodController.loadDataComment();
@@ -546,7 +541,7 @@ var chartperiodController = {
             console.log("da add comment");
             var userid = $('#user').data('userid');
             var dataid  =Number($('.dataid').text())
-            chartperiodController.AddCommentHistory(userid,dataid);
+            chartperiodController.addCommentHistory(userid,dataid);
           // do something…
         })
        
@@ -596,34 +591,6 @@ var chartperiodController = {
                 //console.log(errormessage.responseText);
             }
         });
-    //},
-    //addDataHistory() {
-    //    if ($('#comment').val() == "") {
-    //        Swal.fire({
-    //            title: 'Warning!',
-    //            text: 'Please enter message!',
-    //            type: 'warning',
-    //            confirmButtonText: 'OK'
-    //        });
-    //        return;
-    //    }
-    //    var mObj = {
-    //        UserID: Number($("#user").data('userid'))
-    //    };
-    //    $.ajax({
-    //        url: "/ChartPeriod/AddCommentHistory",
-    //        data: JSON.stringify(mObj),
-    //        type: "POST",
-    //        contentType: "application/json;charset=utf-8",
-    //        dataType: "json",
-    //        success: function (result) {
-    //            $('#comment').val("");
-    //            chartperiodController.loadDataComment();
-    //        },
-    //        error: function (errormessage) {
-    //            //console.log(errormessage.responseText);
-    //        }
-    //    });
     },
     getUrlParameter: function(sParam) {
     var sPageURL = window.location.search.substring(1),
@@ -675,7 +642,7 @@ var chartperiodController = {
             }
         });
     },
-    Remark(id) {
+    remark(id) {
 
         $.post("/ChartPeriod/Remark", { dataid: id }, function (data) {
             var result = data.model;
@@ -683,13 +650,14 @@ var chartperiodController = {
 
            var users = data.users;
                 //console.log(data)
+
             $('#comment').suggest('@@', {
-                    filter: {
-                      casesensitive: true,
-                      limit: 10
-                    },
-                  data: users,
-                  map: function(user) {
+                filter: {
+                    casesensitive: true,
+                    limit: 10
+                },
+                data: users,
+               map: function (user) {
                     return {
                       value: user.Username,
                       text: '<strong>Username: '+user.Username+' - </strong> <small>Full name :'+user.FullName+'</small>'
@@ -729,10 +697,10 @@ var chartperiodController = {
              }
         });
     },
-    UpdateRemark() {
+    updateRemark() {
         var remark = $('#lastRemark').val();
         var dataid = Number($('.lastRemark').text());
-         $.post("/ChartPeriod/UpdateRemark", { dataid:dataid , remark:remark }, function (result) {
+         $.post("/ChartPeriod/updateRemark", { dataid:dataid , remark:remark }, function (result) {
             Swal.fire({
                 title: 'Success!',
                 text: 'Add successfully!',
@@ -741,9 +709,8 @@ var chartperiodController = {
             });
         });
     },
-     AddCommentHistory(userid,dataid) {
-        //var userid = Number($('#user').data("userid"));
-         $.post("/ChartPeriod/AddCommentHistory", { userid: userid, dataid: dataid }, function (result) {
+    addCommentHistory(userid,dataid) {
+         $.post("/ChartPeriod/addCommentHistory", { userid: userid, dataid: dataid }, function (result) {
              console.log("data add comment" + result);
             //Swal.fire({
             //    title: 'Success!',

@@ -150,6 +150,13 @@ thead tr th {
 
 
 }
+.active-td {
+    box-shadow: 0 0 3px #022598 !important;
+    color: #fff !important;
+    font-weight: bold !important;
+    background-color:red !important;
+   
+}
     .parent-search .search-box {
         position: absolute;
         z-index: 9999;
@@ -283,5 +290,5 @@ thead tr th {
     }
 
     .tooltip:hover .tooltiptext {
-        visibility: visible!;
+        visibility: visible;
     }

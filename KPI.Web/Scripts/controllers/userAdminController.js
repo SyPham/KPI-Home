@@ -63,7 +63,8 @@ var adminUserController = {
             Password: $('#addUser .Password').val(),
             LevelID: $('#addUser .LevelID').val(),
             Permission: $('#addUser .permission input[type=radio]:checked').val(),
-            FullName: $('#addUser .FullName').val()
+            FullName: $('#addUser .FullName').val(),
+            Email: $('#addUser .Email').val()
         };
         $.ajax({
             url: "/AdminUser/Add",
@@ -157,7 +158,8 @@ var adminUserController = {
             Username: $('#updateUser .Username').val(),
             Permission: $('#updateUser .permission input[type=radio]:checked').val(),
             FullName: $('#updateUser .FullName').val(),
-            Code: $('#updateUser .Code').val()
+            Code: $('#updateUser .Code').val(),
+            Email: $('#addUser .Email').val()
         };
 
         $.ajax({
@@ -241,6 +243,7 @@ var adminUserController = {
                 $('#updateUser .LevelID').val(result.LevelID);
                 $('#updateUser .permission input').val(result.Permission);
                 $('#updateUser .FullName').val(result.FullName);
+                $('#updateUser .Email').val(result.Email);
                 $('#modal-group2').modal('show');
                 adminUserController.GetListAllPermissions(result.ID);
             },
@@ -333,7 +336,13 @@ var adminUserController = {
         else {
             $('.FullName').css('border-color', 'lightgrey');
         }
-
+        if ($('.Email').val().trim() === "") {
+            $('.Email').css('border-color', 'Red');
+            isValid = false;
+        }
+        else {
+            $('.Email').css('border-color', 'lightgrey');
+        }
         return isValid;
     },
     loadData: function (changePageSize) {

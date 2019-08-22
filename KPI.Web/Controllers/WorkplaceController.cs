@@ -92,9 +92,6 @@ namespace KPI.Web.Controllers
                     content = content.Replace("{{{html-template}}}", html);
                     var sessionUser = Session["UserProfile"] as UserProfileVM;
                     string from = ConfigurationManager.AppSettings["FromEmailAddress"].ToString();
-                    string host = ConfigurationManager.AppSettings["SMTPHost"].ToString();
-                    string port = ConfigurationManager.AppSettings["SMTPPort"].ToString();
-                    string ssl = ConfigurationManager.AppSettings["EnabledSSL"].ToString();
                     string password = ConfigurationManager.AppSettings["FromEmailPassword"].ToString();
                     string to = sessionUser.User.Email;
                     if (sessionUser.User.Email.IsEmailFormat())
@@ -106,21 +103,13 @@ namespace KPI.Web.Controllers
 
                     MailMessage mail = new MailMessage();
                     mail.To.Add(to.ToString());
-                    mail.From = new MailAddress("Peter.Tran@shc.ssbshoes.com", "KPI.App");
-                    mail.Subject = "Thông báo từ KPI System";
+                    mail.From = new MailAddress(from, "KPI.App");
+                    mail.Subject = subject;
                     mail.Body = content;
                     mail.IsBodyHtml = true;
                     mail.BodyEncoding = System.Text.Encoding.UTF8;
                     mail.Priority = MailPriority.High;
-                   
-                    //MailUtility mail = new MailUtility(from, password);
-                    //mail.To = to;
-                    //mail.Content = content;
-                    //mail.Port = port.ToInt();
 
-                    //mail.Server = host;
-                    //mail.SSl = ssl.ToBool();
-                    //mail.Subject = subject;
                     try
                     {
                         using (var smtp = new SmtpClient())
@@ -131,8 +120,7 @@ namespace KPI.Web.Controllers
                     }
                     catch (Exception ex)
                     {
-                        var message = ex.Message;
-                        throw;
+                        Console.WriteLine(ex);
                     }
 
                     return Json(model.Status, JsonRequestBehavior.AllowGet);
@@ -154,138 +142,139 @@ namespace KPI.Web.Controllers
             var end = now.GetEndOfQuarter();
             var tt = end.Subtract(now).Days;
 
-           
-                DataTable Dt = new DataTable();
-                Dt.Columns.Add("KPILevel Code", typeof(string));
-                Dt.Columns.Add("KPI Name", typeof(string));
-                Dt.Columns.Add("Value", typeof(int));
-                Dt.Columns.Add("Period Value", typeof(string));
-                Dt.Columns.Add("Year", typeof(int));
-                Dt.Columns.Add("Area", typeof(string));
-                Dt.Columns.Add("Update Time", typeof(object));
-                Dt.Columns.Add("Remark", typeof(string));
-                foreach (var item in model)
+
+            DataTable Dt = new DataTable();
+            Dt.Columns.Add("KPILevel Code", typeof(string));
+            Dt.Columns.Add("KPI Name", typeof(string));
+            Dt.Columns.Add("Value", typeof(int));
+            Dt.Columns.Add("Period Value", typeof(string));
+            Dt.Columns.Add("Year", typeof(int));
+            Dt.Columns.Add("Area", typeof(string));
+            Dt.Columns.Add("Update Time", typeof(object));
+            Dt.Columns.Add("Remark", typeof(string));
+            foreach (var item in model)
+            {
+                ///Logic export tuần
+                //Nếu tuần MAX trong bảng DATA mà bằng 0 thì export từ tuần đầu cho đến tuần hiện tại
+                if (item.PeriodValueW == 0 && item.StateW == true)
                 {
-                    ///Logic export tuần
-                    //Nếu tuần MAX trong bảng DATA mà bằng 0 thì export từ tuần đầu cho đến tuần hiện tại
-                    if (item.PeriodValueW == 0)
+                    for (int i = 1; i <= currentWeek; i++)
                     {
-                        for (int i = 1; i <= currentWeek; i++)
+                        var updateTimeW = item.UploadTimeW.ConvertNumberDayOfWeekToString() + ", Week " + i;
+                        Dt.Rows.Add(item.KPILevelCode + "W", item.KPIName, item.Value, i, currentYear, item.Area, updateTimeW, item.Remark);
+                    }
+                }
+                //Ngược lại nếu tuần hiện tại trừ tuần MAX >= 1 thì export từ tuần kế tiếp tuần MAX cho đến tuần hiện tại
+                else
+                {
+                    if (currentWeek - item.PeriodValueW >= 1)
+                    {
+                        for (int i = item.PeriodValueW.Value + 1; i <= currentWeek; i++)
                         {
-                            var updateTimeW = item.UploadTimeW.ConvertNumberDayOfWeekToString() + ", Week " + i;
-                            Dt.Rows.Add(item.KPILevelCode + "W", item.KPIName, item.Value, i, currentYear, item.Area,updateTimeW , item.Remark);
+                            Dt.Rows.Add(item.KPILevelCode + "W", item.KPIName, item.Value, i++, currentYear, item.Area, item.UploadTimeW.ToSafetyString(), item.Remark);
                         }
                     }
-                    //Ngược lại nếu tuần hiện tại trừ tuần MAX >= 1 thì export từ tuần kế tiếp tuần MAX cho đến tuần hiện tại
-                    else
-                    {
-                        if ( currentWeek - item.PeriodValueW >= 1)
-                        {
-                            for (int i = item.PeriodValueW.Value + 1; i <= currentWeek; i++)
-                            {
-                                Dt.Rows.Add(item.KPILevelCode + "W", item.KPIName, item.Value, i++, currentYear, item.Area, item.UploadTimeW.ToSafetyString(), item.Remark);
-                            }
-                        }
-                    }
-                    ///Logic export tháng
-                    //Nếu tháng MAX trong bảng DATA mà bằng 0 thì export từ tháng đầu cho đến tháng hiện tại
+                }
+                ///Logic export tháng
+                //Nếu tháng MAX trong bảng DATA mà bằng 0 thì export từ tháng đầu cho đến tháng hiện tại
 
-                    if (item.PeriodValueM == 0)
+                if (item.PeriodValueM == 0 && item.StateM == true)
+                {
+                    for (int i = 1; i <= currentMonth; i++)
                     {
-                        for (int i = 1; i <= currentMonth; i++)
+                        Dt.Rows.Add(item.KPILevelCode + "M", item.KPIName, item.Value, i, currentYear, item.Area, item.UploadTimeM.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
+                    }
+                }
+                //Ngược lại nếu tháng hiện tại trừ tháng MAX >= 1 thì export từ tháng kế tiếp tháng MAX cho đến tháng hiện tại
+                if (item.PeriodValueM > 0 && item.StateM == true)
+                {
+                    if (currentMonth - item.PeriodValueM > 1)
+                    {
+                        for (int i = item.PeriodValueM.Value + 1; i <= currentMonth; i++)
                         {
-                            Dt.Rows.Add(item.KPILevelCode + "M", item.KPIName, item.Value, i, currentYear, item.Area, item.UploadTimeM.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
+                            Dt.Rows.Add(item.KPILevelCode + "M", item.KPIName, item.Value, i++, currentYear, item.Area, item.UploadTimeM.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
                         }
                     }
-                    //Ngược lại nếu tháng hiện tại trừ tháng MAX >= 1 thì export từ tháng kế tiếp tháng MAX cho đến tháng hiện tại
-                    else
+                }
+                ///Logic export quý
+                //Nếu quý MAX trong bảng DATA mà bằng 0 thì export từ tháng đầu cho đến quý hiện tại
+                if (item.PeriodValueQ == 0 && item.StateQ == true)
+                {
+                    for (int i = 1; i < currentQuarter; i++)
                     {
-                        if (currentMonth - item.PeriodValueM > 1)
-                        {
-                            for (int i = item.PeriodValueM.Value + 1; i <= currentMonth; i++)
-                            {
-                                Dt.Rows.Add(item.KPILevelCode + "M", item.KPIName, item.Value, i++, currentYear, item.Area, item.UploadTimeM.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
-                            }
-                        }
+                        Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, item.Value, i, currentYear, item.Area, item.UploadTimeQ.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
                     }
-                    ///Logic export quý
-                    //Nếu quý MAX trong bảng DATA mà bằng 0 thì export từ tháng đầu cho đến quý hiện tại
-                    if (item.PeriodValueQ == 0)
-                    {
-                        for (int i = 1; i < currentQuarter; i++)
-                        {
-                            Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, item.Value, i, currentYear, item.Area, item.UploadTimeQ.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
-                        }
-                    }
-                    else
-                    {
-                        //Ngược lại, Nếu quý hiện tại trừ quý MAX trong bảng DATA lớn hơn 1 thì 
-                        //export từ quý 1 cho đến quý hiện tại
-                        if (currentQuarter - item.PeriodValueQ > 1)
-                        {
-                            for (int i = item.PeriodValueQ.Value; i < currentQuarter; i++)
-                            {
-                                Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, item.Value, i++, currentYear, item.Area, item.UploadTimeQ.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
-                            }
-                        }
-                        //Ngược lại, Nếu quý hiện tại trừ quý MAX trong bảng DATA bằng 1 thì 
-                        //kiểm tra nếu tháng cuối cùng của quý hiện tại trừ đi ngày hiện tại >= 30 thì export excel
-                        if (currentQuarter - item.PeriodValueQ == 1)
-                        {
-                            if (tt <= 30)
-                            {
-                                Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, item.Value, currentQuarter, currentYear, item.Area, item.UploadTimeQ.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
-                            }
-                        }
-                    }
-
-                    ///Logic export năm
-                    //Nếu năm MAX trong bảng DATA == 0 thì export năm hiện tại
-                    if (item.PeriodValueY == 0)
-                    {
-                        Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, item.Value, currentYear, currentYear, item.Area, item.UploadTimeY.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
-
-                    }
-                    else
-                    {
-                        //Ngược lại nếu năm hiện tại - năm max trong bảng DATA > 1 thì export năm kế tiếp đến năm hiện tại
-                        if (currentYear - item.PeriodValueY > 1)
-                        {
-                            for (int i = item.PeriodValueY.Value + 1; i <= currentYear; i++)
-                            {
-                                Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, item.Value, i, currentYear, item.Area, item.UploadTimeY.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
-                            }
-                        }
-                        //Nếu năm hiện tại - năm max trong bảng DATA == 1 thì kiểm tra tháng, nếu là tháng 12 thì export năm hiện tại
-                        if (currentYear - item.PeriodValueY == 1)
-                        {
-                            if (currentMonth == 12)
-                            {
-                                Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, item.Value, currentYear, currentYear, item.Area, item.UploadTimeY.ToSafetyString().Split(' ')[0], item.Remark);
-                            }
-                        }
-                    }
+                }
+                if (item.PeriodValueQ > 0 && item.StateQ == true)
+                {
                     
-
+                    //Ngược lại, Nếu quý hiện tại trừ quý MAX trong bảng DATA lớn hơn 1 thì 
+                    //export từ quý 1 cho đến quý hiện tại
+                    if (currentQuarter - item.PeriodValueQ > 1)
+                    {
+                        for (int i = item.PeriodValueQ.Value; i < currentQuarter; i++)
+                        {
+                            Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, item.Value, i++, currentYear, item.Area, item.UploadTimeQ.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
+                        }
+                    }
+                    //Ngược lại, Nếu quý hiện tại trừ quý MAX trong bảng DATA bằng 1 thì 
+                    //kiểm tra nếu tháng cuối cùng của quý hiện tại trừ đi ngày hiện tại >= 30 thì export excel
+                    if (currentQuarter - item.PeriodValueQ == 1)
+                    {
+                        if (tt <= 30)
+                        {
+                            Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, item.Value, currentQuarter, currentYear, item.Area, item.UploadTimeQ.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
+                        }
+                    }
                 }
-                var memoryStream = new MemoryStream();
-                using (var excelPackage = new ExcelPackage(memoryStream))
+
+                ///Logic export năm
+                //Nếu năm MAX trong bảng DATA == 0 thì export năm hiện tại
+                if (item.PeriodValueY == 0 && item.StateY == true)
                 {
-                    var worksheet = excelPackage.Workbook.Worksheets.Add("Sheet1");
-                    worksheet.Cells["A1"].LoadFromDataTable(Dt, true, TableStyles.None);
-                    worksheet.Cells["A1:AN1"].Style.Font.Bold = true;
-                    worksheet.DefaultRowHeight = 18;
+                    Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, item.Value, currentYear, currentYear, item.Area, item.UploadTimeY.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
 
-                    worksheet.Column(2).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
-                    worksheet.Column(6).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                    worksheet.Column(7).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                    worksheet.DefaultColWidth = 20;
-                    worksheet.Column(2).AutoFit();
-
-                    Session["DownloadExcel_FileManager"] = excelPackage.GetAsByteArray();
-                    return Json("", JsonRequestBehavior.AllowGet);
                 }
-           
+                if (item.PeriodValueY > 0 && item.StateY == true)
+                {
+                    //Ngược lại nếu năm hiện tại - năm max trong bảng DATA > 1 thì export năm kế tiếp đến năm hiện tại
+                    if (currentYear - item.PeriodValueY > 1)
+                    {
+                        for (int i = item.PeriodValueY.Value + 1; i <= currentYear; i++)
+                        {
+                            Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, item.Value, i, currentYear, item.Area, item.UploadTimeY.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
+                        }
+                    }
+                    //Nếu năm hiện tại - năm max trong bảng DATA == 1 thì kiểm tra tháng, nếu là tháng 12 thì export năm hiện tại
+                    if (currentYear - item.PeriodValueY == 1)
+                    {
+                        if (currentMonth == 12)
+                        {
+                            Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, item.Value, currentYear, currentYear, item.Area, item.UploadTimeY.ToSafetyString().Split(' ')[0], item.Remark);
+                        }
+                    }
+                }
+
+
+            }
+            var memoryStream = new MemoryStream();
+            using (var excelPackage = new ExcelPackage(memoryStream))
+            {
+                var worksheet = excelPackage.Workbook.Worksheets.Add("Sheet1");
+                worksheet.Cells["A1"].LoadFromDataTable(Dt, true, TableStyles.None);
+                worksheet.Cells["A1:AN1"].Style.Font.Bold = true;
+                worksheet.DefaultRowHeight = 18;
+
+                worksheet.Column(2).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                worksheet.Column(6).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                worksheet.Column(7).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                worksheet.DefaultColWidth = 20;
+                worksheet.Column(2).AutoFit();
+
+                Session["DownloadExcel_FileManager"] = excelPackage.GetAsByteArray();
+                return Json("", JsonRequestBehavior.AllowGet);
+            }
+
 
 
         }
@@ -310,6 +299,10 @@ namespace KPI.Web.Controllers
         public JsonResult UpLoadKPILevelTrack(int userid, int page, int pageSize)
         {
             return Json(new UploadDAO().UpLoadKPILevelTrack(userid, page, pageSize), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult KPIRelated(int levelid, int page, int pageSize)
+        {
+            return Json(new UploadDAO().KPIRelated(levelid, page, pageSize), JsonRequestBehavior.AllowGet);
         }
     }
 }

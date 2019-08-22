@@ -17,7 +17,7 @@ namespace KPI.Web.Controllers
         public ActionResult Index()
         {
           
-            BreadCrumb.Add("/Home/Index", "Home");
+            BreadCrumb.Add("/", "Home");
             BreadCrumb.SetLabel("Dashboard");
             ViewBag.TotalUser = new UserAdminDAO().Total().ToInt();
             ViewBag.TotalKPI = new KPIAdminDAO().Total().ToInt();

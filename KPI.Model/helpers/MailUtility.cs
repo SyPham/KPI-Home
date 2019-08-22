@@ -43,6 +43,7 @@ namespace KPI.Model.helpers
             }
             catch (Exception error)
             {
+                Console.WriteLine(error);
                 return false;
             }
         }
