@@ -127,6 +127,8 @@ namespace KPI.Model.DAO
             item.Username = entity.Username;
             item.Code = code;
             item.FullName = entity.FullName;
+            item.Email = entity.Email;
+            item.Skype = entity.Skype;
             item.Permission = entity.Permission;
             try
             {
@@ -238,6 +240,8 @@ namespace KPI.Model.DAO
                 x.Code,
                 PermissionName = _dbContext.Permissions.FirstOrDefault(a => a.ID == x.Permission).PermissionName,
                 x.State,
+                x.Email,
+                x.Skype,
                 x.Permission
 
             });

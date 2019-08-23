@@ -36,5 +36,9 @@ namespace KPI.Web.Controllers
         {
             return Json(new KPILevelDAO().Update(entity), JsonRequestBehavior.AllowGet);
         }
+        public JsonResult GetbyID(int ID)
+        {
+            return Json(new KPILevelDAO().GetbyID(ID), JsonRequestBehavior.AllowGet);
+        }
     }
 }

@@ -22,10 +22,11 @@
                 <tr>
                     <th>#</th>
                     <th>Username</th>
-                    @*<th>Password</th>*@
+
                     <th>FullName</th>
                     <th>Code</th>
-                    @*<th>Level</th>*@
+                    <th>Email</th>
+                    <th>Skype</th>
                     <th>State</th>
                     <th>Permission</th>
                     <th>Add/Edit/Delete</th>
@@ -39,13 +40,14 @@
             <tr>
                 <td>{{No}}</td>
                 <td>{{Username}}</td>
-                @*<td>Password</td>*@
+
                 <td>{{FullName}}</td>
                 <td class="code">{{Code}}</td>
-                @*<td>{{Level}}</td>*@
+                <td>{{Email}}</td>
+                <td>{{Skype}}</td>
                 <td class="lock">
                     <div class="pretty p-icon p-jelly">
-                        <input type="checkbox" class="lockUser" onchange="return adminUserController.lockUser({{ID}})" value="{{IDStatus}}" {{{IsActive}}}/>
+                        <input type="checkbox" class="lockUser" onchange="return adminUserController.lockUser({{ID}})" value="{{IDStatus}}" {{{IsActive}}} />
                         <div class="state p-info-o">
                             <i class="icon fa fa-lock"></i>
                             <label>{{{Label}}}</label>
@@ -53,7 +55,7 @@
                     </div>
                 </td>
                 <td>
-                  {{PermissionName}}
+                    {{PermissionName}}
                 </td>
                 <td style="width:20%">
                     <div class="btn-user">

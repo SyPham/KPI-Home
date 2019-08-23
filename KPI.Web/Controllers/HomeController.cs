@@ -29,6 +29,7 @@ namespace KPI.Web.Controllers
         public ActionResult UserDashBoard()
         {
             var userprofile = Session["UserProfile"] as UserProfileVM;
+            
             if (userprofile != null)
             {
                 return View();

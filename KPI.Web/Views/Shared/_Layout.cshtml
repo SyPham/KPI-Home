@@ -13,6 +13,7 @@
     @RenderSection("Styles", required: false)
 </head>
 <body class="hold-transition skin-blue sidebar-collapse sidebar-mini">
+
     <!-- Site wrapper -->
     <div class="wrapper">
 
@@ -38,7 +39,7 @@
                     <ul class="nav navbar-nav">
                         <!-- Notifications: style can be found in dropdown.less -->
 
-                        <li class="dropdown notifications-menu">
+                        <li class="dropdown notifications-menu" style="display:none">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                 <i class="fa fa-commenting-o"></i>
                                 <span class="label label-warning">3</span>
@@ -230,5 +231,7 @@
     </div>
     @RenderPage("_Script.cshtml")
     @RenderSection("Scripts", required: false)
+    <a data-config="commands=*;size=30;status=off;theme=logo;language=en;bgcolor=#2a92f3;hostname=www.skaip.org" id="skaip-buttons" href="http://www.skaip.org/">Skype</a>
+    <script src="https://apps.skaip.org/buttons/widget/core.min.js" defer="defer"></script>
 </body>
 </html>

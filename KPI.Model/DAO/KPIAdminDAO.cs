@@ -101,8 +101,11 @@ namespace KPI.Model.DAO
 
             try
             {
-                var user = _dbContext.KPIs.Find(id);
-                _dbContext.KPIs.Remove(user);
+                var kpi = _dbContext.KPIs.Find(id);
+                _dbContext.KPIs.Remove(kpi);
+
+                var kpiLevel = _dbContext.KPILevels.Where(x=>x.KPIID==id).ToList();
+                _dbContext.KPILevels.RemoveRange(kpiLevel);
                 _dbContext.SaveChanges();
                 return true;
             }

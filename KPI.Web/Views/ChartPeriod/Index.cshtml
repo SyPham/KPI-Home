@@ -18,6 +18,9 @@
 @Html.Raw(BreadCrumb.Display())
 @section Scripts{
     <script type="text/javascript">
+        $('.btn-skype').unbind().click(function () {
+            window.location = 'skype:some_skype_user?chat';
+        });
         var labelString;
         if ("@period" === "W") {
             labelString = " Weeks in year ";
@@ -43,7 +46,7 @@
                         type: 'error'
                     });
              }
-
+         var borderWith = 0;
         var labels =@Html.Raw(Json.Encode(labels));
         var dataremarks =@Html.Raw(Json.Encode(dataremarks));
         var label = "@label";
@@ -52,6 +55,7 @@
         var standard = "@standard";
         var unit = "@unit";
         $(function () {
+
             $('.standard').text(standard);
             if (period === "W") {
             //Thêm tiêu đề cho tr:first-child th
@@ -76,8 +80,8 @@
                     }
                     $("#tblDataChart tr:nth-child(2)").children("td").addClass("text-center");
 
-                $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Week - 1) + "')").text(item.Value);
-                $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Week - 1) + "')").attr('data-id', item.ID);
+                $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").text(item.Value);
+                $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").attr('data-id', item.ID);
             });
 
         var lastRemark = dataremarks[dataremarks.length - 1]==undefined?"":dataremarks[dataremarks.length - 1];
@@ -86,8 +90,8 @@
                 $('.lastRemarkLabel').text("Week " + lastRemark.Week + " : ");
                 $("#fromDateEndDate").show();
 
-            
-               
+
+
         }
     else if (period === "M") {
             //Thêm tiêu đề cho tr:first-child th
@@ -113,8 +117,8 @@
                     }
                     $("#tblDataChart tr:nth-child(2), #tblDataChart tr:nth-child(1)").children("td,th").addClass("text-center");
 
-                $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Month - 1) + "')").text(item.Value);
-                $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Month - 1) + "')").attr('data-id', item.ID);
+                $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").text(item.Value);
+                $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").attr('data-id', item.ID);
 
             });
 
@@ -122,7 +126,7 @@
 
              $('#lastRemark').val(lastRemark.Remark);
             $('.lastRemarkLabel').text("Month " + lastRemark.Month + " : ");
-                
+
         }
     else if (period=== "Q") {
              //Thêm tiêu đề cho tr:first-child th
@@ -147,12 +151,12 @@
                        $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Quarter - 1) + "')").addClass("active-td");
                     }
                 $("#tblDataChart tr:nth-child(2), #tblDataChart tr:nth-child(1)").children("td,th").addClass("text-center");
-                $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Quarter - 1) + "')").text(item.Value);
-                $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Quarter - 1) + "')").attr('data-id', item.ID);
+                $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").text(item.Value);
+                $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").attr('data-id', item.ID);
 
             });
 
-            
+
         }
     else if (period === "Y") {
 
@@ -179,11 +183,11 @@
                  if (item.Value < standard) {
                        $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Year - 1) + "')").addClass("active-td ");
                     }
-                $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Year - 1) + "')").text(item.Value);
-                $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Year - 1) + "')").attr('data-id', item.ID);
+                $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").text(item.Value);
+                $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").attr('data-id', item.ID);
 
             });
- 
+
         }
             //var standards = [];
 
@@ -193,6 +197,7 @@
                     datasets[i] = undefined;
                 }
             }
+
             var listData = {
                 label: label,
                 data: datasets,
@@ -218,12 +223,12 @@
                     mode: 'horizontal',
                     scaleID: 'y-axis-0',
                     value: standard,
-                    borderColor: '#09a99f',
-                    borderWidth: 3,
+                    borderColor: '#3c8d8a',
+                    borderWidth: borderWith,
                     label: {
                       enabled: true,
                         //content: 'standard',
-                        backgroundColor: '#09a99f',
+                        backgroundColor: '#3c8d8a',
                         fontSize: 12,
                       fontStyle: "bold",
                     }
@@ -308,6 +313,7 @@
                 options: options
                  });
             var chartdatasets = chart.data.datasets[0].data
+              if (chartdatasets.length > 0) borderWith = 3;
             var m;
             for (var i = chartdatasets.length; i > 0; i--) {
                 if (chartdatasets[i] > 0) {
@@ -319,12 +325,12 @@
             }
 
                 if (m < standard) {
-                    chart.data.datasets[0].borderColor = "red";
-                     chart.data.datasets[0].backgroundColor="red";
+                    chart.data.datasets[0].borderColor = "#e7263b";
+                     chart.data.datasets[0].backgroundColor="#e7263b";
                      chart.update();
                 }else if(m===0){
-                    chart.data.datasets[0].borderColor = "red";
-                    chart.data.datasets[0].backgroundColor="red";
+                    chart.data.datasets[0].borderColor = "#e7263b";
+                    chart.data.datasets[0].backgroundColor="#e7263b";
                      chart.update();
                 } else {
                     chart.data.datasets[0].borderColor = "green";
@@ -489,7 +495,8 @@ var chartperiodController = {
               $("#fromDateEndDateQ .endDayOfQuarter").text(' -> Quarter '+end+' ( from ' + formatDate(startQ2) + ' to ' + formatDate(endQ2)+' )');
 
         }
-        $('#btnClearSearch').off('click').on('click', function () {
+        $('.btnClearSearch').off('click').on('click', function () {
+            borderWith = 0;
              let kpilevelcode = chartperiodController.getUrlParameter('kpilevelcode');
             let period = chartperiodController.getUrlParameter('period');
              let d = new Date();
@@ -520,8 +527,8 @@ var chartperiodController = {
         $('#btnCompare').off('click').on('click', function (e) {
              chartperiodController.loadDataProvide();
         });
-        
-        
+
+
         $("#tblDataChart tr:nth-child(2) td").off('click').on('click', function () {
             var number = Number($(this).text());
             if (number > 0 && number < standard) {
@@ -529,12 +536,12 @@ var chartperiodController = {
                 $('#modal-group-comment-data').modal('show');
                 var id = $(this).data('id');
                 $('.dataid').text(id);
-                
+
                 chartperiodController.remark(id);
 
                 //Khi tao ra table roi thi moi load data
                 chartperiodController.loadDataComment();
-               
+
             }
         });
         $('#modal-group-comment-data').unbind().on('hidden.bs.modal', function () {
@@ -544,9 +551,9 @@ var chartperiodController = {
             chartperiodController.addCommentHistory(userid,dataid);
           // do something…
         })
-       
+
         $('.btnComment').off('click').on('click', function () {
-            chartperiodController.addData(); 
+            chartperiodController.addData();
         });
     },
     search() {
@@ -654,8 +661,12 @@ var chartperiodController = {
             $('#comment').suggest('@@', {
                 filter: {
                     casesensitive: true,
-                    limit: 10
+                    limit:2
                 },
+                onlookup: function (e,item) {
+                    console.log(item);
+                }
+                ,
                 data: users,
                map: function (user) {
                     return {
@@ -847,7 +858,7 @@ var chartperiodController = {
                 });
                 $('#media-list').empty();
                 $('#media-list').append(html);
-              
+
             },
             error: function (err) {
             }
@@ -856,8 +867,12 @@ var chartperiodController = {
 }
     </script>
 }
-<section id="chartperiod">
+<section id="chartperiod" class="animatedParent">
     <div class="row">
+        <div class="col-md-12">
+
+            @*<div class="skype-button bubble" data-animation="true" data-can-collapse="true" data-can-close="true" data-contact-id="phamtiensy8696_1" ></div>*@
+        </div>
         <div class="col-md-12">
             <!-- LINE CHART -->
             <div class="box box-widget">
@@ -887,28 +902,37 @@ var chartperiodController = {
 
                         }*@
 
-                    <div class="box-tools pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
-                            <i class="fa fa-minus"></i>
-                        </button>
-                        <button type="button" class="btn btn-box-tool"><i class="fa fa-times"></i></button>
+                    @*<div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                                <i class="fa fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-box-tool"><i class="fa fa-times"></i></button>
 
-                    </div>
+                        </div>*@
+
                 </div>
                 <div class="box-body">
 
 
-                    <button type="button" data-toggle="modal" data-target="#modal-group" style="background-color:#135043;color:#fff" class="btn margin btnLike pull-right" id="btnCompare"><i class="fa fa-adjust"></i> Compare</button>
+
+                    <button type="button" data-toggle="modal" data-target="#modal-group"class="btn btn-danger margin btnLike pull-right" id="btnCompare"><i class="fa fa-adjust"></i> Compare</button>
                     @if (@statusfavorite == "false")
                     {
-                        <button type="button" class="btn margin btnLike pull-right" id="btnLike" style="background-color:#060247;color:#fff"><i class="fa fa-heart"></i> Add Favourite</button>
+                        <button type="button" class="btn margin btnLike bg-navy pull-right" id="btnLike"><i class="fa fa-heart"></i> Add Favourite</button>
                     }
                     else
                     {
                         <button type="button" class="btn btn-default  margin btnLike pull-right disabled" disabled id="btnLike"><i class="fa fa-heart"></i> Added Favourite</button>
                     }
-                    <button type="button" class="btn margin pull-right" style="background-color:#09a99f;color:#fff"><i class="fa fa-star"></i> <span>Standard : </span><span class="standard text-bold" style="">0</span></button>
-
+                    <button type="button" class="btn margin pull-right animated swing fast" style="background-color:#3c8d8a;color:#fff"><i class="fa fa-star"></i> <span>Standard : </span><span class="standard text-bold" style="">0</span></button>
+                    @*<button class="btn margin pull-right btn-skype" style="background-color:#fff;border:1px solid #d2d6de;color:#000">*@
+                    <button class="btn margin btn-primary pull-right btn-skype">
+                        @*<a href="skype:phamtiensy8696_1">
+                                Skype
+                            </a>*@
+                        <i class="fa fa-skype"></i>
+                        Skype
+                    </button>
                     <div class="form-inline" style="display:none" id="searchMonth">
                         <label class="my-1 mr-2" for="startMonth">Year</label>
                         <select class="custom-select form-control year my-1 mr-sm-2" id="monthOfYear">
@@ -952,7 +976,7 @@ var chartperiodController = {
                             <option value="11">Nov</option>
                             <option value="12">Dec</option>
                         </select>
-                        <button type="button" class="btn btn-warning margin" id="btnClearSearch"><i class="fa fa-remove"></i> Reset search</button>
+                        <button type="button" class="btn bg-teal margin btnClearSearch" ><i class="fa fa-remove"></i> Reset search</button>
 
                     </div>
 
@@ -968,7 +992,7 @@ var chartperiodController = {
                                 }
                             }
                         </select>
-                        <label class="my-1 mr-2" for="startMonth">Week Start</label>
+                        <label class="my-1 mr-2" for="startWeek">Week Start</label>
                         <select class="custom-select form-control my-1 mr-sm-2" id="startWeek">
                             <option value="0" selected>Choose...</option>
                             @{
@@ -978,7 +1002,7 @@ var chartperiodController = {
                                 }
                             }
                         </select>
-                        <label class="my-1 mr-2" for="endMonth">Week End</label>
+                        <label class="my-1 mr-2" for="endWeek">Week End</label>
                         <select class="custom-select form-control my-1 mr-sm-2" id="endWeek">
                             <option value="0" selected>Choose...</option>
                             @{
@@ -988,7 +1012,8 @@ var chartperiodController = {
                                 }
                             }
                         </select>
-                        <button type="button" class="btn btn-warning margin" id="btnClearSearch"><i class="fa fa-remove"></i> Reset search</button>
+                        <button type="button" class="btn bg-teal margin btnClearSearch" ><i class="fa fa-remove"></i> Reset search</button>
+
                     </div>
                     @* Quarter *@
                     <div class="form-inline" style="display:none" id="searchQuarter">
@@ -1022,6 +1047,8 @@ var chartperiodController = {
                                 }
                             }
                         </select>
+                        <button type="button" class="btn bg-teal margin btnClearSearch" ><i class="fa fa-remove"></i> Reset search</button>
+
                     </div>
                     @* Year *@
                     <div class="form-inline" style="display:none" id="searchYear">
@@ -1045,7 +1072,10 @@ var chartperiodController = {
                                 }
                             }
                         </select>
+                        <button type="button" class="btn bg-teal margin btnClearSearch" ><i class="fa fa-remove"></i> Reset search</button>
+
                     </div>
+
                     <div class="chart">
                         @*<canvas id="lineChart" style="height:250px"></canvas>*@
                         <canvas id="lineChart" style="height:500px"></canvas>
@@ -1054,15 +1084,15 @@ var chartperiodController = {
                 </div>
                 <div class="box-footer">
 
-                    <p class="text-green text-bold" style="font-size:16px;display:none" id="fromDateEndDate">
+                    <p class="text-bold" style="font-size:16px;color:green;display:none" id="fromDateEndDate">
                         <span class="fromDayOfWeek"></span>
                         <span class="endDayOfWeek"></span>
                     </p>
-                    <p class="text-green text-bold" style="font-size:16px;display:none" id="fromDateEndDateM">
+                    <p class="text-bold" style="font-size:16px;color:green;display:none" id="fromDateEndDateM">
                         <span class="fromDayOfMonth"></span>
                         <span class="endDayOfMonth"></span>
                     </p>
-                    <p class="text-green text-bold" style="font-size:16px;display:none" id="fromDateEndDateQ">
+                    <p class="text-bold" style="font-size:16px;color:green;display:none" id="fromDateEndDateQ">
                         <span class="fromDayOfQuarter"></span>
                         <span class="endDayOfQuarter"></span>
                     </p>
@@ -1093,6 +1123,7 @@ var chartperiodController = {
 
                     }
 
+
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body">
@@ -1119,3 +1150,5 @@ var chartperiodController = {
 
     @RenderPage("_Modal.cshtml")
 </section>
+@*<a data-config="commands=*;size=14;status=off;theme=logo;language=en;bgcolor=#2a92f3" id="skaip-buttons" href="http://www.skaip.org/">Skype</a>
+    <script src="//apps.skaip.org/buttons/widget/core.min.js" defer="defer"></script>*@

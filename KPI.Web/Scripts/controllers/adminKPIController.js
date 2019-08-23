@@ -122,7 +122,7 @@ var adminKPIController = {
         });
     },
     deleteData: function (id) {
-        var ID = id;
+        var value = id;
         Swal.fire({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -134,8 +134,9 @@ var adminKPIController = {
         }).then((result) => {
             if (result.value) {
                 $.ajax({
-                    url: "/AdminKPI/Delete/" + ID,
-                    type: "POST",
+                    url: "/AdminKPI/Delete/",
+                    data: { ID: JSON.stringify(value) },
+                    type: "GET",
                     contentType: "application/json;charset=UTF-8",
                     dataType: "json",
                     success: function (result) {

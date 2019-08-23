@@ -82,6 +82,9 @@ namespace KPI.Web.Controllers
         {
             return View();
         }
-        
+        public JsonResult UserSendMail(int userid)
+        {
+            return Json("", JsonRequestBehavior.AllowGet);
+        }
     }
 }

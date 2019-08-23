@@ -64,7 +64,8 @@ var adminUserController = {
             LevelID: $('#addUser .LevelID').val(),
             Permission: $('#addUser .permission input[type=radio]:checked').val(),
             FullName: $('#addUser .FullName').val(),
-            Email: $('#addUser .Email').val()
+            Email: $('#addUser .Email').val(),
+            Skype: $('#addUser .Skype').val()
         };
         $.ajax({
             url: "/AdminUser/Add",
@@ -159,7 +160,8 @@ var adminUserController = {
             Permission: $('#updateUser .permission input[type=radio]:checked').val(),
             FullName: $('#updateUser .FullName').val(),
             Code: $('#updateUser .Code').val(),
-            Email: $('#addUser .Email').val()
+            Email: $('#updateUser .Email').val(),
+            Skype: $('#updateUser .Skype').val()
         };
 
         $.ajax({
@@ -378,6 +380,8 @@ var adminUserController = {
                             FullName: item.FullName,
                             Code: item.Code,
                             Level: item.LevelID,
+                            Email: item.Email,
+                            Skype:item.Skype,
                             IDStatus: item.ID,
                             IsActive: item.IsActive === true ? "" : "checked",
                             Label: item.IsActive === true ? "Unlocked" : "Locked",

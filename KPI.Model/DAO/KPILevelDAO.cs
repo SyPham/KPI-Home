@@ -16,6 +16,10 @@ namespace KPI.Model.DAO
         {
             this._dbContext = new KPIDbContext();
         }
+        public KPILevel GetByID(int id)
+        {
+            return _dbContext.KPILevels.Where(x => x.ID == id).FirstOrDefault();
+        }
         /// <summary>
         ///
         /// </summary>
