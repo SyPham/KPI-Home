@@ -18,6 +18,68 @@
 @Html.Raw(BreadCrumb.Display())
 @section Scripts{
     <script type="text/javascript">
+        ///To Do List
+    // Create a "close" button and append it to each list item
+    var myNodelist = document.getElementsByTagName("LI");
+    var i;
+    for (i = 0; i < myNodelist.length; i++) {
+        var span = document.createElement("SPAN");
+        var txt = document.createTextNode("\u00D7");
+        span.className = "close";
+        span.appendChild(txt);
+        myNodelist[i].appendChild(span);
+    }
+
+    // Click on a close button to hide the current list item
+    var close = document.getElementsByClassName("close");
+    var i;
+    for (i = 0; i < close.length; i++) {
+        close[i].onclick = function () {
+            var div = this.parentElement;
+            div.style.display = "none";
+        }
+    }
+
+    // Add a "checked" symbol when clicking on a list item
+    var list = document.querySelector('ul');
+    list.addEventListener('click', function (ev) {
+        if (ev.target.tagName === 'LI') {
+            ev.target.classList.toggle('checked');
+        }
+    }, false);
+
+    // Create a new list item when clicking on the "Add" button
+    function newElement() {
+        var li = document.createElement("li");
+        var inputValue = document.getElementById("myInput").value;
+        var t = document.createTextNode(inputValue);
+        li.appendChild(t);
+        if (inputValue === '') {
+            alert("You must write something!");
+        } else {
+            document.getElementById("myUL").appendChild(li);
+        }
+        document.getElementById("myInput").value = "";
+
+        var span = document.createElement("SPAN");
+        var txt = document.createTextNode("\u00D7");
+        span.className = "close";
+        span.appendChild(txt);
+        li.appendChild(span);
+
+        for (i = 0; i < close.length; i++) {
+            close[i].onclick = function () {
+                var div = this.parentElement;
+                div.style.display = "none";
+            }
+        }
+        }
+        $('#myInput').unbind().on('keyup', function (e) {
+            if (e.which === 13) {
+                newElement();
+            }
+        })
+///end todolist
         $('.btn-skype').unbind().click(function () {
             window.location = 'skype:some_skype_user?chat';
         });
@@ -57,7 +119,7 @@
         $(function () {
 
             $('.standard').text(standard);
-            if (period === "W") {
+        if (period === "W") {
             //Thêm tiêu đề cho tr:first-child th
                 $("#tblDataChart tr:first-child").append("<th>Week</th>");
 
@@ -65,7 +127,7 @@
             $.each(labels, function (key, item) {
                 $("#tblDataChart tr:first-child").append("<th>" + item + "</th>");
             });
-
+            $("#tblDataChart tr:first-child").children("th:not(:first-child)").addClass("text-center");
             //Thêm tiêu đề cho tr:nth-child(2) th
             $("#tblDataChart tr:nth-child(2)").append("<th >"+unit+"</th>");
 
@@ -75,8 +137,12 @@
             });
 
                 $.each(dataremarks, function (key, item) {
-                    if (item.Value < standard) {
-                        $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Week - 1) + "')").addClass("active-td");
+                    if (item.Value < Number(standard)) {
+                        $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td");
+                    }
+                    else {
+                        $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td2");
+
                     }
                     $("#tblDataChart tr:nth-child(2)").children("td").addClass("text-center");
 
@@ -90,6 +156,8 @@
                 $('.lastRemarkLabel').text("Week " + lastRemark.Week + " : ");
                 $("#fromDateEndDate").show();
 
+            $("#tblDataChart tr:first-child").children("th:first-child").attr("width", '5%');
+            $("#tblDataChart tr:nth-child(2)").children("th:first-child").attr("width", '5%');
 
 
         }
@@ -101,7 +169,7 @@
             $.each(labels, function (key, item) {
                 $("#tblDataChart tr:first-child").append("<th >" + item + "</th>");
             });
-
+            $("#tblDataChart tr:first-child").children("th:not(:first-child)").addClass("text-center");
             //Thêm tiêu đề cho tr:nth-child(2) th
                 $("#tblDataChart tr:nth-child(2)").append("<th >Percentage</th>");
 
@@ -113,7 +181,7 @@
                 console.log(dataremarks);
                 $.each(dataremarks, function (key, item) {
                   if (item.Value < standard) {
-                      $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Month - 1) + "')").addClass("active-td");
+                      $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td");
                     }
                     $("#tblDataChart tr:nth-child(2), #tblDataChart tr:nth-child(1)").children("td,th").addClass("text-center");
 
@@ -127,6 +195,8 @@
              $('#lastRemark').val(lastRemark.Remark);
             $('.lastRemarkLabel').text("Month " + lastRemark.Month + " : ");
 
+            $("#tblDataChart tr:first-child").children("th:first-child").attr("width", '5%');
+            $("#tblDataChart tr:nth-child(2)").children("th:first-child").attr("width", '5%');
         }
     else if (period=== "Q") {
              //Thêm tiêu đề cho tr:first-child th
@@ -136,7 +206,7 @@
             $.each(labels, function (key, item) {
                 $("#tblDataChart tr:first-child").append("<th >" + item + "</th>");
         });
-
+            $("#tblDataChart tr:first-child").children("th:not(:first-child)").addClass("text-center");
             //Thêm tiêu đề cho tr:nth-child(2) th
             $("#tblDataChart tr:nth-child(2)").append("<th >Percentage</th>");
 
@@ -148,7 +218,7 @@
 
                 $.each(dataremarks, function (key, item) {
                    if (item.Value < standard) {
-                       $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Quarter - 1) + "')").addClass("active-td");
+                       $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td");
                     }
                 $("#tblDataChart tr:nth-child(2), #tblDataChart tr:nth-child(1)").children("td,th").addClass("text-center");
                 $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").text(item.Value);
@@ -157,6 +227,8 @@
             });
 
 
+            $("#tblDataChart tr:first-child").children("th:first-child").attr("width", '5%');
+            $("#tblDataChart tr:nth-child(2)").children("th:first-child").attr("width", '5%');
         }
     else if (period === "Y") {
 
@@ -167,7 +239,7 @@
             $.each(labels, function (key, item) {
                 $("#tblDataChart tr:first-child").append("<th >" + item + "</th>");
             });
-
+            $("#tblDataChart tr:first-child").children("th:not(:first-child)").addClass("text-center");
             //Thêm tiêu đề cho tr:nth-child(2) th
             $("#tblDataChart tr:nth-child(2)").append("<th >Percentage</th>");
 
@@ -181,13 +253,15 @@
                  $("#tblDataChart tr:nth-child(2), #tblDataChart tr:nth-child(1)").children("td,th").addClass("text-center");
 
                  if (item.Value < standard) {
-                       $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (item.Year - 1) + "')").addClass("active-td ");
+                       $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td ");
                     }
                 $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").text(item.Value);
                 $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").attr('data-id', item.ID);
 
             });
 
+            $("#tblDataChart tr:first-child").children("th:first-child").attr("width", '5%');
+            $("#tblDataChart tr:nth-child(2)").children("th:first-child").attr("width", '5%');
         }
             //var standards = [];
 
@@ -352,6 +426,7 @@ var chartperiodController = {
         chartperiodController.registerEvent();
 
     },
+
     registerEvent() {
 
         $('#lastRemark').off('keypress').on('keypress', function (e) {
@@ -496,13 +571,21 @@ var chartperiodController = {
 
         }
         $('.btnClearSearch').off('click').on('click', function () {
+            var kpilevelcode = chartperiodController.getUrlParameter('kpilevelcode');
+            var period = chartperiodController.getUrlParameter('period');
             borderWith = 0;
-             let kpilevelcode = chartperiodController.getUrlParameter('kpilevelcode');
-            let period = chartperiodController.getUrlParameter('period');
-             let d = new Date();
-            let currenyear = d.getFullYear();
-           window.location.href = "/ChartPeriod/?kpilevelcode="+kpilevelcode+"&period="+period+"&year="+currenyear+"&start=0&end=0";
+            var d = new Date();
+            var currenyear = d.getFullYear();
 
+            if (period === "W") {
+                let currentWeek = chartperiodController.getDateOfWeekInYear(d)
+                window.location.href = "/ChartPeriod/?kpilevelcode="+kpilevelcode+"&period="+period+"&year="+currenyear+"&start=1&end="+currentWeek;
+            }
+            if (period === "M") {
+                let currentMonth = d.getMonth();
+                window.location.href = "/ChartPeriod/?kpilevelcode="+kpilevelcode+"&period="+period+"&year="+currenyear+"&start=1&end="+currentMonth;
+
+            }
         })
 
          $('#btnLike').off('click').on('click', function (e) {
@@ -522,6 +605,22 @@ var chartperiodController = {
 
          });
          $('#endYear').off('change').on('change', function (e) {
+             chartperiodController.search();
+         });
+
+
+        $('#startWeek').off('change').on('change', function (e) {
+             chartperiodController.search();
+         });
+         $('#startMonth').off('change').on('change', function (e) {
+             chartperiodController.search();
+
+         });
+         $('#startQuarter').off('change').on('change', function (e) {
+             chartperiodController.search();
+
+         });
+         $('#startYear').off('change').on('change', function (e) {
              chartperiodController.search();
          });
         $('#btnCompare').off('click').on('click', function (e) {
@@ -556,6 +655,23 @@ var chartperiodController = {
             chartperiodController.addData();
         });
     },
+    getCurrentQuarter(d) {
+              d = d || new Date();
+              var m = Math.floor(d.getMonth()/3) + 2;
+              return m > 4? m - 4 : m;
+            },
+     getDateOfWeekInYear(dt) {
+                var tdt = new Date(dt.valueOf());
+                var dayn = (dt.getDay() + 6) % 7;
+                tdt.setDate(tdt.getDate() - dayn + 3);
+                var firstThursday = tdt.valueOf();
+                tdt.setMonth(0, 1);
+                if (tdt.getDay() !== 4) {
+                    tdt.setMonth(0, 1 + ((4 - tdt.getDay()) + 7) % 7);
+                }
+                return 1 + Math.ceil((firstThursday - tdt) / 604800000);
+            }
+    ,
     search() {
           if ("@period" === "W")
                     window.location.href = "/ChartPeriod/?kpilevelcode=@kpilevelcode&period=@period&year="+Number($("#weekOfYear").val())+"&start=" + Number($("#startWeek").val()) + "&end=" + Number($("#endWeek").val());
@@ -569,6 +685,45 @@ var chartperiodController = {
           if ("@period" === "Y")
                    window.location.href = "/ChartPeriod/?kpilevelcode=@kpilevelcode&period=@period&year=0&start=" + Number($("#startYear").val()) + "&end=" + Number($("#endYear").val());
     },
+    //add-task
+    addTask() {
+        if ($('#comment').val() == "") {
+            Swal.fire({
+                title: 'Warning!',
+                text: 'Please enter message!',
+                type: 'warning',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+        var cmt = $('#comment').val();
+
+        var mObj = {
+            DataID: Number($('.dataid').text()),
+            CommentMsg: $('#comment').val(),
+            UserID: Number($("#user").data('userid')),
+            DataID: dataid,
+            Content: content,
+            Title: title,
+            ApprovedBy: approvedBy,
+            Deadline: deadline,
+        };
+        $.ajax({
+            url: "/ChartPeriod/AddComment",
+            data: JSON.stringify(mObj),
+            type: "POST",
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            success: function (result) {
+                $('#comment').val("");
+                chartperiodController.loadDataComment();
+            },
+            error: function (errormessage) {
+                //console.log(errormessage.responseText);
+            }
+        });
+    }
+    ,
     addData() {
         if ($('#comment').val() == "") {
             Swal.fire({
@@ -579,6 +734,8 @@ var chartperiodController = {
             });
             return;
         }
+        var cmt = $('#comment').val();
+
         var mObj = {
             DataID: Number($('.dataid').text()),
             CommentMsg: $('#comment').val(),
@@ -661,19 +818,19 @@ var chartperiodController = {
             $('#comment').suggest('@@', {
                 filter: {
                     casesensitive: true,
-                    limit:2
+                    limit:10
                 },
-                onlookup: function (e,item) {
-                    console.log(item);
-                }
-                ,
                 data: users,
                map: function (user) {
                     return {
                       value: user.Username,
                       text: '<strong>Username: '+user.Username+' - </strong> <small>Full name :'+user.FullName+'</small>'
                     }
-                  }
+                },
+                //onselect: function (e, item) {
+                //    console.log(item)
+                //},
+
                 })
 
             //$("#remark").val(result.Remark);
@@ -723,14 +880,9 @@ var chartperiodController = {
     addCommentHistory(userid,dataid) {
          $.post("/ChartPeriod/addCommentHistory", { userid: userid, dataid: dataid }, function (result) {
              console.log("data add comment" + result);
-            //Swal.fire({
-            //    title: 'Success!',
-            //    text: 'Add successfully!',
-            //    type: 'success',
-            //    confirmButtonText: 'OK'
-            //});
+           
         });
-    } ,
+    },
     loadDataProvide(changePageSize) {
         var obj="@kpilevelcode,@period";
           $.ajax({
@@ -849,9 +1001,10 @@ var chartperiodController = {
                      if (item.Read) {
                          html += '<span class="label bg-green"> new</span>';
                      }
-                     html +='';
-                     html += '<p>';
-                     html += item.CommentMsg +'</a>.';
+                    
+                     html += '<p><a href="#modal-group-comment-data2" data-toggle="modal" data-dismiss="modal" class="btn btn-xs btn-warning text-bold"><i class="fa fa-tags"></i> Task</a> </p>';
+                    html += '<p>';
+                    html += item.CommentMsg;
                      html += '</p>';
                      html +=    '</div>';
                      html +='</li >';
@@ -915,7 +1068,7 @@ var chartperiodController = {
 
 
 
-                    <button type="button" data-toggle="modal" data-target="#modal-group"class="btn btn-danger margin btnLike pull-right" id="btnCompare"><i class="fa fa-adjust"></i> Compare</button>
+                    <button type="button" data-toggle="modal" data-target="#modal-group" class="btn btn-danger margin btnLike pull-right" id="btnCompare"><i class="fa fa-adjust"></i> Compare</button>
                     @if (@statusfavorite == "false")
                     {
                         <button type="button" class="btn margin btnLike bg-navy pull-right" id="btnLike"><i class="fa fa-heart"></i> Add Favourite</button>
@@ -976,7 +1129,7 @@ var chartperiodController = {
                             <option value="11">Nov</option>
                             <option value="12">Dec</option>
                         </select>
-                        <button type="button" class="btn bg-teal margin btnClearSearch" ><i class="fa fa-remove"></i> Reset search</button>
+                        <button type="button" class="btn bg-teal margin btnClearSearch"><i class="fa fa-remove"></i> Reset search</button>
 
                     </div>
 
@@ -1012,7 +1165,7 @@ var chartperiodController = {
                                 }
                             }
                         </select>
-                        <button type="button" class="btn bg-teal margin btnClearSearch" ><i class="fa fa-remove"></i> Reset search</button>
+                        <button type="button" class="btn bg-teal margin btnClearSearch"><i class="fa fa-remove"></i> Reset search</button>
 
                     </div>
                     @* Quarter *@
@@ -1047,7 +1200,7 @@ var chartperiodController = {
                                 }
                             }
                         </select>
-                        <button type="button" class="btn bg-teal margin btnClearSearch" ><i class="fa fa-remove"></i> Reset search</button>
+                        <button type="button" class="btn bg-teal margin btnClearSearch"><i class="fa fa-remove"></i> Reset search</button>
 
                     </div>
                     @* Year *@
@@ -1072,7 +1225,7 @@ var chartperiodController = {
                                 }
                             }
                         </select>
-                        <button type="button" class="btn bg-teal margin btnClearSearch" ><i class="fa fa-remove"></i> Reset search</button>
+                        <button type="button" class="btn bg-teal margin btnClearSearch"><i class="fa fa-remove"></i> Reset search</button>
 
                     </div>
 
@@ -1122,7 +1275,6 @@ var chartperiodController = {
                         <h3 class="box-title" style="font-weight:bold">Data - @kpiname - Yearly</h3>
 
                     }
-
 
                 </div>
                 <!-- /.box-header -->

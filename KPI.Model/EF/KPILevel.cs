@@ -60,5 +60,11 @@ namespace KPI.Model.EF
         [Column("QuarterlyStandard")]
         public int QuarterlyStandard { get; set; }
         public int YearlyStandard { get; set; }
+
+
+        public int WeeklyTarget { get; set; }
+        public int MonthlyTarget { get; set; }
+        public int QuarterlyTarget { get; set; }
+        public int YearlyTarget { get; set; }
     }
 }

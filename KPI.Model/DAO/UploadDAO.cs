@@ -12,7 +12,7 @@ using System.Configuration;
 
 namespace KPI.Model.DAO
 {
-    public class UploadDAO
+    public class UploadDAO :IDisposable
     {
         public KPIDbContext _dbContext = null;
         public UploadDAO() => _dbContext = new KPIDbContext();
@@ -360,7 +360,7 @@ namespace KPI.Model.DAO
                          select new KPIUpLoadVM
                          {
                              KPIName = kpi.Name,
-                             StateW = item.WeeklyChecked == true && datas.Where(x => x.KPILevelCode == item.KPILevelCode).Max(x=>x.Week) > 0 ? true : false,
+                             StateW = item.WeeklyChecked == true && datas.Where(x => x.KPILevelCode == item.KPILevelCode).Max(x => x.Week) > 0 ? true : false,
                              StateM = item.MonthlyChecked == true && datas.Where(x => x.KPILevelCode == item.KPILevelCode).Max(x => x.Month) > 0 ? true : false,
                              StateQ = item.QuarterlyChecked == true && datas.Where(x => x.KPILevelCode == item.KPILevelCode).Max(x => x.Quarter) > 0 ? true : false,
                              StateY = item.YearlyChecked == true && datas.Where(x => x.KPILevelCode == item.KPILevelCode).Max(x => x.Year) > 0 ? true : false
@@ -378,6 +378,8 @@ namespace KPI.Model.DAO
         }
         public List<DataExportVM> DataExport(int userid)
         {
+            var datas = _dbContext.Datas;
+            var kpis = _dbContext.KPIs;
             var model = (from u in _dbContext.Users
                          join l in _dbContext.Levels on u.LevelID equals l.ID
                          join kpiLevel in _dbContext.KPILevels on l.ID equals kpiLevel.LevelID
@@ -386,22 +388,24 @@ namespace KPI.Model.DAO
                          {
                              Area = l.Name,
                              KPILevelCode = kpiLevel.KPILevelCode,
-                             KPIName = _dbContext.KPIs.FirstOrDefault(x => x.ID == kpiLevel.KPIID).Name,
+                             KPIName = kpis.FirstOrDefault(x => x.ID == kpiLevel.KPIID).Name,
                              StateW = (bool?)kpiLevel.WeeklyChecked ?? false,
                              StateM = (bool?)kpiLevel.MonthlyChecked ?? false,
                              StateQ = (bool?)kpiLevel.QuarterlyChecked ?? false,
                              StateY = (bool?)kpiLevel.YearlyChecked ?? false,
 
-                             PeriodValueW = (int?)_dbContext.Datas.Where(x=>x.KPILevelCode==kpiLevel.KPILevelCode).Max(x => x.Week) ?? 0,
-                             PeriodValueM = (int?)_dbContext.Datas.Where(x=>x.KPILevelCode==kpiLevel.KPILevelCode).Max(x => x.Month) ?? 0,
-                             PeriodValueQ = (int?)_dbContext.Datas.Where(x=>x.KPILevelCode==kpiLevel.KPILevelCode).Max(x => x.Quarter) ?? 0,
-                             PeriodValueY = (int?)_dbContext.Datas.Where(x => x.KPILevelCode == kpiLevel.KPILevelCode).Max(x => x.Year) ?? 0,
+                             PeriodValueW = (int?)datas.Where(x => x.KPILevelCode == kpiLevel.KPILevelCode).Max(x => x.Week) ?? 0,
+                             PeriodValueM = (int?)datas.Where(x => x.KPILevelCode == kpiLevel.KPILevelCode).Max(x => x.Month) ?? 0,
+                             PeriodValueQ = (int?)datas.Where(x => x.KPILevelCode == kpiLevel.KPILevelCode).Max(x => x.Quarter) ?? 0,
+                             PeriodValueY = (int?)datas.Where(x => x.KPILevelCode == kpiLevel.KPILevelCode).Max(x => x.Year) ?? 0,
 
                              UploadTimeW = kpiLevel.Weekly,
                              UploadTimeM = kpiLevel.Monthly,
                              UploadTimeQ = kpiLevel.Quarterly,
                              UploadTimeY = kpiLevel.Yearly,
-                         });
+
+                         }).ToList();
+
             return model.ToList();
         }
         //group by, join sample
@@ -513,29 +517,29 @@ namespace KPI.Model.DAO
                 {
                     if (aa != null)
                     {
-                         KPILevels = _dbContext.KPILevels.Where(x => x.Checked == true && x.LevelID == aa.ID)
-                        .Select(a => new
-                        {
-                            a.KPIID,
-                            a.LevelID,
-                            a.WeeklyChecked,
-                            a.MonthlyChecked,
-                            a.QuarterlyChecked,
-                            a.YearlyChecked,
-                            a.KPILevelCode
-                        }).ToList()
-                        .Select(x => new KPILevel
-                        {
-                            KPIID = x.KPIID,
-                            LevelID = x.LevelID,
-                            WeeklyChecked = x.WeeklyChecked,
-                            MonthlyChecked = x.MonthlyChecked,
-                            QuarterlyChecked = x.QuarterlyChecked,
-                            YearlyChecked = x.YearlyChecked,
-                            KPILevelCode = x.KPILevelCode
-                        }).ToList();
+                        KPILevels = _dbContext.KPILevels.Where(x => x.Checked == true && x.LevelID == aa.ID)
+                       .Select(a => new
+                       {
+                           a.KPIID,
+                           a.LevelID,
+                           a.WeeklyChecked,
+                           a.MonthlyChecked,
+                           a.QuarterlyChecked,
+                           a.YearlyChecked,
+                           a.KPILevelCode
+                       }).ToList()
+                       .Select(x => new KPILevel
+                       {
+                           KPIID = x.KPIID,
+                           LevelID = x.LevelID,
+                           WeeklyChecked = x.WeeklyChecked,
+                           MonthlyChecked = x.MonthlyChecked,
+                           QuarterlyChecked = x.QuarterlyChecked,
+                           YearlyChecked = x.YearlyChecked,
+                           KPILevelCode = x.KPILevelCode
+                       }).ToList();
                     }
-                    
+
                     if (KPILevels != null)
                     {
                         foreach (var item in KPILevels)
@@ -582,8 +586,8 @@ namespace KPI.Model.DAO
             if (parent == null)
                 parent = new LevelVM();
             if (parent.Levels == null)
-                 parent.Levels = new List<LevelVM>();
-             yield return parent;
+                parent.Levels = new List<LevelVM>();
+            yield return parent;
             foreach (LevelVM child in parent.Levels) // check null if you must
                 foreach (LevelVM relative in ConvertHierarchicalToFlattenObject2(child))
                     yield return relative;
@@ -666,6 +670,11 @@ namespace KPI.Model.DAO
             {
                 status = false
             };
+        }
+
+        public void Dispose()
+        {
+            _dbContext.Dispose();
         }
     }
 }

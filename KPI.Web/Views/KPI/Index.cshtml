@@ -5,7 +5,7 @@
 }
 @Html.Raw(BreadCrumb.Display())
 @section Scripts{
-   
+
     <script>
         var ctx = document.getElementById('lineChart');
         Chart.defaults.global.defaultFontSize = 17;
@@ -23,7 +23,7 @@
             $.ui.fancytree.info("Event('" + event.type + "', node=" + data.node + ")" + msg);
         }
         $(function () {
-          
+
             kpiController.init();
 
             $("#treetable").fancytree({
@@ -126,14 +126,18 @@
                     let year = date.getFullYear();
                     var kpilevelcode = $(this).data('kpilevelcode');
                     var period = $(this).data('period');
-                    window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&period=" + period + "&year=" + year + "&start=0&end=0";
+
+                    var currentWeek = kpiController.getDateOfWeekInYear(date)
+                    window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&period=" + period + "&year=" + year + "&start=1&end=" + currentWeek;
                 })
                 $('#tblkpilevel .month').off('click').on('click', function (e) {
                     //e.preventDefault();
                     var kpilevelcode = $(this).data('kpilevelcode');
                     var period = $(this).data('period');
                     let year = date.getFullYear();
-                    window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&period=" + period + "&year=" + year + "&start=0&end=0";
+                  
+                    var currentMonth = date.getMonth();
+                    window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&period=" + period + "&year=" + year + "&start=1&end="+currentMonth;
 
                 })
                 $('#tblkpilevel .quarter').off('click').on('click', function (e) {
@@ -141,7 +145,8 @@
                     var kpilevelcode = $(this).data('kpilevelcode');
                     var period = $(this).data('period');
                     let year = date.getFullYear();
-                    window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&period=" + period + "&year=" + year + "&start=0&end=0";
+                    let currentQuarter = kpiController.getCurrentQuarter(date);   
+                    window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&period=" + period + "&year=" + year + "&start=1&end="+currentQuarter;
 
                 })
                 $('#tblkpilevel .year').off('click').on('click', function (e) {
@@ -149,10 +154,26 @@
                     var kpilevelcode = $(this).data('kpilevelcode');
                     var period = $(this).data('period');
                     let year = date.getFullYear();
-                    window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&period=" + period + "&year=" + year + "&start=0&end=0";
+                    window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&period=" + period + "&year=" + year + "&start="+year+"&end="+year;
 
                 })
 
+            },
+            getCurrentQuarter(d) {
+              d = d || new Date();
+              var m = Math.floor(d.getMonth()/3) + 2;
+              return m > 4? m - 4 : m;
+            },
+            getDateOfWeekInYear(dt) {
+                var tdt = new Date(dt.valueOf());
+                var dayn = (dt.getDay() + 6) % 7;
+                tdt.setDate(tdt.getDate() - dayn + 3);
+                var firstThursday = tdt.valueOf();
+                tdt.setMonth(0, 1);
+                if (tdt.getDay() !== 4) {
+                    tdt.setMonth(0, 1 + ((4 - tdt.getDay()) + 7) % 7);
+                }
+                return 1 + Math.ceil((firstThursday - tdt) / 604800000);
             },
             loadDataCategory: function () {
                 $.ajax({

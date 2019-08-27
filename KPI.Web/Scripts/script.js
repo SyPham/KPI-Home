@@ -1,4 +1,24 @@
 ﻿$(document).ready(function () {
+    Date.prototype.getWeekNumber = function () {
+        var d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
+        var dayNum = d.getUTCDay() || 7;
+        d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+        var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+        return Math.ceil((((d - yearStart) / 86400000) + 1) / 7)
+    };
+    
+   function getDateOfWeekInYear(dt)
+    {
+        var tdt = new Date(dt.valueOf());
+        var dayn = (dt.getDay() + 6) % 7;
+        tdt.setDate(tdt.getDate() - dayn + 3);
+        var firstThursday = tdt.valueOf();
+        tdt.setMonth(0, 1);
+        if (tdt.getDay() !== 4) {
+            tdt.setMonth(0, 1 + ((4 - tdt.getDay()) + 7) % 7);
+        }
+        return 1 + Math.ceil((firstThursday - tdt) / 604800000);
+    };
     $('[data-toggle="tooltip"]').tooltip(); 
     $('.monthly').datetimepicker({
         format: 'MM/DD/YYYY'
@@ -41,5 +61,8 @@
 
 
     });
+
+
+    
 });
 

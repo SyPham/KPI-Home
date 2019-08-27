@@ -11,6 +11,57 @@ namespace KPI.Model.helpers
 {
     public static class CodeUtility
     {
+        
+        public static DateTime ToGetMondayOfWeek(this int year, int week)
+        {
+            if (week == 0)
+                 week = 1;
+            // 4 January is always in week 1 (see http://en.wikipedia.org/wiki/ISO_week_date)
+            DateTime jan4 = new DateTime(year, 1, 4);
+
+            // get a day in the requested week
+            DateTime day = jan4.AddDays((week - 1) * 7);
+
+            // get day of week, with [mon = 0 ... sun = 6] instead of [sun = 0 ... sat = 6]
+            int dayOfWeek = ((int)day.DayOfWeek + 6) % 7;
+
+            return day.AddDays(-dayOfWeek);
+        }
+        public static DateTime ToGetSaturdayOfWeek( int year, int week)
+        {
+            if (week == 0)
+                week = 1;
+            // 4 January is always in week 1 (see http://en.wikipedia.org/wiki/ISO_week_date)
+            DateTime jan4 = new DateTime(year, 1, 4);
+
+            // get a day in the requested week
+            DateTime day = jan4.AddDays((week - 1) * 7);
+
+            // get day of week, with [mon = 0 ... sun = 6] instead of [sun = 0 ... sat = 6]
+            int dayOfWeek = ((int)day.DayOfWeek + 6) % 7;
+
+            return day.AddDays(-dayOfWeek).AddDays(6);
+        }
+
+        public static DateTime ToGetStartDayOfWeek( int year, int dayofweek)
+        {
+            var fromDate = new DateTime(year, 1,1);
+            var fw = fromDate.Millisecond + 518400000 + (dayofweek - 1);
+            return new DateTime();
+        }
+
+        public static DateTime ToGetStartDateOfMonth(int year, int month)
+        {
+            var firstDayOfMonth = new DateTime(year, month, 1);
+            //var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+            return firstDayOfMonth;
+        }
+        public static DateTime ToGetEndDateOfMonth(int year, int month)
+        {
+            var lastDayOfMonth = ToGetStartDateOfMonth(year,month).AddMonths(1).AddDays(-1);
+            return lastDayOfMonth;
+        }
+
         /// <summary>
         /// Kiểm tra giá trị value có phải là định dạng email không?
         /// Nếu là định dạng email, trả về true; Ngược lại, trả về false.

@@ -1,6 +1,7 @@
 'use strict';
 
 (function (global) {
+
     var Samples = global.Samples || (global.Samples = {});
     var Color = global.Color;
 

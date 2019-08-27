@@ -26,10 +26,6 @@
             listData3 = @Html.Raw(Json.Encode(list3)),
             listData4 = @Html.Raw(Json.Encode(list4));
 
-        console.log(listData1);
-        console.log(listData2);
-        console.log(listData3);
-        console.log(listData4);
         $(function () {
 
              var labelString;
@@ -52,20 +48,22 @@
                     $("#tblkpi tr:nth-child(3)").append("<td>" + item + "</td>");
                 });
             }
-            if (listData3.datasets.length !== 0) {
-                    $("#tblkpi tr:nth-child(4)").append("<th >"+listData3.label+"</th>");
-                $.each(listData3.datasets, function (key, item) {
-                    $("#tblkpi tr:nth-child(4)").append("<td>" + item + "</td>");
-                });
+            if (listData3.datasets !== null) {
+                if (listData3.datasets.length !== 0) {
+                    $("#tblkpi tr:nth-child(4)").append("<th >" + listData3.label + "</th>");
+                    $.each(listData3.datasets, function (key, item) {
+                        $("#tblkpi tr:nth-child(4)").append("<td>" + item + "</td>");
+                    });
+                }
             }
-            if (listData4.datasets.length !== 0) {
-                    $("#tblkpi tr:nth-child(5)").append("<th >"+listData4.label+"</th>");
-                $.each(listData4.datasets, function (key, item) {
-                    $("#tblkpi tr:nth-child(5)").append("<td>" + item + "</td>");
-                });
+            if (listData4.datasets !== null) {
+                if (listData4.datasets.length !== 0) {
+                    $("#tblkpi tr:nth-child(5)").append("<th >" + listData4.label + "</th>");
+                    $.each(listData4.datasets, function (key, item) {
+                        $("#tblkpi tr:nth-child(5)").append("<td>" + item + "</td>");
+                    });
+                }
             }
-
-        console.log(listData3.datasets.length)
         }
 
         if ("@period" === "M") {
@@ -120,6 +118,7 @@
                     anchor: 'center'
                 }
             }
+
              for (var i = 0; i < listData1.datasets.length; i++) {
                 if (listData1.datasets[i] === 0) {
                     listData1.datasets[i] = undefined;
@@ -130,16 +129,20 @@
                     listData2.datasets[i] = undefined;
                 }
             }
-             for (var i = 0; i < listData3.datasets.length; i++) {
+            if (listData3.datasets !== null) {
+                for (var i = 0; i < listData3.datasets.length; i++) {
                 if (listData3.datasets[i] === 0) {
                     listData3.datasets[i] = undefined;
                 }
+                }
             }
+              if (listData4.datasets !== null) {
              for (var i = 0; i < listData4.datasets.length; i++) {
                 if (listData4.datasets[i] === 0) {
                     listData4.datasets[i] = undefined;
                 }
-            }
+                  }
+                  }
             var list1 = {
                 label: "@Html.Raw(@list1.label)",
                 spanGaps: false, //data=undefined thi k draw line
@@ -168,8 +171,8 @@
                 label: "@Html.Raw(@list3.label)",
                 spanGaps: false, //data=undefined thi k draw line
                 data:  listData3.datasets,
-                 backgroundColor: Samples.color(3),
-                borderColor: Samples.color(3),
+                 backgroundColor: Samples.color(6),
+                borderColor: Samples.color(6),
                 datalabels: {
                     align: 'center',
                     anchor: 'center'
@@ -180,39 +183,42 @@
                 label: "@Html.Raw(@list4.label)",
                 spanGaps: false, //data=undefined thi k draw line
                 data:  listData4.datasets,
-                  backgroundColor: Samples.color(4),
-                borderColor: Samples.color(4),
+                  backgroundColor: Samples.color(5),
+                borderColor: Samples.color(5),
                 datalabels: {
                     align: 'center',
                     anchor: 'center'
                 }
             };
-            console.log(list1.data.length);
-            console.log(list2.data.length);
-            console.log(list3.data.length);
-            console.log(list4.data.length);
+          
             var compareData;
-             if (list4.data.length === 0) {
+            if (list4.data !== null) {
+                if (list4.data.length === 0) {
 
                   compareData = {
                     labels: listData1.labels,
                     datasets: [standard,list1, list2, list3]
                     };
              }
-
-             if (list3.data.length=== 0&&list4.data.length=== 0) {
-
-                   compareData = {
-                    labels: listData1.labels,
-                    datasets: [standard,list1, list2]
-                    };
             }
-              if(list1.data.length!== 0&&list2.data.length!== 0&&list3.data.length!== 0&&list4.data.length!== 0) {
+            //if (list4.data !== null && list3.data !== null) {
 
-                   compareData = {
-                    labels: listData1.labels,
-                    datasets: [standard,list1, list2,list3, list4]
+            //    if (list3.data.length === 0 && list4.data.length === 0) {
+
+                    compareData = {
+                        labels: listData1.labels,
+                        datasets: [standard, list1, list2]
                     };
+            //    }
+            //}
+            if (list4.data !== null && list3.data !== null&&list2.data !== null && list1.data !== null) {
+                if (list1.data.length !== 0 && list2.data.length !== 0 && list3.data.length !== 0 && list4.data.length !== 0) {
+
+                    compareData = {
+                        labels: listData1.labels,
+                        datasets: [standard, list1, list2, list3, list4]
+                    };
+                }
             }
             var chartOptions = {
                  plugins: {

@@ -21,7 +21,6 @@ namespace KPI.Web.Controllers
         }
         public ActionResult Chat()
         {
-           
             return View();
         }
         public ActionResult Period(string kpilevelcode, string period)

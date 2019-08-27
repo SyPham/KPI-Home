@@ -118,7 +118,7 @@
     <!-- /.modal-dialog -->
 </div>
 @* Cai nay khong xai *@
-<div class="modal fade" id="modal-group-comment-datas" style="display: none">
+<div class="modal fade " id="modal-group-comment-datas" style="display: none">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -136,16 +136,17 @@
     <!-- /.modal-dialog -->
 </div>
 
-<div class="modal fade" id="modal-group-comment-data" style="display: none">
-    <div class="modal-dialog modal-lg">
+<div class="modal fade modal-window modal" id="modal-group-comment-data" style="display: none">
+    <div class="modal-dialog modal-lg" style="width:90%">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header" style="background-color:#25708d;color:#fff">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
                 <h4 class="modal-title">Remark</h4>
             </div>
             <div class="modal-body">
+
                 <div class="row bootstrap snippets">
                     <div class="col-md-12 col-sm-12">
                         <div class="comment-wrapper">
@@ -156,9 +157,8 @@
                                 <div class="panel-body">
                                     <span class="dataid" style="display:none"></span>
                                     <div class="form-group">
-                                        <textarea class="form-control" id="comment" placeholder="write a comment..." rows="3"></textarea>
+                                        <textarea class="form-control" id="comment" placeholder="write a comment..." rows="6"></textarea>
                                     </div>
-                                    <br>
                                     <button type="button" class="btn btn-info pull-right btnComment">Post</button>
                                     <div class="clearfix"></div>
                                     <hr>
@@ -186,9 +186,151 @@
                     </div>
                 </div>
             </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                @*<a href="#modal-group-comment-data2" data-toggle="modal" data-dismiss="modal" class="btn btn-primary">Next</a>*@
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade modal-window modal" id="modal-group-comment-data2" style="display: none">
+    <div class="modal-dialog modal-lg" style="width:90%">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#8d0404;color:#fff">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title">Task</h4>
+            </div>
+            <div class="modal-body">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#home">Home</a></li>
+                    <li><a data-toggle="tab" href="#menu1">Add/Edit/Delete</a></li>
+                </ul>
+                <div class="tab-content" id="ToDoList">
+                    <div id="home" class="tab-pane fade in active">
+                        <div class="btn-group mt-4 pull-right">
+                            <button type="button" class="btn btn-primary"><i class="fa fa-edit"></i></button>
+                            <button type="button" class="btn btn-danger"><i class="fa fa-remove"></i></button>
+                            <a data-toggle="tab" href="#menu1" class="btn btn-success"><i class="fa fa-plus"></i></a>
+                        </div>
+                        <div id="myDIV" class="header form-group">
+                            <h2>My To Do List</h2>
+                            <input class="form-control" type="text" id="myInput" placeholder="Title...">
+                        </div>
+
+                        <ul id="myUL">
+                      
+                        </ul>
+                    </div>
+                    <div id="menu1" class="tab-pane fade">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h3>
+                                    PPH - Week 34
+                                </h3>
+                                <hr />
+                            </div>
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label for="Title">Title</label>
+                                    <input type="tel" class="form-control" id="Title" aria-describedby="Title" placeholder="Enter Title">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="Deadline">Deadline</label>
+                                    <input type="date" class="form-control" id="Deadline">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="Description">Description</label>
+                                    <input type="text" class="form-control" id="Description">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="Content">Content</label>
+                                    <textarea rows="3" class="form-control"></textarea>
+                                </div>
+                            </div>
+
+                        </div>
+                        </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <a href="#modal-group-comment-data" data-toggle="modal" data-dismiss="modal" class="btn btn-primary">Back to remark</a>
+            </div>
         </div>
         <!-- /.modal-content -->
     </div>
     <!-- /.modal-dialog -->
 </div>
 
+<div class="modal fade modal-window modal" id="modal-group-comment-data3" style="display: none">
+    <div class="modal-dialog modal-lg" style="width:90%">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#8d0404;color:#fff">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title">Task</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row bootstrap snippets">
+                    <div class="col-md-12 col-sm-12">
+                        <div class="comment-wrapper">
+                            <div class="panel panel-info">
+                                @*<div class="panel-heading">
+                                        Comment panel
+                                    </div>*@
+                                <div class="panel-body">
+                                    <span class="dataid" style="display:none"></span>
+                                    <div class="form-group">
+                                        <textarea class="form-control" id="comment2" placeholder="write a comment..." rows="6"></textarea>
+
+                                    </div>
+                                    <button type="button" class="btn btn-info pull-right btnComment2">Post</button>
+                                    <div class="clearfix"></div>
+                                    <hr>
+                                    <ul class="media-list" id="media-list">
+                                        <li class="media">
+                                            <a href="#" class="pull-left">
+                                                <img src="https://bootdey.com/img/Content/user_1.jpg" alt="" class="img-circle">
+                                            </a>
+                                            <div class="media-body">
+                                                <span class="text-muted pull-right">
+                                                    <small class="text-muted">30 min ago</small>
+                                                </span>
+                                                <strong class="text-success">MartinoMont</strong>
+
+                                                <p>
+                                                    <button type="button" class="text-success btn-xs btn btn-success">Task</button>
+
+                                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                                    Lorem ipsum dolor sit amet, <a href="#">#consecteturadipiscing </a>.
+                                                </p>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <a href="#modal-group-comment-data" data-toggle="modal" data-dismiss="modal" class="btn btn-primary">Back to remark</a>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>

@@ -9,20 +9,7 @@ namespace KPI.Model.ViewModel
 {
    public class ChartVM
     {
-        private int[] datasetsList = {};
-
-        public int[] datasets
-        {
-            get
-            {
-                return datasetsList;
-            }
-
-            set
-            {
-                datasetsList = value;
-            }
-        }
+        public int[] datasets { get; set; }
         public string[] labels { get; set; }
 
         public string label { get; set; }
@@ -34,6 +21,8 @@ namespace KPI.Model.ViewModel
         public string Unit { get; set; }
         public int[] dataids { get; set; }
 
+        public List<int> datasets1 { get; set; }
+        public List<string> labels1 { get; set; }
 
         public List<Dataremark> Dataremarks { get; set; }
     }

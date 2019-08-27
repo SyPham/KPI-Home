@@ -30,11 +30,13 @@ namespace KPI.Model.DAO
                         break;
                     }
                 }
+
                 _dbContext.KPIs.Add(entity);
                 _dbContext.SaveChanges();
 
                 List<EF.KPILevel> kpiLevelList = new List<EF.KPILevel>();
                 var levels = _dbContext.Levels.ToList();
+
                 foreach (var level in levels)
                 {
                     var kpilevel = new EF.KPILevel();
@@ -42,8 +44,10 @@ namespace KPI.Model.DAO
                     kpilevel.KPIID = entity.ID;
                     kpiLevelList.Add(kpilevel);
                 }
+
                 _dbContext.KPILevels.AddRange(kpiLevelList);
                 _dbContext.SaveChanges();
+
                 return true;
             }
             catch (Exception)

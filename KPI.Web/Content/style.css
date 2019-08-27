@@ -2,23 +2,25 @@
     height: 300px;
     overflow-y: scroll;
 }
+
 .unselectable {
-    cursor: not-allowed!important;
+    cursor: not-allowed !important;
 }
-    #ListKPI .henry {
-        margin-top: 10px;
-        margin-bottom: 10px;
+
+#ListKPI .henry {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+    #ListKPI .henry .period {
+        float: left;
+        display: block;
     }
 
-        #ListKPI .henry .period {
-            float: left;
-            display: block;
-        }
-
-        #ListKPI .henry .kpilevel {
-            float: left;
-            width: 30%;
-        }
+    #ListKPI .henry .kpilevel {
+        float: left;
+        width: 30%;
+    }
 
 .clearfix {
     clear: both;
@@ -117,8 +119,8 @@ thead tr th {
 
 .complete {
     /*the container must be positioned relative:*/
-    position: relative!important;
-    display:block!important;
+    position: relative !important;
+    display: block !important;
 }
 
 .complete-items {
@@ -145,32 +147,41 @@ thead tr th {
     color: #ffffff;
 }
 
-.parent-search{
-    position:relative;
-
-
+.parent-search {
+    position: relative;
 }
+
 .active-td {
     box-shadow: 0 0 3px #022598 !important;
     color: #fff !important;
     font-weight: bold !important;
     background-color: #e7263b !important;
 }
-    .parent-search .search-box {
-        position: absolute;
-        z-index: 9999;
-        top: 100%;
-        left: 0;
-        box-sizing: border-box;
-        background-color: #fff;
-        border: 1px solid #ccc;
-        /*display:none;*/
-        width:100%;
+
+.active-td2 {
+    box-shadow: 0 0 3px #08872f !important;
+    color: #fff !important;
+    font-weight: bold !important;
+    background-color: #08872f !important;
+}
+
+.parent-search .search-box {
+    position: absolute;
+    z-index: 9999;
+    top: 100%;
+    left: 0;
+    box-sizing: border-box;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    /*display:none;*/
+    width: 100%;
+}
+
+    .parent-search .search-box ul {
+        list-style: none;
+        padding: 0;
     }
-    .parent-search .search-box ul{
-        list-style:none;
-        padding:0;
-    }
+
         .parent-search .search-box ul li {
             padding-top: 5px;
             padding-bottom: 5px;
@@ -179,19 +190,23 @@ thead tr th {
             color: black;
             font-weight: 500;
         }
-        .parent-search .search-box ul li:hover{
-            background-color:#d4cfcf;
-        }
+
+            .parent-search .search-box ul li:hover {
+                background-color: #d4cfcf;
+            }
+
 .breadcrumb {
-    background-color:#fff!important;
+    background-color: #fff !important;
 }
 
-#tblkpi tr td{
-    text-align:center
+#tblkpi tr td {
+    text-align: center
 }
+
 #tblkpi tr th {
     text-align: center;
 }
+
 #tblkpi tr:first-child th:first-child {
     text-align: left;
     width: 6%;
@@ -202,28 +217,30 @@ thead tr th {
     text-align: left;
     color: #d81b60;
 }
+
 #tableWorkplace tr td {
     text-align: center;
 }
 
-#tblDataChart tr:nth-child(2) th{
-    color:#022598!important;
+#tblDataChart tr:nth-child(2) th {
+    color: #022598 !important;
 }
-    #tblDataChart tr:nth-child(2) td {
+
+#tblDataChart tr:nth-child(2) td {
+    cursor: pointer !important;
+    box-shadow: 0 !important;
+    transition: box-shadow .2s !important;
+}
+
+    #tblDataChart tr:nth-child(2) td:hover {
         cursor: pointer !important;
-        box-shadow: 0 !important;
-        transition: box-shadow .2s !important;
+        box-shadow: 0 0 3px #022598 !important;
+        color: #fff !important;
+        font-weight: bold !important;
+        background-color: #022598 !important;
     }
 
-        #tblDataChart tr:nth-child(2) td:hover {
-            cursor: pointer !important;
-            box-shadow: 0 0 3px #022598 !important;
-            color: #fff !important;
-            font-weight: bold !important;
-            background-color: #022598 !important;
-        }
-.warning-data{
-
+.warning-data {
 }
 
 /*.led-box {
@@ -290,4 +307,126 @@ thead tr th {
 
     .tooltip:hover .tooltiptext {
         visibility: visible;
+    }
+
+.tag {
+    color: inherit;
+    font-size: 0.9em;
+    line-height: 1.2em;
+    background: #ddd;
+    border: 1px solid #ccc;
+    padding: 0.05em 0.4em;
+    cursor: pointer;
+    font-weight: normal;
+    border-radius: 1em;
+    transition: all 0.2s linear;
+}
+
+
+/*To Do List*/
+/* Remove margins and padding from the list */
+#ToDoList ul {
+    margin: 0;
+    padding: 0;
+}
+
+    /* Style the list items */
+    #ToDoList ul li {
+        cursor: pointer;
+        position: relative;
+        padding: 12px 8px 12px 40px;
+        background: #eee;
+        font-size: 18px;
+        transition: 0.2s;
+        /* make the list items unselectable */
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+        /* Set all odd list items to a different color (zebra-stripes) */
+        #ToDoList ul li:nth-child(odd) {
+            background: #f9f9f9;
+        }
+
+        /* Darker background-color on hover */
+        #ToDoList ul li:hover {
+            background: #ddd;
+        }
+
+        /* When clicked on, add a background color and strike out text */
+        #ToDoList ul li.checked {
+            background: #888;
+            color: #fff;
+            text-decoration: line-through;
+        }
+
+            /* Add a "checked" mark when clicked on */
+            #ToDoList ul li.checked::before {
+                content: '';
+                position: absolute;
+                border-color: #fff;
+                border-style: solid;
+                border-width: 0 2px 2px 0;
+                top: 10px;
+                left: 16px;
+                transform: rotate(45deg);
+                height: 15px;
+                width: 7px;
+            }
+
+/* Style the close button */
+#ToDoList .close {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 12px 16px 12px 16px;
+}
+
+    #ToDoList .close:hover {
+        background-color: #f44336;
+        color: white;
+    }
+
+/* Style the header */
+#ToDoList .header {
+   
+
+}
+
+    /* Clear floats after the header */
+    #ToDoList .header:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+/* Style the input */
+#ToDoList input {
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    width: 75%;
+    padding: 10px;
+    float: left;
+    font-size: 16px;
+}
+
+/* Style the "Add" button */
+#ToDoList .addBtn {
+    padding: 10px;
+    width: 25%;
+    background: #d9d9d9;
+    color: #555;
+    float: left;
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    border-radius: 0;
+}
+
+    #ToDoList .addBtn:hover {
+        background-color: #bbb;
     }
