@@ -18,68 +18,7 @@
 @Html.Raw(BreadCrumb.Display())
 @section Scripts{
     <script type="text/javascript">
-        ///To Do List
-    // Create a "close" button and append it to each list item
-    var myNodelist = document.getElementsByTagName("LI");
-    var i;
-    for (i = 0; i < myNodelist.length; i++) {
-        var span = document.createElement("SPAN");
-        var txt = document.createTextNode("\u00D7");
-        span.className = "close";
-        span.appendChild(txt);
-        myNodelist[i].appendChild(span);
-    }
-
-    // Click on a close button to hide the current list item
-    var close = document.getElementsByClassName("close");
-    var i;
-    for (i = 0; i < close.length; i++) {
-        close[i].onclick = function () {
-            var div = this.parentElement;
-            div.style.display = "none";
-        }
-    }
-
-    // Add a "checked" symbol when clicking on a list item
-    var list = document.querySelector('ul');
-    list.addEventListener('click', function (ev) {
-        if (ev.target.tagName === 'LI') {
-            ev.target.classList.toggle('checked');
-        }
-    }, false);
-
-    // Create a new list item when clicking on the "Add" button
-    function newElement() {
-        var li = document.createElement("li");
-        var inputValue = document.getElementById("myInput").value;
-        var t = document.createTextNode(inputValue);
-        li.appendChild(t);
-        if (inputValue === '') {
-            alert("You must write something!");
-        } else {
-            document.getElementById("myUL").appendChild(li);
-        }
-        document.getElementById("myInput").value = "";
-
-        var span = document.createElement("SPAN");
-        var txt = document.createTextNode("\u00D7");
-        span.className = "close";
-        span.appendChild(txt);
-        li.appendChild(span);
-
-        for (i = 0; i < close.length; i++) {
-            close[i].onclick = function () {
-                var div = this.parentElement;
-                div.style.display = "none";
-            }
-        }
-        }
-        $('#myInput').unbind().on('keyup', function (e) {
-            if (e.which === 13) {
-                newElement();
-            }
-        })
-///end todolist
+         
         $('.btn-skype').unbind().click(function () {
             window.location = 'skype:some_skype_user?chat';
         });
@@ -880,7 +819,7 @@ var chartperiodController = {
     addCommentHistory(userid,dataid) {
          $.post("/ChartPeriod/addCommentHistory", { userid: userid, dataid: dataid }, function (result) {
              console.log("data add comment" + result);
-           
+
         });
     },
     loadDataProvide(changePageSize) {
@@ -1001,7 +940,7 @@ var chartperiodController = {
                      if (item.Read) {
                          html += '<span class="label bg-green"> new</span>';
                      }
-                    
+
                      html += '<p><a href="#modal-group-comment-data2" data-toggle="modal" data-dismiss="modal" class="btn btn-xs btn-warning text-bold"><i class="fa fa-tags"></i> Task</a> </p>';
                     html += '<p>';
                     html += item.CommentMsg;

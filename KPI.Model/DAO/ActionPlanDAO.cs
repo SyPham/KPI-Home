@@ -64,9 +64,30 @@ namespace KPI.Model.DAO
             }
 
         }
-        public IEnumerable<ActionPlan> GetAll()
+        public object GetAll()
         {
-            return _dbContext.ActionPlans.ToList();
+            var lvm = new List<ActionPlanCategoryViewModel>();
+            var model = _dbContext.ActionPlanCategories.ToList();
+            var model2 = _dbContext.ActionPlans.ToList().Select(x => new ActionPlanViewModel
+            {
+                id = x.ID,
+                title = x.Title,
+                description = x.Description,
+                done = x.Status,
+                dueDate = x.Deadline.ToSafetyString().Split(' ')[0],
+                listId = "lobilist-list-" + x.ActionPlanCategoryID.ToSafetyString()
+            }).ToList();
+
+            foreach (var item in model)
+            {
+                var vm = new ActionPlanCategoryViewModel();
+                vm.id = "lobilist-list-" + item.ID.ToSafetyString();
+                vm.title = item.Title;
+                vm.items = model2.Where(x => x.listId == "lobilist-list-" + item.ID.ToSafetyString()).ToArray();
+                lvm.Add(vm);
+            }
+            var arr = lvm.ToArray();
+            return new { lists = lvm.ToArray() };
         }
         public ActionPlan GetbyID(int ID)
         {

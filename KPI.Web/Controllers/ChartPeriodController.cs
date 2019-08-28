@@ -86,5 +86,17 @@ namespace KPI.Web.Controllers
         {
             return Json("", JsonRequestBehavior.AllowGet);
         }
+        public JsonResult LoadToDo()
+        {
+            return Json(new ActionPlanDAO().GetAll(), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult Update(ActionPlanViewModel item)
+        {
+            return Json("", JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult Add(ActionPlanViewModel item)
+        {
+            return Json("", JsonRequestBehavior.AllowGet);
+        }
     }
 }

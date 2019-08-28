@@ -26,6 +26,7 @@ namespace KPI.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Index(UserProfile objUser)
         {
+            
             if (ModelState.IsValid)
             {
 

@@ -21,13 +21,24 @@ namespace KPI.Model.EF
         public string Content { get; set; }
         public int ApprovedBy { get; set; }
 
-        [Column("CreatedTime")]
-        public DateTime CreatedTime { get; set; }
+        private DateTime? createTime = null;
+        public DateTime CreateTime
+        {
+            get
+            {
+                return this.createTime.HasValue
+                   ? this.createTime.Value
+                   : DateTime.Now;
+            }
+
+            set { this.createTime = value; }
+        }
         [Column("Deadline")]
         public DateTime Deadline { get; set; }
         public DateTime SubmitDate { get; set; }
 
         public bool Status { get; set; }
         public bool ApprovedStatus { get; set; }
+        public int ActionPlanCategoryID { get; set; }
     }
 }

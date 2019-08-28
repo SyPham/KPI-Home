@@ -1,4 +1,5 @@
 ﻿$(document).ready(function () {
+
     Date.prototype.getWeekNumber = function () {
         var d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
         var dayNum = d.getUTCDay() || 7;

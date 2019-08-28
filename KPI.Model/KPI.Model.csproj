@@ -67,6 +67,7 @@
     <Compile Include="Abstract\Inheritance .cs" />
     <Compile Include="Abstract\Link.cs" />
     <Compile Include="DAO\ActionPlanDAO.cs" />
+    <Compile Include="EF\ActionPlanCategory.cs" />
     <Compile Include="EF\ActionPlan.cs" />
     <Compile Include="EF\CommentChart.cs" />
     <Compile Include="EF\CommentChartDetail.cs" />
@@ -177,8 +178,25 @@
     <Compile Include="Migrations\201908270757200_updateKPILevelAddResive2.Designer.cs">
       <DependentUpon>201908270757200_updateKPILevelAddResive2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201908280322060_actionplanecate.cs" />
+    <Compile Include="Migrations\201908280322060_actionplanecate.Designer.cs">
+      <DependentUpon>201908280322060_actionplanecate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908280413514_actionplanecate1.cs" />
+    <Compile Include="Migrations\201908280413514_actionplanecate1.Designer.cs">
+      <DependentUpon>201908280413514_actionplanecate1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908280415067_actionplanecate2.cs" />
+    <Compile Include="Migrations\201908280415067_actionplanecate2.Designer.cs">
+      <DependentUpon>201908280415067_actionplanecate2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908280416145_actionplanecate3.cs" />
+    <Compile Include="Migrations\201908280416145_actionplanecate3.Designer.cs">
+      <DependentUpon>201908280416145_actionplanecate3.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModel\ActionPlanViewModel.cs" />
     <Compile Include="ViewModel\DataExportVM.cs" />
     <Compile Include="ViewModel\LevelVM.cs" />
     <Compile Include="ViewModel\UploadKPIVM.cs" />
@@ -257,6 +275,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201908270757200_updateKPILevelAddResive2.resx">
       <DependentUpon>201908270757200_updateKPILevelAddResive2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908280322060_actionplanecate.resx">
+      <DependentUpon>201908280322060_actionplanecate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908280413514_actionplanecate1.resx">
+      <DependentUpon>201908280413514_actionplanecate1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908280415067_actionplanecate2.resx">
+      <DependentUpon>201908280415067_actionplanecate2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908280416145_actionplanecate3.resx">
+      <DependentUpon>201908280416145_actionplanecate3.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
