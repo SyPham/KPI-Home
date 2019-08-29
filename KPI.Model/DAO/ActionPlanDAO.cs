@@ -33,7 +33,25 @@ namespace KPI.Model.DAO
             }
 
         }
+        public bool Update(ActionPlan entity)
+        {
 
+            try
+            {
+                var item = _dbContext.ActionPlans.Find(entity.ID);
+                item.Title = entity.Title;
+                item.Description = entity.Description;
+                item.Deadline = entity.Deadline;
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                var message = ex.Message;
+                return false;
+            }
+
+        }
         public int Total()
         {
             return _dbContext.ActionPlans.Count();
@@ -75,19 +93,37 @@ namespace KPI.Model.DAO
                 description = x.Description,
                 done = x.Status,
                 dueDate = x.Deadline.ToSafetyString().Split(' ')[0],
-                listId = "lobilist-list-" + x.ActionPlanCategoryID.ToSafetyString()
+                listId = x.ActionPlanCategoryID.ToSafetyString()
             }).ToList();
 
             foreach (var item in model)
             {
                 var vm = new ActionPlanCategoryViewModel();
-                vm.id = "lobilist-list-" + item.ID.ToSafetyString();
+                vm.id =item.ID.ToSafetyString();
                 vm.title = item.Title;
-                vm.items = model2.Where(x => x.listId == "lobilist-list-" + item.ID.ToSafetyString()).ToArray();
+                vm.items = model2.Where(x => x.listId == item.ID.ToSafetyString()).ToArray();
                 lvm.Add(vm);
             }
             var arr = lvm.ToArray();
             return new { lists = lvm.ToArray() };
+        }
+        public object GetAll(int DataID, int CommentID)
+        {
+            var model = _dbContext.ActionPlans
+                .Where(x => x.DataID == DataID && x.CommentID == CommentID)
+                .AsEnumerable()
+                .Select(x => new ActionPlanGettAllViewModel
+                {
+                    ID = x.ID,
+                    Title = x.Title,
+                    Description = x.Description,
+                    Content = x.Content,
+                    Deadline = x.Deadline.ToString("dd/MM/yyyy")
+                }).ToList();
+            return new {
+                status = true,
+                data = model
+            };
         }
         public ActionPlan GetbyID(int ID)
         {

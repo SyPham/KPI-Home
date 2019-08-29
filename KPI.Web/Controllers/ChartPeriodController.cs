@@ -1,4 +1,5 @@
 ﻿using KPI.Model.DAO;
+using KPI.Model.EF;
 using KPI.Model.helpers;
 using KPI.Model.ViewModel;
 using MvcBreadCrumbs;
@@ -90,13 +91,31 @@ namespace KPI.Web.Controllers
         {
             return Json(new ActionPlanDAO().GetAll(), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult Update(ActionPlanViewModel item)
+        public JsonResult Update(ActionPlan item)
         {
-            return Json("", JsonRequestBehavior.AllowGet);
+            return Json(new ActionPlanDAO().Update(item), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult Add(ActionPlanViewModel item)
+        public JsonResult Add(ActionPlanViewModel2 obj)
         {
-            return Json("", JsonRequestBehavior.AllowGet);
+            var item = new ActionPlan();
+            item.Title = obj.Title;
+            item.Description = obj.Description;
+            item.KPILevelCodeAndPeriod = obj.KPILevelCodeAndPeriod;
+            item.Content = obj.Content;
+            item.UserID = obj.UserID;
+            item.DataID = obj.DataID;
+            item.CommentID = obj.CommentID;
+            item.SubmitDate = obj.SubmitDate.ToDateTime();
+            item.Deadline = obj.Deadline.ToDateTime();
+            return Json(new ActionPlanDAO().Add(item), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult Delete(int id)
+        {
+            return Json(new ActionPlanDAO().Delete(id), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetAll(int DataID, int CommentID)
+        {
+            return Json(new ActionPlanDAO().GetAll(DataID,CommentID), JsonRequestBehavior.AllowGet);
         }
     }
 }

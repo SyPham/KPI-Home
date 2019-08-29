@@ -1,4 +1,4 @@
-﻿<div class="modal fade" id="modal-group" style="display: none">
+﻿<div class="modal fade" id="modal-group">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -83,77 +83,24 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
-@* Cai nay khong xai *@
-<div class="modal fade" id="modal-group-comment-datass" style="display: none">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-                <h4 class="modal-title">Remark</h4>
-            </div>
-            <div class="modal-body">
-                <div>
-                    <div class="box-body" id="comparechart">
-                        <div class="form-group">
-                            <label for="remark">Content:</label>
-                            <textarea style="font-weight:bold;color:#ff0000;font-size:16px" class="form-control" rows="20" id="remark"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="comment">Comment:</label>
-                            <input type="text" name="name" class="form-control comment" value="" />
-                        </div>
-                    </div>
-                    <!-- /.box-body -->
-                    <div class="box-footer">
-                        <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
 
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-@* Cai nay khong xai *@
-<div class="modal fade " id="modal-group-comment-datas" style="display: none">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-                <h4 class="modal-title">Remark</h4>
-            </div>
-            <div class="modal-body">
-                <div id="comments-container"></div>
-            </div>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-
-<div class="modal fade modal-window modal" id="modal-group-comment-data" style="display: none">
+<div class="modal fade modal" id="modal-group-comment-data" >
     <div class="modal-dialog modal-lg" style="width:90%">
         <div class="modal-content">
             <div class="modal-header" style="background-color:#25708d;color:#fff">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                 <h4 class="modal-title">Remark</h4>
             </div>
             <div class="modal-body">
+              
 
                 <div class="row bootstrap snippets">
                     <div class="col-md-12 col-sm-12">
                         <div class="comment-wrapper">
                             <div class="panel panel-info">
                                 @*<div class="panel-heading">
-                                        Comment panel
-                                    </div>*@
+                            Comment panel
+                        </div>*@
                                 <div class="panel-body">
                                     <span class="dataid" style="display:none"></span>
                                     <div class="form-group">
@@ -163,21 +110,6 @@
                                     <div class="clearfix"></div>
                                     <hr>
                                     <ul class="media-list" id="media-list">
-                                        @*<li class="media">
-                                                <a href="#" class="pull-left">
-                                                    <img src="https://bootdey.com/img/Content/user_1.jpg" alt="" class="img-circle">
-                                                </a>
-                                                <div class="media-body">
-                                                    <span class="text-muted pull-right">
-                                                        <small class="text-muted">30 min ago</small>
-                                                    </span>
-                                                    <strong class="text-success">MartinoMont</strong>
-                                                    <p>
-                                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                                        Lorem ipsum dolor sit amet, <a href="#">#consecteturadipiscing </a>.
-                                                    </p>
-                                                </div>
-                                            </li>*@
                                     </ul>
                                 </div>
                             </div>
@@ -188,35 +120,109 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                @*<a href="#modal-group-comment-data2" data-toggle="modal" data-dismiss="modal" class="btn btn-primary">Next</a>*@
             </div>
         </div>
         <!-- /.modal-content -->
     </div>
     <!-- /.modal-dialog -->
 </div>
-<div class="modal fade modal-window modal" id="modal-group-comment-data2" style="display: none">
-    <div class="modal-dialog modal-lg" style="width:90%">
+<div class="modal fade modal-window modal" id="modal-group-comment-data2" >
+    <div class="modal-dialog modal-lg" style="width:95%">
         <div class="modal-content">
             <div class="modal-header" style="background-color:#8d0404;color:#fff">
+                <span class="commentid" style="display:none"></span>
+
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
-                <h4 class="modal-title">Task</h4>
+                <h4 class="modal-title">Action plan</h4>
             </div>
             <div class="modal-body">
-                <div id="lobilist-examples">
-            <div>
-                <div class="bs-example">
-                    <div id="todo-lists-demo-datepicker"></div>
-                </div>
-            </div>
-        </div>
-                @*<div>
-                    <div class="bs-example">
-                        <div id="todo-lists-demo-events"></div>
+                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                    <li class="nav-item active">
+                        <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home"  >List</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" >Add</a>
+                    </li>
+                   
+                </ul>
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade active in" id="pills-home">
+                        <div class="listTask">
+                            <table class="table table-condensed table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 10px">No.</th>
+                                        <th>Title</th>
+                                        <th>Descriptions</th>
+                                        <th>Group of people responsible </th>
+                                        <th style="width: 100px">Due date</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="tblActionPlan">
+                                    <tr>
+                                        <td>1.</td>
+                                        <td>To do list</td>
+                                        <td>
+                                            <ul>
+                                                <li>
+                                                    Ambitioni dedisse scripsisse iudicaretur. Cras mattis iudicium purus sit amet fermentum.
+                                                </li>
+                                                <li>
+                                                    Ambitioni dedisse scripsisse iudicaretur. Cras mattis iudicium purus sit amet fermentum.
+                                                </li>
+                                                <li>
+                                                    Ambitioni dedisse scripsisse iudicaretur. Cras mattis iudicium purus sit amet fermentum.
+                                                </li>
+                                                <li>
+                                                    Ambitioni dedisse scripsisse iudicaretur. Cras mattis iudicium purus sit amet fermentum.
+                                                </li>
+                                            </ul>
+                                        </td>
+                                        <td>swook, peter, henry</td>
+                                        <td>20-10-2019</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>*@
+                    <div class="tab-pane fade" id="pills-profile" >
+                        <div class="addTask">
+                            <!-- text input -->
+                            <div class="form-group">
+                                <label>Title</label>
+                                <input type="text" class="form-control Title" placeholder="Enter ...">
+                            </div>
+
+                            <!-- textarea -->
+                            <div class="form-group">
+                                <label>Description</label>
+                                <div class="editable Description" style="border:1px solid #d2d6de" contenteditable="true">
+                                    <ul style="list-style: decimal;padding-left: 20px;">
+                                        <li>Enter...</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+
+                            <!-- input states -->
+                            <div class="form-group has-success">
+                                <label class="control-label" for="Tag"><i class="fa fa-check"></i> Tag username</label>
+                                <textarea type="text" class="form-control Tag"   id="Tag" placeholder="Enter ..."></textarea>
+                                <span class="help-block">Notification to user</span>
+                            </div>
+
+                            <!-- radio -->
+                            <div class="form-group">
+                                <label>Due date</label>
+                                <input type="date" class="form-control DueDate" />
+                            </div>
+                            <button type="button" class="btn btn-success btnSaveActionPlan">Save</button>
+
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -228,65 +234,3 @@
     <!-- /.modal-dialog -->
 </div>
 
-<div class="modal fade modal-window modal" id="modal-group-comment-data3" style="display: none">
-    <div class="modal-dialog modal-lg" style="width:90%">
-        <div class="modal-content">
-            <div class="modal-header" style="background-color:#8d0404;color:#fff">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-                <h4 class="modal-title">Task</h4>
-            </div>
-            <div class="modal-body">
-                <div class="row bootstrap snippets">
-                    <div class="col-md-12 col-sm-12">
-                        <div class="comment-wrapper">
-                            <div class="panel panel-info">
-                                @*<div class="panel-heading">
-                                        Comment panel
-                                    </div>*@
-                                <div class="panel-body">
-                                    <span class="dataid" style="display:none"></span>
-                                    <div class="form-group">
-                                        <textarea class="form-control" id="comment2" placeholder="write a comment..." rows="6"></textarea>
-
-                                    </div>
-                                    <button type="button" class="btn btn-info pull-right btnComment2">Post</button>
-                                    <div class="clearfix"></div>
-                                    <hr>
-                                    <ul class="media-list" id="media-list">
-                                        <li class="media">
-                                            <a href="#" class="pull-left">
-                                                <img src="https://bootdey.com/img/Content/user_1.jpg" alt="" class="img-circle">
-                                            </a>
-                                            <div class="media-body">
-                                                <span class="text-muted pull-right">
-                                                    <small class="text-muted">30 min ago</small>
-                                                </span>
-                                                <strong class="text-success">MartinoMont</strong>
-
-                                                <p>
-                                                    <button type="button" class="text-success btn-xs btn btn-success">Task</button>
-
-                                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                                    Lorem ipsum dolor sit amet, <a href="#">#consecteturadipiscing </a>.
-                                                </p>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <a href="#modal-group-comment-data" data-toggle="modal" data-dismiss="modal" class="btn btn-primary">Back to remark</a>
-            </div>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>

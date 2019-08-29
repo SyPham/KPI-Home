@@ -18,8 +18,8 @@
 @Html.Raw(BreadCrumb.Display())
 @section Scripts{
     <script type="text/javascript">
-         
-        $('.btn-skype').unbind().click(function () {
+
+        $('.btn-skype').unbind('click').on('click',function () {
             window.location = 'skype:some_skype_user?chat';
         });
         var labelString;
@@ -367,7 +367,19 @@ var chartperiodController = {
     },
 
     registerEvent() {
+       
 
+        $('.btnTask').unbind('click').on('click', function () {
+            var commentid = $(this).data('commentid');
+            $(".commentid").text(commentid)
+           var commentid = $(this).data('commentid');
+          var dataid = Number($('.dataid').text());
+            chartperiodController.LoadDataActionPlan(dataid,commentid);
+        });
+
+        $('.btnSaveActionPlan').unbind('click').on('click', function () {
+            chartperiodController.addActionPlan();
+        })
         $('#lastRemark').off('keypress').on('keypress', function (e) {
             if (e.keyCode === 13) {
                 chartperiodController.updateRemark();
@@ -572,6 +584,7 @@ var chartperiodController = {
             if (number > 0 && number < standard) {
 
                 $('#modal-group-comment-data').modal('show');
+
                 var id = $(this).data('id');
                 $('.dataid').text(id);
 
@@ -582,7 +595,7 @@ var chartperiodController = {
 
             }
         });
-        $('#modal-group-comment-data').unbind().on('hidden.bs.modal', function () {
+        $('#modal-group-comment-data').on('hidden.bs.modal', function () {
             console.log("da add comment");
             var userid = $('#user').data('userid');
             var dataid  =Number($('.dataid').text())
@@ -609,8 +622,7 @@ var chartperiodController = {
                     tdt.setMonth(0, 1 + ((4 - tdt.getDay()) + 7) % 7);
                 }
                 return 1 + Math.ceil((firstThursday - tdt) / 604800000);
-            }
-    ,
+            },
     search() {
           if ("@period" === "W")
                     window.location.href = "/ChartPeriod/?kpilevelcode=@kpilevelcode&period=@period&year="+Number($("#weekOfYear").val())+"&start=" + Number($("#startWeek").val()) + "&end=" + Number($("#endWeek").val());
@@ -624,45 +636,130 @@ var chartperiodController = {
           if ("@period" === "Y")
                    window.location.href = "/ChartPeriod/?kpilevelcode=@kpilevelcode&period=@period&year=0&start=" + Number($("#startYear").val()) + "&end=" + Number($("#endYear").val());
     },
-    //add-task
-    addTask() {
-        if ($('#comment').val() == "") {
-            Swal.fire({
-                title: 'Warning!',
-                text: 'Please enter message!',
-                type: 'warning',
-                confirmButtonText: 'OK'
-            });
-            return;
-        }
-        var cmt = $('#comment').val();
-
-        var mObj = {
-            DataID: Number($('.dataid').text()),
-            CommentMsg: $('#comment').val(),
-            UserID: Number($("#user").data('userid')),
-            DataID: dataid,
-            Content: content,
-            Title: title,
-            ApprovedBy: approvedBy,
-            Deadline: deadline,
-        };
-        $.ajax({
-            url: "/ChartPeriod/AddComment",
-            data: JSON.stringify(mObj),
-            type: "POST",
-            contentType: "application/json;charset=utf-8",
-            dataType: "json",
-            success: function (result) {
-                $('#comment').val("");
-                chartperiodController.loadDataComment();
+    LoadDataActionPlan(dataid,commentid) {
+         
+        $.post('GetAll',
+            {
+                DataID:dataid ,
+                CommentID:commentid
             },
-            error: function (errormessage) {
-                //console.log(errormessage.responseText);
-            }
+            function (res) {
+             console.log(res);
+           if (res.status) {
+            var data = res.data;
+              
+                var html = '';
+                $.each(data, function (i, item) {
+                    html += '<tr>';
+                        html += '<td>'+(i+1)+'</td>';
+                    html += '<td>' + item.Title + '</td>';
+                    html += '<td>';
+                    if (item.Description.length > 0) {
+                        var array = item.Description.trim(';').split(';');
+                       
+                            html += '<ul>';
+                        $.each(array, function (i, item2) {
+                            if (item2.trim().length > 0) {
+                                html += '<li>'+item2+'</li>';
+                            }
+                              
+                        })
+                            html += '</ul>';
+                    }
+                 
+                        html += '</td>';
+                        html += '<td>swook, peter, henry</td>';
+                        html += '<td>'+item.Deadline+'</td>';
+                    html += '</tr>';
+                });
+                $('.tblActionPlan').empty();
+               $('.tblActionPlan').append(html);
+               chartperiodController.registerEvent();
+           }
+       });
+    },
+    //add-task
+    addActionPlan() {
+         var res = chartperiodController.validate();
+        if (res === false) {
+            return false;
+        }
+        var KPILevelCodeAndPeriod = chartperiodController.getUrlParameter('kpilevelcode') + chartperiodController.getUrlParameter('period');
+                var phrases = [];
+
+        $('.Description').each(function(){
+            var phrase = '';
+            $(this).find('li').each(function(){
+                var current = $(this);
+                if(current.children().length > 0) {return true;}
+                phrase += $(this).text()+';';
+            });
+            phrases.push(phrase);
         });
-    }
+
+        var obj = {
+                UserID: $('#user').data('userid'),
+                DataID: Number($('.dataid').text()),
+                CommentID: Number($('.commentid').text()),
+                Title: $('.addTask .Title').val(),
+                Content: " ",
+                KPILevelCodeAndPeriod: KPILevelCodeAndPeriod,
+                Description: phrases,
+                Deadline: $('.addTask .DueDate').val(),
+                SubmitDate: chartperiodController.convertDate(new Date),
+            };
+       $.post('Add', { obj: obj }, function (res) {
+             console.log(res);
+           if (res) {
+               var commentid = Number($('.commentid').text());
+                var dataid = Number($('.dataid').text());
+               chartperiodController.LoadDataActionPlan(dataid,commentid);
+                 chartperiodController.resetForm();
+             }
+            });
+    },
+     convertDate: function(inputFormat) {
+          function pad(s) { return (s < 10) ? '0' + s : s; }
+          var d = new Date(inputFormat);
+          return [pad(d.getDate()), pad(d.getMonth()+1), d.getFullYear()].join('/');
+        }
     ,
+      resetForm: function () {
+        $('.Title').val("");
+       $('.Description').each(function(){
+           $(this).find('li').remove();
+       });
+            $('.Description ul').append("<li>Enter...</li>")
+        $('.DueDate').val("");
+        $('.Title').css('border-color', 'lightgrey');
+        $('.DueDate').css('border-color', 'lightgrey');
+
+    },
+    validate: function () {
+        var isValid = true;
+        if ($('.Title').val().trim() === "") {
+            $('.Title').css('border-color', 'Red');
+            isValid = false;
+        }
+        else {
+            $('.Title').css('border-color', 'lightgrey');
+        }
+        //if ($('.Description').val().trim() === "") {
+        //    $('.Description').css('border-color', 'Red');
+        //    isValid = false;
+        //}
+        //else {
+        //    $('.Description').css('border-color', 'lightgrey');
+        //}
+        if ($('.DueDate').val().trim() === "") {
+            $('.DueDate').css('border-color', 'Red');
+            isValid = false;
+        }
+        else {
+            $('.DueDate').css('border-color', 'lightgrey');
+        }
+        return isValid;
+    },
     addData() {
         if ($('#comment').val() == "") {
             Swal.fire({
@@ -752,8 +849,24 @@ var chartperiodController = {
             var userid = $('#user').data('userid');
 
            var users = data.users;
-                //console.log(data)
 
+             $('#Tag').suggest('@@', {
+                filter: {
+                    casesensitive: true,
+                    limit:10
+                },
+                data: users,
+               map: function (user) {
+                    return {
+                      value: user.Username,
+                      text: '<strong>Username: '+user.Username+' - </strong> <small>Full name :'+user.FullName+'</small>'
+                    }
+                },
+                //onselect: function (e, item) {
+                //    console.log(item)
+                //},
+
+                })
             $('#comment').suggest('@@', {
                 filter: {
                     casesensitive: true,
@@ -860,7 +973,7 @@ var chartperiodController = {
 
                 ///Lấy tất cả KPILevelCode và period khi click ghép lại thành chuỗi cách nhau bởi dấu (-) để gửi lên server.
                  var old="";
-                $('#comparechart .compare').unbind().change(function (e) {
+                $('#comparechart .compare').unbind('click').change(function (e) {
                     var code = $(this).val();
                     if (old.indexOf($(this).val()) == -1) {
                         old += code + '-';
@@ -941,7 +1054,7 @@ var chartperiodController = {
                          html += '<span class="label bg-green"> new</span>';
                      }
 
-                     html += '<p><a href="#modal-group-comment-data2" data-toggle="modal" data-dismiss="modal" class="btn btn-xs btn-warning text-bold"><i class="fa fa-tags"></i> Task</a> </p>';
+                     html += '<p><a href="#modal-group-comment-data2" data-toggle="modal" data-commentid="'+item.CommentID+'" data-dismiss="modal" class="btn btn-xs btn-warning text-bold btnTask"><i class="fa fa-tags"></i> Task</a> </p>';
                     html += '<p>';
                     html += item.CommentMsg;
                      html += '</p>';
@@ -950,7 +1063,7 @@ var chartperiodController = {
                 });
                 $('#media-list').empty();
                 $('#media-list').append(html);
-
+                chartperiodController.registerEvent();
             },
             error: function (err) {
             }

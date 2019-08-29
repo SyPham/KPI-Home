@@ -212,7 +212,7 @@ $(function () {
             item = me._processItemData(item);
             if (me.$globalOptions.actions.insert) {
                 $.ajax(me.$globalOptions.actions.insert, {
-                    data: item,
+                    data: JSON.stringify(item),
                     method: 'POST'
                 })
                 //res is JSON object of format {"success": Boolean, "id": Number, "msg": String}
@@ -246,13 +246,14 @@ $(function () {
          * @returns {List}
          */
         updateItem: function (item, errorCallback) {
+       
             var me = this;
             if (me._triggerEvent('beforeItemUpdate', [me, item]) === false) {
                 return me
             }
             if (me.$globalOptions.actions.update) {
                 $.ajax(me.$globalOptions.actions.update, {
-                    data: item,
+                    data: JSON.stringify(item),
                     method: 'POST'
                 })
                 //res is JSON object of format {"id": Number, "success": Boolean, "msg": String}
@@ -290,7 +291,7 @@ $(function () {
             }
             if (me.$globalOptions.actions.delete) {
                 return me._sendAjax(me.$globalOptions.actions.delete, {
-                    data: item,
+                    data: JSON.stringify(item),
                     method: 'POST'
                 })
                 //res is JSON object of format
@@ -1223,19 +1224,30 @@ $(function () {
          * @method getNextListId
          * @returns {Number}
          */
+        //getNextListId: function () {
+        //    var $lists = this.$el.find('.lobilist');
+        //    var maxId = 0;
+        //    $lists.each(function(index, item){
+        //        var $list = $(item).data('lobiList');
+        //        if ($list.getId().indexOf('lobilist-list-') === 0 &&
+        //            parseInt($list.getId().replace('lobilist-list-')) > maxId){
+        //            maxId = parseInt($list.getId().replace('lobilist-list-'));
+        //        }
+        //    });
+        //    return 'lobilist-list-' + (maxId + 1);
+        //},
         getNextListId: function () {
             var $lists = this.$el.find('.lobilist');
             var maxId = 0;
-            $lists.each(function(index, item){
+            $lists.each(function (index, item) {
                 var $list = $(item).data('lobiList');
-                if ($list.getId().indexOf('lobilist-list-') === 0 &&
-                    parseInt($list.getId().replace('lobilist-list-')) > maxId){
-                    maxId = parseInt($list.getId().replace('lobilist-list-'));
+                if ($list.getId() === 0 &&
+                    parseInt($list.getId()) > maxId) {
+                    maxId = parseInt($list.getId());
                 }
             });
-            return 'lobilist-list-' + (maxId + 1);
+            return maxId + 1;
         },
-
         getListsPositions: function(){
             var positions = {};
             var $lists = this.$el.find('.lobilist-wrapper');
