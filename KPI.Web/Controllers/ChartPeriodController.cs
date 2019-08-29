@@ -89,7 +89,7 @@ namespace KPI.Web.Controllers
         }
         public JsonResult LoadToDo()
         {
-            return Json(new ActionPlanDAO().GetAll(), JsonRequestBehavior.AllowGet);
+            return Json("", JsonRequestBehavior.AllowGet);
         }
         public JsonResult Update(ActionPlan item)
         {
@@ -101,7 +101,7 @@ namespace KPI.Web.Controllers
             item.Title = obj.Title;
             item.Description = obj.Description;
             item.KPILevelCodeAndPeriod = obj.KPILevelCodeAndPeriod;
-            item.Content = obj.Content;
+            item.Tag = obj.Tag;
             item.UserID = obj.UserID;
             item.DataID = obj.DataID;
             item.CommentID = obj.CommentID;

@@ -18,7 +18,12 @@
 @Html.Raw(BreadCrumb.Display())
 @section Scripts{
     <script type="text/javascript">
+            $("#modal-group-comment-data").on("shown.bs.modal", function () {
 
+        $("body").addClass("modal-open");
+    }).on("hidden.bs.modal", function () {
+        $("body").removeClass("modal-open");
+    });
         $('.btn-skype').unbind('click').on('click',function () {
             window.location = 'skype:some_skype_user?chat';
         });
@@ -367,7 +372,7 @@ var chartperiodController = {
     },
 
     registerEvent() {
-       
+
 
         $('.btnTask').unbind('click').on('click', function () {
             var commentid = $(this).data('commentid');
@@ -612,7 +617,7 @@ var chartperiodController = {
               var m = Math.floor(d.getMonth()/3) + 2;
               return m > 4? m - 4 : m;
             },
-     getDateOfWeekInYear(dt) {
+    getDateOfWeekInYear(dt) {
                 var tdt = new Date(dt.valueOf());
                 var dayn = (dt.getDay() + 6) % 7;
                 tdt.setDate(tdt.getDate() - dayn + 3);
@@ -637,7 +642,7 @@ var chartperiodController = {
                    window.location.href = "/ChartPeriod/?kpilevelcode=@kpilevelcode&period=@period&year=0&start=" + Number($("#startYear").val()) + "&end=" + Number($("#endYear").val());
     },
     LoadDataActionPlan(dataid,commentid) {
-         
+
         $.post('GetAll',
             {
                 DataID:dataid ,
@@ -647,28 +652,35 @@ var chartperiodController = {
              console.log(res);
            if (res.status) {
             var data = res.data;
-              
+
                 var html = '';
                 $.each(data, function (i, item) {
                     html += '<tr>';
                         html += '<td>'+(i+1)+'</td>';
-                    html += '<td>' + item.Title + '</td>';
+                    html += '<td class="text-bold" style="padding-left:15px;">' + item.Title + '</td>';
                     html += '<td>';
                     if (item.Description.length > 0) {
                         var array = item.Description.trim(';').split(';');
-                       
+
                             html += '<ul>';
                         $.each(array, function (i, item2) {
                             if (item2.trim().length > 0) {
                                 html += '<li>'+item2+'</li>';
                             }
-                              
+
                         })
                             html += '</ul>';
                     }
-                 
+
+                    html += '</td>';
+                    html += '<td>';
+                      if (item.Tag!== undefined) {
+                            var array2 = item.Tag.split(',');
+                            $.each(array2, function (i, item2) {
+                              html += '<span class="badge bg-green text-bold">' +item2+ '</span> ';
+                            })
+                        }
                         html += '</td>';
-                        html += '<td>swook, peter, henry</td>';
                         html += '<td>'+item.Deadline+'</td>';
                     html += '</tr>';
                 });
@@ -702,7 +714,7 @@ var chartperiodController = {
                 DataID: Number($('.dataid').text()),
                 CommentID: Number($('.commentid').text()),
                 Title: $('.addTask .Title').val(),
-                Content: " ",
+                Tag: $('.listTag').text(),
                 KPILevelCodeAndPeriod: KPILevelCodeAndPeriod,
                 Description: phrases,
                 Deadline: $('.addTask .DueDate').val(),
@@ -722,15 +734,16 @@ var chartperiodController = {
           function pad(s) { return (s < 10) ? '0' + s : s; }
           var d = new Date(inputFormat);
           return [pad(d.getDate()), pad(d.getMonth()+1), d.getFullYear()].join('/');
-        }
-    ,
-      resetForm: function () {
+        },
+    resetForm: function () {
         $('.Title').val("");
        $('.Description').each(function(){
            $(this).find('li').remove();
        });
             $('.Description ul').append("<li>Enter...</li>")
         $('.DueDate').val("");
+        $('.listTag').val("");
+         $('.Tag').val("");
         $('.Title').css('border-color', 'lightgrey');
         $('.DueDate').css('border-color', 'lightgrey');
 
@@ -847,7 +860,7 @@ var chartperiodController = {
         $.post("/ChartPeriod/Remark", { dataid: id }, function (data) {
             var result = data.model;
             var userid = $('#user').data('userid');
-
+             var arrays = [];
            var users = data.users;
 
              $('#Tag').suggest('@@', {
@@ -859,14 +872,20 @@ var chartperiodController = {
                map: function (user) {
                     return {
                       value: user.Username,
-                      text: '<strong>Username: '+user.Username+' - </strong> <small>Full name :'+user.FullName+'</small>'
+                      text: '<strong>Username: '+user.Username+' - </strong> <small>Full name : '+user.FullName+'</small>'
                     }
                 },
-                //onselect: function (e, item) {
-                //    console.log(item)
-                //},
+                onselect: function (e, item) {
+                    var arr = '';
+                    arr += item.value;
+                    arrays.push(arr)
+                    console.log(arrays);
+                    $('.listTag').text(arrays);
+                },
 
-                })
+
+             })
+
             $('#comment').suggest('@@', {
                 filter: {
                     casesensitive: true,

@@ -12,7 +12,7 @@
         }
         return 1 + Math.ceil((firstThursday - tdt) / 604800000);
     };
-    $('[data-toggle="tooltip"]').tooltip(); 
+    $('[data-toggle="tooltip"]').tooltip();
     $('.monthly').datetimepicker({
         format: 'MM/DD/YYYY'
     });
@@ -56,6 +56,6 @@
     });
 
 
-    
+
 });
 

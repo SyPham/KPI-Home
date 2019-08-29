@@ -18,7 +18,8 @@ namespace KPI.Model.EF
         public string Title { get; set; }
         public string KPILevelCodeAndPeriod { get; set; }
         public string Description { get; set; }
-        public string Content { get; set; }
+        [Column("Tag")]
+        public string Tag { get; set; }
         public int ApprovedBy { get; set; }
 
         private DateTime? createTime = null;
@@ -39,6 +40,6 @@ namespace KPI.Model.EF
 
         public bool Status { get; set; }
         public bool ApprovedStatus { get; set; }
-        public int ActionPlanCategoryID { get; set; }
+
     }
 }

@@ -1,4 +1,7 @@
-﻿#ListKPI {
+﻿body.modal-open {
+    overflow: hidden;
+}
+#ListKPI {
     height: 300px;
     overflow-y: scroll;
 }
@@ -325,3 +328,22 @@ thead tr th {
 
 /*To Do List*/
 /* Remove margins and padding from the list */
+.Description ul, .tblActionPlan ul {
+    list-style: decimal;
+
+
+}
+
+    .Description ul li, .tblActionPlan ul li {
+        font-size: 16px;
+        font-weight: 600;
+    }
+/* Important part */
+.modal-dialog {
+    overflow-y: initial !important
+}
+
+.modal-content {
+    max-height: calc(100vh - 50px);
+    overflow-y: auto !important;
+}

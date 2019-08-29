@@ -15,7 +15,7 @@ namespace KPI.Model.ViewModel
         public string Title { get; set; }
         public string KPILevelCodeAndPeriod { get; set; }
         public string Description { get; set; }
-        public string Content { get; set; }
+        public string Tag { get; set; }
 
         public string Deadline { get; set; }
         public string SubmitDate { get; set; }

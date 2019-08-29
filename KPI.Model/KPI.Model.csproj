@@ -194,6 +194,10 @@
     <Compile Include="Migrations\201908280416145_actionplanecate3.Designer.cs">
       <DependentUpon>201908280416145_actionplanecate3.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201908291607182_removeACtionCategory.cs" />
+    <Compile Include="Migrations\201908291607182_removeACtionCategory.Designer.cs">
+      <DependentUpon>201908291607182_removeACtionCategory.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModel\ActionPlanViewModel.cs" />
@@ -290,6 +294,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201908280416145_actionplanecate3.resx">
       <DependentUpon>201908280416145_actionplanecate3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908291607182_removeACtionCategory.resx">
+      <DependentUpon>201908291607182_removeACtionCategory.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

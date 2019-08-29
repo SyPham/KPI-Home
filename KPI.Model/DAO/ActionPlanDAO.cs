@@ -82,31 +82,6 @@ namespace KPI.Model.DAO
             }
 
         }
-        public object GetAll()
-        {
-            var lvm = new List<ActionPlanCategoryViewModel>();
-            var model = _dbContext.ActionPlanCategories.ToList();
-            var model2 = _dbContext.ActionPlans.ToList().Select(x => new ActionPlanViewModel
-            {
-                id = x.ID,
-                title = x.Title,
-                description = x.Description,
-                done = x.Status,
-                dueDate = x.Deadline.ToSafetyString().Split(' ')[0],
-                listId = x.ActionPlanCategoryID.ToSafetyString()
-            }).ToList();
-
-            foreach (var item in model)
-            {
-                var vm = new ActionPlanCategoryViewModel();
-                vm.id =item.ID.ToSafetyString();
-                vm.title = item.Title;
-                vm.items = model2.Where(x => x.listId == item.ID.ToSafetyString()).ToArray();
-                lvm.Add(vm);
-            }
-            var arr = lvm.ToArray();
-            return new { lists = lvm.ToArray() };
-        }
         public object GetAll(int DataID, int CommentID)
         {
             var model = _dbContext.ActionPlans
@@ -117,7 +92,7 @@ namespace KPI.Model.DAO
                     ID = x.ID,
                     Title = x.Title,
                     Description = x.Description,
-                    Content = x.Content,
+                    Tag = x.Tag,
                     Deadline = x.Deadline.ToString("dd/MM/yyyy")
                 }).ToList();
             return new {
