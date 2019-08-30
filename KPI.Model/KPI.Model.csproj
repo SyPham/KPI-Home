@@ -67,7 +67,7 @@
     <Compile Include="Abstract\Inheritance .cs" />
     <Compile Include="Abstract\Link.cs" />
     <Compile Include="DAO\ActionPlanDAO.cs" />
-    <Compile Include="EF\ActionPlanCategory.cs" />
+    <Compile Include="DAO\AdminCategoryDAO.cs" />
     <Compile Include="EF\ActionPlan.cs" />
     <Compile Include="EF\CommentChart.cs" />
     <Compile Include="EF\CommentChartDetail.cs" />
@@ -75,7 +75,6 @@
     <Compile Include="helpers\ConfigHelper.cs" />
     <Compile Include="DAO\FavouriteDAO.cs" />
     <Compile Include="DAO\DataChartDAO.cs" />
-    <Compile Include="DAO\AdminCategoryDAO.cs" />
     <Compile Include="DAO\KPIDAO.cs" />
     <Compile Include="DAO\LevelDAO.cs" />
     <Compile Include="DAO\UploadDAO.cs" />

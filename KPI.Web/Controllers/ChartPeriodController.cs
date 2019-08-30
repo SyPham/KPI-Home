@@ -117,5 +117,13 @@ namespace KPI.Web.Controllers
         {
             return Json(new ActionPlanDAO().GetAll(DataID,CommentID), JsonRequestBehavior.AllowGet);
         }
+        public JsonResult GetByID(int id)
+        {
+            return Json(new ActionPlanDAO().GetByID(id), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult Approval(int id,int approveby)
+        {
+            return Json(new ActionPlanDAO().Approval(id,approveby), JsonRequestBehavior.AllowGet);
+        }
     }
 }

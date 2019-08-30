@@ -8,6 +8,7 @@ namespace KPI.Model.ViewModel
 {
     public class ActionPlanViewModel2
     {
+        public int ID { get; set; }
         public int UserID { get; set; }
         public int DataID { get; set; }
         public int CommentID { get; set; }

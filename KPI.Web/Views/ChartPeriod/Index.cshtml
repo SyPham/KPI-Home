@@ -600,7 +600,7 @@ var chartperiodController = {
 
             }
         });
-        $('#modal-group-comment-data').on('hidden.bs.modal', function () {
+        $('#modal-group-comment-data').off('hidden.bs.modal').on('hidden.bs.modal', function () {
             console.log("da add comment");
             var userid = $('#user').data('userid');
             var dataid  =Number($('.dataid').text())
@@ -611,6 +611,7 @@ var chartperiodController = {
         $('.btnComment').off('click').on('click', function () {
             chartperiodController.addData();
         });
+
     },
     getCurrentQuarter(d) {
               d = d || new Date();
@@ -641,6 +642,45 @@ var chartperiodController = {
           if ("@period" === "Y")
                    window.location.href = "/ChartPeriod/?kpilevelcode=@kpilevelcode&period=@period&year=0&start=" + Number($("#startYear").val()) + "&end=" + Number($("#endYear").val());
     },
+    getByID: function (actionplaneID) {
+        var value = actionplaneID;
+        $.ajax({
+            url: "/ChartPeriod/GetByID/",
+            data: { id: JSON.stringify(value) },
+            type: "GET",
+            contentType: "application/json;charset=UTF-8",
+            dataType: "json",
+            success: function (res) {
+                $('.addTask .Title').val(res.Title);
+                if (res.Description !== undefined) {
+                    let arr = res.Description.split(';');
+                    $.each(arr,function(i, item) {
+                         $('.addTask .Description ul').append("<li>"+item+"</li>")
+                    })
+
+                }
+                if (res.Tag !== null) {
+                    var arr2 = res.Tag.split(',');
+                    var value = '';
+                    $.each(arr2, function (i, item) {
+                        if (item.length > 1)
+                            value += '@@' + item + ' ';
+                    })
+                    $('.addTask .Tag').val(value);
+                }
+                else {
+                     $('.addTask .Tag').val("");
+                }
+
+                 $('.addTask .ID').val(res.ID);
+                $('.listTag').val(res.Tag);
+                $('.addTask .DueDate').val(res.Deadline);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    },
     LoadDataActionPlan(dataid,commentid) {
 
         $.post('GetAll',
@@ -659,13 +699,13 @@ var chartperiodController = {
                         html += '<td>'+(i+1)+'</td>';
                     html += '<td class="text-bold" style="padding-left:15px;">' + item.Title + '</td>';
                     html += '<td>';
-                    if (item.Description.length > 0) {
+                    if (item.Description !== null) {
                         var array = item.Description.trim(';').split(';');
 
                             html += '<ul>';
-                        $.each(array, function (i, item2) {
-                            if (item2.trim().length > 0) {
-                                html += '<li>'+item2+'</li>';
+                        $.each(array, function (i, item) {
+                            if (item.trim().length > 0) {
+                                html += '<li>'+item+'</li>';
                             }
 
                         })
@@ -674,14 +714,56 @@ var chartperiodController = {
 
                     html += '</td>';
                     html += '<td>';
-                      if (item.Tag!== undefined) {
-                            var array2 = item.Tag.split(',');
-                            $.each(array2, function (i, item2) {
-                              html += '<span class="badge bg-green text-bold">' +item2+ '</span> ';
+
+                    if (item.Tag !== null) {
+                          var array2 = item.Tag.split(',');
+
+                          $.each(array2, function (i, item2) {
+
+                              if (item2.length > 1) {
+                              html += '<span class="badge bg-default text-bold">' +item2+ '</span> ';
+                              }
                             })
                         }
-                        html += '</td>';
-                        html += '<td>'+item.Deadline+'</td>';
+                    html += '</td>';
+                    html += '<td>' + item.Deadline + '</td>';
+                     html += '<td > ';
+                              html += '<div class="pretty p-icon p-round p-pulse">';
+                              html += '<input type="checkbox" />';
+                              html += '<div class="state p-success">';
+                                  html += '<i class="icon fa fa-check"></i>';
+                                  html += '<label>Done</label>';
+                              html += '</div>';
+                          html += '</div>';
+
+                     html += '</td > ';
+                    html += '<td> <div class="pretty p-icon p-round p-jelly">';
+                      if (item.ApprovedStatus) {
+                        html += '<input type="checkbox" checked onclick="chartperiodController.approval('+item.ID+')" class="btnApproveActionPlan" />';
+                        html += '<div class="state p-success">';
+                        html += '<i class="icon fa fa-check"></i>';
+                        html += '<label class="black">Approved</label>';
+                      }
+                      else {
+                          html += '<input type="checkbox" onclick="chartperiodController.approval('+item.ID+')" class="btnApproveActionPlan" />';
+                          html += '<div class="state p-danger">';
+                          html += '<i class="icon fa fa-check"></i>';
+                          html += '<label class="black">Not approved</label>';
+                    }
+                               
+                    html += '</div>';
+                    html += '</div >';
+                    html += '</td > ';
+                   
+                    html += '<td>';
+                    html +='<div class="btn-group">';
+                    html +='<button type="button" onclick="chartperiodController.getByID('+item.ID+')" class="btn btn-success btn-sm btnEditActionPlan"><i class="fa fa-edit"></i></button>';
+                    html +='<button type="button"  onclick="chartperiodController.getByID('+item.ID+')" class="btn btn-warning btn-sm btnDeleteActionPlan"><i class="fa fa-remove"></i></button>';
+                        //html +='<button type="button" class="btn btn-info">1</button>';
+                    html +='</div>';
+                    html += '</div>';
+
+                    html += '</td>';
                     html += '</tr>';
                 });
                 $('.tblActionPlan').empty();
@@ -692,43 +774,86 @@ var chartperiodController = {
     },
     //add-task
     addActionPlan() {
-         var res = chartperiodController.validate();
-        if (res === false) {
-            return false;
-        }
-        var KPILevelCodeAndPeriod = chartperiodController.getUrlParameter('kpilevelcode') + chartperiodController.getUrlParameter('period');
-                var phrases = [];
+        var id = $('.addTask .ID').val();
+        console.log(id);
+               var res = chartperiodController.validate();
+            if (res === false) {
+                return false;
+            }
+            var KPILevelCodeAndPeriod = chartperiodController.getUrlParameter('kpilevelcode') + chartperiodController.getUrlParameter('period');
+                    var phrases = new Array();
+        //Dung de tham khao
+            //$('.Description').each(function(){
+            //    var phrase = '';
+            //    $(this).find('li').each(function(){
+            //        var current = $(this);
+            //        if(current.children().length > 0) {return true;}
+            //        phrase += $(this).text();
+            //    });
+            //    phrases.push(phrase);
+            //});
+         $('.Description').each(function(){
+                $(this).find('li').each(function(){
+                    var current = $(this);
+                    if(current.children().length > 0) {return true;}
+                     phrases.push($(this).text().trim());
+                });
 
-        $('.Description').each(function(){
-            var phrase = '';
-            $(this).find('li').each(function(){
-                var current = $(this);
-                if(current.children().length > 0) {return true;}
-                phrase += $(this).text()+';';
             });
-            phrases.push(phrase);
-        });
-
+       var Description= phrases.join(';');
         var obj = {
-                UserID: $('#user').data('userid'),
-                DataID: Number($('.dataid').text()),
-                CommentID: Number($('.commentid').text()),
-                Title: $('.addTask .Title').val(),
-                Tag: $('.listTag').text(),
-                KPILevelCodeAndPeriod: KPILevelCodeAndPeriod,
-                Description: phrases,
-                Deadline: $('.addTask .DueDate').val(),
-                SubmitDate: chartperiodController.convertDate(new Date),
-            };
-       $.post('Add', { obj: obj }, function (res) {
-             console.log(res);
-           if (res) {
-               var commentid = Number($('.commentid').text());
-                var dataid = Number($('.dataid').text());
-               chartperiodController.LoadDataActionPlan(dataid,commentid);
-                 chartperiodController.resetForm();
-             }
+                    ID: id,
+                    UserID: $('#user').data('userid'),
+                    DataID: Number($('.dataid').text()),
+                    CommentID: Number($('.commentid').text()),
+                    Title: $('.addTask .Title').val(),
+                    Tag: $('.listTag').text().trim(),
+                    KPILevelCodeAndPeriod: KPILevelCodeAndPeriod,
+                    Description: Description,
+                    Deadline: $('.addTask .datepicker').datepicker({ dateFormat: 'mm-dd-yy' }).val(),
+                    SubmitDate: chartperiodController.convertDate(new Date),
+                };
+        if (id === "") {
+
+            $.post('Add', { obj: obj }, function (res) {
+                console.log(res);
+                if (res) {
+                    var commentid = Number($('.commentid').text());
+                    var dataid = Number($('.dataid').text());
+                    chartperiodController.LoadDataActionPlan(dataid, commentid);
+                    chartperiodController.resetForm();
+                }
             });
+
+        }
+        if (Number(id) > 0) {
+            $.post('Update', { obj: obj }, function (res) {
+                 console.log(res);
+               if (res) {
+                   var commentid = Number($('.commentid').text());
+                    var dataid = Number($('.dataid').text());
+                   chartperiodController.LoadDataActionPlan(dataid,commentid);
+                     chartperiodController.resetForm();
+                 }
+           });
+
+        }
+
+
+    },
+     approval(id) {      
+        if (Number(id) > 0) {
+            $.post('Approval', { id: id,approveby:$('#user').data('userid') }, function (res) {
+                 console.log(res);
+               if (res) {
+                   var commentid = Number($('.commentid').text());
+                    var dataid = Number($('.dataid').text());
+                   chartperiodController.LoadDataActionPlan(dataid,commentid);
+                     chartperiodController.resetForm();
+                 }
+           });
+
+        }
     },
      convertDate: function(inputFormat) {
           function pad(s) { return (s < 10) ? '0' + s : s; }
@@ -737,10 +862,11 @@ var chartperiodController = {
         },
     resetForm: function () {
         $('.Title').val("");
+        $('.ID').val("");
        $('.Description').each(function(){
            $(this).find('li').remove();
        });
-            $('.Description ul').append("<li>Enter...</li>")
+            $('.Description ul').append("<li></li>")
         $('.DueDate').val("");
         $('.listTag').val("");
          $('.Tag').val("");

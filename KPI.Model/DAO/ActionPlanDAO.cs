@@ -41,7 +41,26 @@ namespace KPI.Model.DAO
                 var item = _dbContext.ActionPlans.Find(entity.ID);
                 item.Title = entity.Title;
                 item.Description = entity.Description;
+                item.Tag = entity.Tag;
                 item.Deadline = entity.Deadline;
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                var message = ex.Message;
+                return false;
+            }
+
+        }
+        public bool Approve(ActionPlan entity)
+        {
+
+            try
+            {
+                var item = _dbContext.ActionPlans.Find(entity.ID);
+                item.ApprovedBy = entity.ApprovedBy;
+                item.ApprovedStatus = entity.ApprovedStatus;
                 _dbContext.SaveChanges();
                 return true;
             }
@@ -82,6 +101,35 @@ namespace KPI.Model.DAO
             }
 
         }
+        public ActionPlanViewModel2 GetByID(int id)
+        {
+            var modal = _dbContext.ActionPlans.FirstOrDefault(x => x.ID == id);
+            var vm = new ActionPlanViewModel2();
+            vm.ID = modal.ID;
+            vm.Title = modal.Title;
+            vm.Deadline = modal.Deadline.ToString("yyyy-MM-dd");
+            vm.Description = modal.Description;
+            vm.Tag = modal.Tag;
+            return vm;
+
+        }
+        public bool Approval(int id, int aproveBy)
+        {
+            var model = _dbContext.ActionPlans.FirstOrDefault(x => x.ID == id);
+            model.ApprovedBy = aproveBy;
+           model.ApprovedStatus = !model.ApprovedStatus;
+            try
+            {
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+           
+
+        }
         public object GetAll(int DataID, int CommentID)
         {
             var model = _dbContext.ActionPlans
@@ -93,9 +141,11 @@ namespace KPI.Model.DAO
                     Title = x.Title,
                     Description = x.Description,
                     Tag = x.Tag,
+                    ApprovedStatus=x.ApprovedStatus,
                     Deadline = x.Deadline.ToString("dd/MM/yyyy")
                 }).ToList();
-            return new {
+            return new
+            {
                 status = true,
                 data = model
             };

@@ -158,6 +158,9 @@
                                         <th>Descriptions</th>
                                         <th>Group of people responsible </th>
                                         <th style="width: 100px">Due date</th>
+                                        <th style="width: 100px">Task status</th>
+                                        <th style="width: 100px">Approval</th>
+                                        <th style="width: 100px">Option</th>
                                     </tr>
                                 </thead>
                                 <tbody class="tblActionPlan">
@@ -181,6 +184,8 @@
                                             </ul>
                                         </td>
                                         <td>swook, peter, henry</td>
+                                        <td></td>
+                                        <td></td>
                                         <td>20-10-2019</td>
                                     </tr>
                                 </tbody>
@@ -192,7 +197,8 @@
                             <!-- text input -->
                             <div class="form-group">
                                 <label>Title</label>
-                                <input type="text" class="form-control Title" placeholder="Enter ...">
+                                <input type="text" class="form-control Title" autocomplete="off" placeholder="Enter ...">
+                                <input type="text" class="form-control ID hidden"  placeholder="Enter ...">
                             </div>
 
                             <!-- textarea -->
@@ -200,7 +206,7 @@
                                 <label>Description</label>
                                 <div class="editable Description" style="border:1px solid #d2d6de" contenteditable="true">
                                     <ul style="list-style: decimal;padding-left: 20px;">
-                                        <li>Enter...</li>
+                                        <li></li>
                                     </ul>
                                 </div>
                                 <div class="listTag hidden"></div>
@@ -211,15 +217,15 @@
                             <div class="form-group has-success">
                                 <label class="control-label" for="Tag"><i class="fa fa-check"></i> Tag username</label>
                                 <textarea type="text" class="form-control Tag"   id="Tag" placeholder="Enter ..."></textarea>
-                                <span class="help-block">Notification to user</span>
+                                @*<span class="help-block">Notification to user</span>*@
                             </div>
 
                             <!-- radio -->
                             <div class="form-group">
                                 <label>Due date</label>
-                                <input type="date" class="form-control DueDate" />
+                                <input type="text" class="form-control DueDate datepicker" />
                             </div>
-                            <button type="button" class="btn btn-success btnSaveActionPlan">Save</button>
+                            <button type="button" class="btn btn-success btnSaveActionPlan"> Save</button>
 
                         </div>
                     </div>
