@@ -130,8 +130,26 @@ namespace KPI.Model.DAO
            
 
         }
-        public object GetAll(int DataID, int CommentID)
+        public bool Done(int id)
         {
+            var model = _dbContext.ActionPlans.FirstOrDefault(x => x.ID == id);
+            model.Status = !model.Status;
+            try
+            {
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+
+        }
+        public object GetAll(int DataID, int CommentID,int userid)
+        {
+            var userModel = _dbContext.Users.FirstOrDefault(x => x.ID == userid);
+            var permission = _dbContext.Permissions;
             var model = _dbContext.ActionPlans
                 .Where(x => x.DataID == DataID && x.CommentID == CommentID)
                 .AsEnumerable()
@@ -141,8 +159,10 @@ namespace KPI.Model.DAO
                     Title = x.Title,
                     Description = x.Description,
                     Tag = x.Tag,
-                    ApprovedStatus=x.ApprovedStatus,
-                    Deadline = x.Deadline.ToString("dd/MM/yyyy")
+                    ApprovedStatus = x.ApprovedStatus,
+                    Deadline = x.Deadline.ToString("dd/MM/yyyy"),
+                    Status = x.Status,
+                    IsBoss = (int?)permission.FirstOrDefault(a => a.ID == userModel.Permission).ID < 3 ? true : false
                 }).ToList();
             return new
             {

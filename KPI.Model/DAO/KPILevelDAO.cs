@@ -436,7 +436,7 @@ namespace KPI.Model.DAO
         {
             try
             {
-                var comments = _dbContext.Comments.Where(x=>x.DataID== dataid).ToList();
+                var comments = _dbContext.Comments.Where(x => x.DataID == dataid).ToList();
                 foreach (var comment in comments)
                 {
                     var item = _dbContext.SeenComments.FirstOrDefault(x => x.UserID == userid && x.CommentID == comment.ID);
@@ -462,10 +462,11 @@ namespace KPI.Model.DAO
         /// </summary>
         /// <param name="dataid">Là giá trị của KPILevel upload</param>
         /// <returns>Trả về các comment theo dataid</returns>
-        public object ListComments(int dataid,int userid)
+        public object ListComments(int dataid, int userid)
         {
-            //Cat chuoi
 
+            var actionPlan = _dbContext.ActionPlans;
+            //Cat chuoi
             //lay tat ca comment cua kpi
             var listcmts = _dbContext.Comments.Where(x => x.DataID == dataid).ToList();
 
@@ -489,7 +490,8 @@ namespace KPI.Model.DAO
                    CommentedDate = x.CommentedDate,
                    FullName = user.FirstOrDefault(a => a.ID == x.UserID).FullName,
                    Period = x.Period,
-                   Read = seenCMT.FirstOrDefault(a => a.CommentID == x.ID && a.UserID == userid) == null ? true : false
+                   Read = seenCMT.FirstOrDefault(a => a.CommentID == x.ID && a.UserID == userid) == null ? true : false,
+                   IsHasTask = actionPlan.FirstOrDefault(a => a.DataID == dataid && a.CommentID == x.ID) == null ? false : true
                })
                .OrderByDescending(x => x.CommentedDate)
                .ToList();
@@ -504,7 +506,6 @@ namespace KPI.Model.DAO
 
         public object LoadData(string obj)
         {
-
             var value = obj.ToSafetyString().Split(',');
             var code = value[0].Substring(0, value[0].Length - 1).ToSafetyString();
             var period = value[0].Substring(value[0].Length - 1, 1).ToUpper().ToSafetyString();
@@ -528,7 +529,6 @@ namespace KPI.Model.DAO
                 data,
                 total = _dbContext.Comments.Where(x => x.KPILevelCode == code).Count()
             };
-
 
         }
         /// <summary>
@@ -666,7 +666,7 @@ namespace KPI.Model.DAO
                 listCompare
             };
         }
-       
+
     }
 }
 

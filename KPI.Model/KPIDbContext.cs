@@ -9,10 +9,13 @@ namespace KPI.Model
 {
     public class KPIDbContext : DbContext
     {
-
-        public KPIDbContext() : base("KPIDbContext")
+        const String DefaultConnectionName = "KPIDbContext";
+        public KPIDbContext() : base(DefaultConnectionName)
         {
             this.Configuration.LazyLoadingEnabled = false;
+        }
+        public KPIDbContext(String sqlConnectionName) : base(String.Format("Name={0}", sqlConnectionName))
+        {
         }
         public DbSet<EF.KPI> KPIs { get; set; }
         public DbSet<EF.KPILevel> KPILevels { get; set; }
@@ -35,7 +38,7 @@ namespace KPI.Model
 
         public DbSet<Revise> Revises { get; set; }
         public DbSet<ActionPlan> ActionPlans { get; set; }
-
+        public DbSet <Notification> Notifications { get; set; }
         protected override void OnModelCreating(DbModelBuilder builder)
         {
             //builder.Entity<IdentityUserRole>().HasKey(i => new { i.UserId, i.RoleId });

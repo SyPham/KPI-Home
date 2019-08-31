@@ -51,6 +51,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
@@ -68,10 +69,14 @@
     <Compile Include="Abstract\Link.cs" />
     <Compile Include="DAO\ActionPlanDAO.cs" />
     <Compile Include="DAO\AdminCategoryDAO.cs" />
+    <Compile Include="DAO\NotificationDAO.cs" />
+    <Compile Include="DbContextExtensions.cs" />
     <Compile Include="EF\ActionPlan.cs" />
     <Compile Include="EF\CommentChart.cs" />
     <Compile Include="EF\CommentChartDetail.cs" />
+    <Compile Include="EF\Notification.cs" />
     <Compile Include="EF\Revise.cs" />
+    <Compile Include="EntityBase.cs" />
     <Compile Include="helpers\ConfigHelper.cs" />
     <Compile Include="DAO\FavouriteDAO.cs" />
     <Compile Include="DAO\DataChartDAO.cs" />
@@ -197,8 +202,18 @@
     <Compile Include="Migrations\201908291607182_removeACtionCategory.Designer.cs">
       <DependentUpon>201908291607182_removeACtionCategory.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201908310714040_SingalR.cs" />
+    <Compile Include="Migrations\201908310714040_SingalR.Designer.cs">
+      <DependentUpon>201908310714040_SingalR.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="ObjectQueryExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlServerNotifier\NotifierEntity.cs" />
+    <Compile Include="SqlServerNotifier\NotifierEntityExtentions.cs" />
+    <Compile Include="SqlServerNotifier\PushSqlDependency.cs" />
+    <Compile Include="SqlServerNotifier\SqlDependencyRegister.cs" />
+    <Compile Include="SqlServerNotifier\SqlNotificationEventHandler.cs" />
     <Compile Include="ViewModel\ActionPlanViewModel.cs" />
     <Compile Include="ViewModel\ActionPlanGetAllViewModel.cs" />
     <Compile Include="ViewModel\ActionPlanViewModel2.cs" />
@@ -297,6 +312,10 @@
     <EmbeddedResource Include="Migrations\201908291607182_removeACtionCategory.resx">
       <DependentUpon>201908291607182_removeACtionCategory.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908310714040_SingalR.resx">
+      <DependentUpon>201908310714040_SingalR.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

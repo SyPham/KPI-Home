@@ -16,6 +16,6 @@ namespace KPI.Model.ViewModel
         public string Period { get; set; }
         public string FullName { get; set; }
         public bool? Read { get; set; }
-
+        public bool? IsHasTask { get; set; }
     }
 }

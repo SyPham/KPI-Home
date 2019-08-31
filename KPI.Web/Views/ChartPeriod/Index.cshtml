@@ -17,13 +17,14 @@
 }
 @Html.Raw(BreadCrumb.Display())
 @section Scripts{
+    <script src="~/Scripts/jquery.signalR-2.2.2.min.js"></script>
+    <script src="~/signalr/hubs"></script>
     <script type="text/javascript">
-            $("#modal-group-comment-data").on("shown.bs.modal", function () {
+           var signalRHubInitialized = false;
+        $("#modal-group-comment-data").on("shown.bs.modal", function () {
 
-        $("body").addClass("modal-open");
-    }).on("hidden.bs.modal", function () {
-        $("body").removeClass("modal-open");
-    });
+            activaTab('pills-home');
+         });
         $('.btn-skype').unbind('click').on('click',function () {
             window.location = 'skype:some_skype_user?chat';
         });
@@ -61,7 +62,7 @@
         var standard = "@standard";
         var unit = "@unit";
         $(function () {
-
+             
             $('.standard').text(standard);
         if (period === "W") {
             //Thêm tiêu đề cho tr:first-child th
@@ -363,445 +364,436 @@ var chartperiodlConfig = {
     pageSize: 6,
     pageIndex: 1
 };
-var chartperiodController = {
-    init() {
+        var chartperiodController = {
+            init() {
 
-        chartperiodController.loadDataProvide();
-        chartperiodController.registerEvent();
+                chartperiodController.loadDataProvide();
+                chartperiodController.registerEvent();
 
-    },
+            },
+            registerEvent() {
 
-    registerEvent() {
 
+                $('.btnTask').unbind('click').on('click', function () {
+                    var commentid = $(this).data('commentid');
+                    $(".commentid").text(commentid)
+                    var commentid = $(this).data('commentid');
+                    var dataid = Number($('.dataid').text());
+                    chartperiodController.LoadDataActionPlan(dataid, commentid);
+                });
 
-        $('.btnTask').unbind('click').on('click', function () {
-            var commentid = $(this).data('commentid');
-            $(".commentid").text(commentid)
-           var commentid = $(this).data('commentid');
-          var dataid = Number($('.dataid').text());
-            chartperiodController.LoadDataActionPlan(dataid,commentid);
-        });
-
-        $('.btnSaveActionPlan').unbind('click').on('click', function () {
-            chartperiodController.addActionPlan();
-        })
-        $('#lastRemark').off('keypress').on('keypress', function (e) {
-            if (e.keyCode === 13) {
-                chartperiodController.updateRemark();
-            }
-        });
-        var year = chartperiodController.getUrlParameter('year');
-        var start = chartperiodController.getUrlParameter('start');
-        var end = chartperiodController.getUrlParameter('end');
-        var period = chartperiodController.getUrlParameter('period');
-        if (Number(year) === 2019 && Number(start) === 0 && Number(end) === 0) {
-            $("#fromDateEndDate").hide();
-            var d = new Date();
-            var currenyear = d.getFullYear();
-            year = currenyear;
-            start = 0;
-            end = 0;
-            if (period === "W") {
-                $("#weekOfYear").val(currenyear);
-                $("#startWeek").val(0);
-                $("#endWeek").val(0);
-
-            }
-
-            if (period === "M") {
-                $("#monthOfYear").val(currenyear);
-                $("#startMonth").val(0);
-                $("#endMonth").val(0);
-                 year = currenyear;
+                $('.btnSaveActionPlan').unbind('click').on('click', function () {
+                    chartperiodController.addActionPlan();
+                })
+                $('#lastRemark').off('keypress').on('keypress', function (e) {
+                    if (e.keyCode === 13) {
+                        chartperiodController.updateRemark();
+                    }
+                });
+                var year = getUrlParameter('year');
+                var start = getUrlParameter('start');
+                var end = getUrlParameter('end');
+                var period = getUrlParameter('period');
+                if (Number(year) === 2019 && Number(start) === 0 && Number(end) === 0) {
+                    $("#fromDateEndDate").hide();
+                    var d = new Date();
+                    var currenyear = d.getFullYear();
+                    year = currenyear;
                     start = 0;
                     end = 0;
-            }
-            if (period === "Q") {
-                $("#quarterOfYear").val(currenyear);
-                $("#startQuarter").val(0);
-                $("#endQuarter").val(0);
-                 year = currenyear;
-                    start =0;
-                    end = 0;
-            }
-            if (period === "Y") {
-                $("#weekOfYear").val(currenyear);
-                $("#startYear").val(currenyear);
-                $("#endYear").val(currenyear);
-                    year = currenyear;
-                    start = currenyear;
-                    end = currenyear;
-            }
-        }
-        else {
-            $("#weekOfYear").val(year);
-            $("#startWeek").val(start);
-            $("#endWeek").val(end);
+                    if (period === "W") {
+                        $("#weekOfYear").val(currenyear);
+                        $("#startWeek").val(0);
+                        $("#endWeek").val(0);
 
-            $("#monthOfYear").val(year);
-            $("#startMonth").val(start);
-            $("#endMonth").val(end);
+                    }
 
-
-            $("#quarterOfYear").val(year);
-            $("#startQuarter").val(start);
-            $("#endQuarter").val(end);
-
-            $("#weekOfYear").val(year);
-            $("#startYear").val(start);
-            $("#endYear").val(end);
-
-        }
-
-        if (Number($('#weekOfYear').val()) !== 0) {
-           var year = year;
-            var startWeek = start;
-            var fromDate = new Date("Jan 01, " + year + " 01:00:00");
-            var fw = fromDate.getTime() + 604800000 * (startWeek - 1);
-
-            var fromDayStartWeek = new Date(fw);
-            var fromDayStartW = (fromDayStartWeek.getMonth() + 1) + ' - ' + fromDayStartWeek.getDate() + ' - ' + fromDayStartWeek.getFullYear();
-
-            var endDayStartWeek = new Date(fw + 518400000);
-            var endDayStartW = (endDayStartWeek.getMonth() + 1) + ' - ' + endDayStartWeek.getDate() + ' - ' + endDayStartWeek.getFullYear();
-
-            var endWeek = end;
-            var ed = new Date("Jan 01, " + year + " 01:00:00");
-            var ew = ed.getTime() + 604800000 * (endWeek - 1);
-
-            var fromDayEndWeek = new Date(ew);
-            var fromDayEndW = (fromDayEndWeek.getMonth()+1) + ' - ' + fromDayEndWeek.getDate() + ' - ' + fromDayEndWeek.getFullYear();
-
-
-            var endDayEndWeek = new Date(ew + 518400000);
-            var endDayEndW = (endDayEndWeek.getMonth() + 1) + ' - ' + endDayEndWeek.getDate() + ' - ' + endDayEndWeek.getFullYear();
-
-              $("#fromDateEndDate .fromDayOfWeek").text('Week '+start+' ( from ' + fromDayStartW + ' to ' + endDayStartW +' )');
-              $("#fromDateEndDate .endDayOfWeek").text(' -> Week '+end+' ( from ' + fromDayEndW + ' to ' + endDayEndW+' )');
-
-        }
-        if (Number($('#monthOfYear').val()) !== 0) {
-            var now = new Date(year,start,1);
-            var prevMonthLastDate = new Date(now.getFullYear(), now.getMonth(), 0);
-            var prevMonthFirstDate = new Date(now.getFullYear() - (now.getMonth() > 0 ? 0 : 1), (now.getMonth() - 1 + 12) % 12, 1);
-
-            var formatDateComponent = function(dateComponent) {
-              return (dateComponent < 10 ? '0' : '') + dateComponent;
-            };
-
-            var now2 = new Date(year,end,1);
-            var prevMonthLastDate2 = new Date(now2.getFullYear(), now2.getMonth(), 0);
-            var prevMonthFirstDate2 = new Date(now2.getFullYear() - (now2.getMonth() > 0 ? 0 : 1), (now2.getMonth() - 1 + 12) % 12, 1);
-
-            var formatDateComponent = function(dateComponent) {
-              return (dateComponent < 10 ? '0' : '') + dateComponent;
-            };
-
-            var formatDate = function(date) {
-              return formatDateComponent(date.getMonth() + 1) + ' - ' + formatDateComponent(date.getDate()) + ' - ' + date.getFullYear();
-            };
-
-
-              $("#fromDateEndDateM .fromDayOfMonth").text('Month '+start+' ( from ' + formatDate(prevMonthFirstDate) + ' to ' + formatDate(prevMonthLastDate) +' )');
-              $("#fromDateEndDateM .endDayOfMonth").text(' -> Month '+end+' ( from ' + formatDate(prevMonthFirstDate2) + ' to ' + formatDate(prevMonthLastDate2)+' )');
-        }
-
-         if (Number($('#quarterOfYear').val()) !== 0) {
-            var startQ = new Date(year,start*3-3,1);
-             var endQ = new Date(year, start * 3, 0);
-
-              var startQ2 = new Date(year,end*3-3,1);
-             var endQ2 = new Date(year, end * 3, 0);
-               var formatDateComponent = function(dateComponent) {
-              return (dateComponent < 10 ? '0' : '') + dateComponent;
-             };
-
-            var formatDate = function(date) {
-              return formatDateComponent(date.getMonth() + 1) + ' - ' + formatDateComponent(date.getDate()) + ' - ' + date.getFullYear();
-            };
-            //var formatDate = function(date) {
-            //  return (date.getMonth() + 1) + '/' + (date.getDate()) + '/' + date.getFullYear();
-            //};
-              $("#fromDateEndDateQ .fromDayOfQuarter").text('Quarter '+start+' ( from ' + formatDate(startQ) + ' to ' + formatDate(endQ) +' )');
-              $("#fromDateEndDateQ .endDayOfQuarter").text(' -> Quarter '+end+' ( from ' + formatDate(startQ2) + ' to ' + formatDate(endQ2)+' )');
-
-        }
-        $('.btnClearSearch').off('click').on('click', function () {
-            var kpilevelcode = chartperiodController.getUrlParameter('kpilevelcode');
-            var period = chartperiodController.getUrlParameter('period');
-            borderWith = 0;
-            var d = new Date();
-            var currenyear = d.getFullYear();
-
-            if (period === "W") {
-                let currentWeek = chartperiodController.getDateOfWeekInYear(d)
-                window.location.href = "/ChartPeriod/?kpilevelcode="+kpilevelcode+"&period="+period+"&year="+currenyear+"&start=1&end="+currentWeek;
-            }
-            if (period === "M") {
-                let currentMonth = d.getMonth();
-                window.location.href = "/ChartPeriod/?kpilevelcode="+kpilevelcode+"&period="+period+"&year="+currenyear+"&start=1&end="+currentMonth;
-
-            }
-        })
-
-         $('#btnLike').off('click').on('click', function (e) {
-
-                chartperiodController.addFavourite();
-          });
-         $('#endWeek').off('change').on('change', function (e) {
-             chartperiodController.search();
-
-         });
-         $('#endMonth').off('change').on('change', function (e) {
-             chartperiodController.search();
-
-         });
-         $('#endQuarter').off('change').on('change', function (e) {
-             chartperiodController.search();
-
-         });
-         $('#endYear').off('change').on('change', function (e) {
-             chartperiodController.search();
-         });
-
-
-        $('#startWeek').off('change').on('change', function (e) {
-             chartperiodController.search();
-         });
-         $('#startMonth').off('change').on('change', function (e) {
-             chartperiodController.search();
-
-         });
-         $('#startQuarter').off('change').on('change', function (e) {
-             chartperiodController.search();
-
-         });
-         $('#startYear').off('change').on('change', function (e) {
-             chartperiodController.search();
-         });
-        $('#btnCompare').off('click').on('click', function (e) {
-             chartperiodController.loadDataProvide();
-        });
-
-
-        $("#tblDataChart tr:nth-child(2) td").off('click').on('click', function () {
-            var number = Number($(this).text());
-            if (number > 0 && number < standard) {
-
-                $('#modal-group-comment-data').modal('show');
-
-                var id = $(this).data('id');
-                $('.dataid').text(id);
-
-                chartperiodController.remark(id);
-
-                //Khi tao ra table roi thi moi load data
-                chartperiodController.loadDataComment();
-
-            }
-        });
-        $('#modal-group-comment-data').off('hidden.bs.modal').on('hidden.bs.modal', function () {
-            console.log("da add comment");
-            var userid = $('#user').data('userid');
-            var dataid  =Number($('.dataid').text())
-            chartperiodController.addCommentHistory(userid,dataid);
-          // do something…
-        })
-
-        $('.btnComment').off('click').on('click', function () {
-            chartperiodController.addData();
-        });
-
-    },
-    getCurrentQuarter(d) {
-              d = d || new Date();
-              var m = Math.floor(d.getMonth()/3) + 2;
-              return m > 4? m - 4 : m;
-            },
-    getDateOfWeekInYear(dt) {
-                var tdt = new Date(dt.valueOf());
-                var dayn = (dt.getDay() + 6) % 7;
-                tdt.setDate(tdt.getDate() - dayn + 3);
-                var firstThursday = tdt.valueOf();
-                tdt.setMonth(0, 1);
-                if (tdt.getDay() !== 4) {
-                    tdt.setMonth(0, 1 + ((4 - tdt.getDay()) + 7) % 7);
-                }
-                return 1 + Math.ceil((firstThursday - tdt) / 604800000);
-            },
-    search() {
-          if ("@period" === "W")
-                    window.location.href = "/ChartPeriod/?kpilevelcode=@kpilevelcode&period=@period&year="+Number($("#weekOfYear").val())+"&start=" + Number($("#startWeek").val()) + "&end=" + Number($("#endWeek").val());
-
-         if ("@period" === "M")
-                   window.location.href = "/ChartPeriod/?kpilevelcode=@kpilevelcode&period=@period&year="+Number($("#monthOfYear").val())+"&start=" + Number($("#startMonth").val()) + "&end=" + Number($("#endMonth").val());
-
-         if ("@period" === "Q")
-                  window.location.href = "/ChartPeriod/?kpilevelcode=@kpilevelcode&period=@period&year="+Number($("#quarterOfYear").val())+"&start=" + Number($("#startQuarter").val()) + "&end=" + Number($("#endQuarter").val());
-
-          if ("@period" === "Y")
-                   window.location.href = "/ChartPeriod/?kpilevelcode=@kpilevelcode&period=@period&year=0&start=" + Number($("#startYear").val()) + "&end=" + Number($("#endYear").val());
-    },
-    getByID: function (actionplaneID) {
-        var value = actionplaneID;
-        $.ajax({
-            url: "/ChartPeriod/GetByID/",
-            data: { id: JSON.stringify(value) },
-            type: "GET",
-            contentType: "application/json;charset=UTF-8",
-            dataType: "json",
-            success: function (res) {
-                $('.addTask .Title').val(res.Title);
-                if (res.Description !== undefined) {
-                    let arr = res.Description.split(';');
-                    $.each(arr,function(i, item) {
-                         $('.addTask .Description ul').append("<li>"+item+"</li>")
-                    })
-
-                }
-                if (res.Tag !== null) {
-                    var arr2 = res.Tag.split(',');
-                    var value = '';
-                    $.each(arr2, function (i, item) {
-                        if (item.length > 1)
-                            value += '@@' + item + ' ';
-                    })
-                    $('.addTask .Tag').val(value);
+                    if (period === "M") {
+                        $("#monthOfYear").val(currenyear);
+                        $("#startMonth").val(0);
+                        $("#endMonth").val(0);
+                        year = currenyear;
+                        start = 0;
+                        end = 0;
+                    }
+                    if (period === "Q") {
+                        $("#quarterOfYear").val(currenyear);
+                        $("#startQuarter").val(0);
+                        $("#endQuarter").val(0);
+                        year = currenyear;
+                        start = 0;
+                        end = 0;
+                    }
+                    if (period === "Y") {
+                        $("#weekOfYear").val(currenyear);
+                        $("#startYear").val(currenyear);
+                        $("#endYear").val(currenyear);
+                        year = currenyear;
+                        start = currenyear;
+                        end = currenyear;
+                    }
                 }
                 else {
-                     $('.addTask .Tag').val("");
+                    $("#weekOfYear").val(year);
+                    $("#startWeek").val(start);
+                    $("#endWeek").val(end);
+
+                    $("#monthOfYear").val(year);
+                    $("#startMonth").val(start);
+                    $("#endMonth").val(end);
+
+
+                    $("#quarterOfYear").val(year);
+                    $("#startQuarter").val(start);
+                    $("#endQuarter").val(end);
+
+                    $("#weekOfYear").val(year);
+                    $("#startYear").val(start);
+                    $("#endYear").val(end);
+
                 }
 
-                 $('.addTask .ID').val(res.ID);
-                $('.listTag').val(res.Tag);
-                $('.addTask .DueDate').val(res.Deadline);
-            },
-            error: function (err) {
-                console.log(err);
-            }
-        });
-    },
-    LoadDataActionPlan(dataid,commentid) {
+                if (Number($('#weekOfYear').val()) !== 0) {
+                    var year = year;
+                    var startWeek = start;
+                    var fromDate = new Date("Jan 01, " + year + " 01:00:00");
+                    var fw = fromDate.getTime() + 604800000 * (startWeek - 1);
 
-        $.post('GetAll',
-            {
-                DataID:dataid ,
-                CommentID:commentid
-            },
-            function (res) {
-             console.log(res);
-           if (res.status) {
-            var data = res.data;
+                    var fromDayStartWeek = new Date(fw);
+                    var fromDayStartW = (fromDayStartWeek.getMonth() + 1) + ' - ' + fromDayStartWeek.getDate() + ' - ' + fromDayStartWeek.getFullYear();
 
-                var html = '';
-                $.each(data, function (i, item) {
-                    html += '<tr>';
-                        html += '<td>'+(i+1)+'</td>';
-                    html += '<td class="text-bold" style="padding-left:15px;">' + item.Title + '</td>';
-                    html += '<td>';
-                    if (item.Description !== null) {
-                        var array = item.Description.trim(';').split(';');
+                    var endDayStartWeek = new Date(fw + 518400000);
+                    var endDayStartW = (endDayStartWeek.getMonth() + 1) + ' - ' + endDayStartWeek.getDate() + ' - ' + endDayStartWeek.getFullYear();
 
-                            html += '<ul>';
-                        $.each(array, function (i, item) {
-                            if (item.trim().length > 0) {
-                                html += '<li>'+item+'</li>';
-                            }
+                    var endWeek = end;
+                    var ed = new Date("Jan 01, " + year + " 01:00:00");
+                    var ew = ed.getTime() + 604800000 * (endWeek - 1);
 
-                        })
-                            html += '</ul>';
+                    var fromDayEndWeek = new Date(ew);
+                    var fromDayEndW = (fromDayEndWeek.getMonth() + 1) + ' - ' + fromDayEndWeek.getDate() + ' - ' + fromDayEndWeek.getFullYear();
+
+
+                    var endDayEndWeek = new Date(ew + 518400000);
+                    var endDayEndW = (endDayEndWeek.getMonth() + 1) + ' - ' + endDayEndWeek.getDate() + ' - ' + endDayEndWeek.getFullYear();
+
+                    $("#fromDateEndDate .fromDayOfWeek").text('Week ' + start + ' ( from ' + getDateOfISOWeek(start, year) + ' to ' + getEndDateOfISOWeek(start, year) + ' )');
+                    $("#fromDateEndDate .endDayOfWeek").text(' -> Week ' + end + ' ( from ' + getDateOfISOWeek(end, year) + ' to ' + getEndDateOfISOWeek(end, year) + ' )');
+
+                }
+                if (Number($('#monthOfYear').val()) !== 0) {
+                    var now = new Date(year, start, 1);
+                    var prevMonthLastDate = new Date(now.getFullYear(), now.getMonth(), 0);
+                    var prevMonthFirstDate = new Date(now.getFullYear() - (now.getMonth() > 0 ? 0 : 1), (now.getMonth() - 1 + 12) % 12, 1);
+
+                    var formatDateComponent = function (dateComponent) {
+                        return (dateComponent < 10 ? '0' : '') + dateComponent;
+                    };
+
+                    var now2 = new Date(year, end, 1);
+                    var prevMonthLastDate2 = new Date(now2.getFullYear(), now2.getMonth(), 0);
+                    var prevMonthFirstDate2 = new Date(now2.getFullYear() - (now2.getMonth() > 0 ? 0 : 1), (now2.getMonth() - 1 + 12) % 12, 1);
+
+                    var formatDateComponent = function (dateComponent) {
+                        return (dateComponent < 10 ? '0' : '') + dateComponent;
+                    };
+
+                    var formatDate = function (date) {
+                        return formatDateComponent(date.getMonth() + 1) + ' - ' + formatDateComponent(date.getDate()) + ' - ' + date.getFullYear();
+                    };
+
+
+                    $("#fromDateEndDateM .fromDayOfMonth").text('Month ' + start + ' ( from ' + formatDate(prevMonthFirstDate) + ' to ' + formatDate(prevMonthLastDate) + ' )');
+                    $("#fromDateEndDateM .endDayOfMonth").text(' -> Month ' + end + ' ( from ' + formatDate(prevMonthFirstDate2) + ' to ' + formatDate(prevMonthLastDate2) + ' )');
+                }
+
+                if (Number($('#quarterOfYear').val()) !== 0) {
+                    var startQ = new Date(year, start * 3 - 3, 1);
+                    var endQ = new Date(year, start * 3, 0);
+
+                    var startQ2 = new Date(year, end * 3 - 3, 1);
+                    var endQ2 = new Date(year, end * 3, 0);
+                    var formatDateComponent = function (dateComponent) {
+                        return (dateComponent < 10 ? '0' : '') + dateComponent;
+                    };
+
+                    var formatDate = function (date) {
+                        return formatDateComponent(date.getMonth() + 1) + ' - ' + formatDateComponent(date.getDate()) + ' - ' + date.getFullYear();
+                    };
+                    //var formatDate = function(date) {
+                    //  return (date.getMonth() + 1) + '/' + (date.getDate()) + '/' + date.getFullYear();
+                    //};
+                    $("#fromDateEndDateQ .fromDayOfQuarter").text('Quarter ' + start + ' ( from ' + formatDate(startQ) + ' to ' + formatDate(endQ) + ' )');
+                    $("#fromDateEndDateQ .endDayOfQuarter").text(' -> Quarter ' + end + ' ( from ' + formatDate(startQ2) + ' to ' + formatDate(endQ2) + ' )');
+
+                }
+                $('.btnClearSearch').off('click').on('click', function () {
+                    var kpilevelcode = getUrlParameter('kpilevelcode');
+                    var period = getUrlParameter('period');
+                    borderWith = 0;
+                    var d = new Date();
+                    var currenyear = d.getFullYear();
+
+                    if (period === "W") {
+                        let currentWeek = chartperiodController.getDateOfWeekInYear(d)
+                        window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&period=" + period + "&year=" + currenyear + "&start=1&end=" + currentWeek;
                     }
+                    if (period === "M") {
+                        let currentMonth = d.getMonth();
+                        window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&period=" + period + "&year=" + currenyear + "&start=1&end=" + currentMonth;
 
-                    html += '</td>';
-                    html += '<td>';
+                    }
+                })
 
-                    if (item.Tag !== null) {
-                          var array2 = item.Tag.split(',');
+                $('#btnLike').off('click').on('click', function (e) {
 
-                          $.each(array2, function (i, item2) {
+                    chartperiodController.addFavourite();
+                });
+                $('#endWeek').off('change').on('change', function (e) {
+                    chartperiodController.search();
 
-                              if (item2.length > 1) {
-                              html += '<span class="badge bg-default text-bold">' +item2+ '</span> ';
-                              }
+                });
+                $('#endMonth').off('change').on('change', function (e) {
+                    chartperiodController.search();
+
+                });
+                $('#endQuarter').off('change').on('change', function (e) {
+                    chartperiodController.search();
+
+                });
+                $('#endYear').off('change').on('change', function (e) {
+                    chartperiodController.search();
+                });
+
+
+                $('#startWeek').off('change').on('change', function (e) {
+                    chartperiodController.search();
+                });
+                $('#startMonth').off('change').on('change', function (e) {
+                    chartperiodController.search();
+
+                });
+                $('#startQuarter').off('change').on('change', function (e) {
+                    chartperiodController.search();
+
+                });
+                $('#startYear').off('change').on('change', function (e) {
+                    chartperiodController.search();
+                });
+                $('#btnCompare').off('click').on('click', function (e) {
+                    chartperiodController.loadDataProvide();
+                });
+
+
+                $("#tblDataChart tr:nth-child(2) td").off('click').on('click', function () {
+                    var number = Number($(this).text());
+                    if (number > 0 && number < standard) {
+
+                        $('#modal-group-comment-data').modal('show');
+
+                        var id = $(this).data('id');
+                        $('.dataid').text(id);
+
+                        chartperiodController.remark(id);
+
+                        //Khi tao ra table roi thi moi load data
+                        chartperiodController.loadDataComment();
+
+                    }
+                });
+                $('#modal-group-comment-data').off('hidden.bs.modal').on('hidden.bs.modal', function () {
+                    console.log("da add comment");
+                    var userid = $('#user').data('userid');
+                    var dataid = Number($('.dataid').text())
+                    chartperiodController.addCommentHistory(userid, dataid);
+                    // do something…
+                })
+
+                $('.btnComment').off('click').on('click', function () {
+                    chartperiodController.addData();
+                });
+
+            },
+            search() {
+                if ("@period" === "W")
+                    window.location.href = "/ChartPeriod/?kpilevelcode=@kpilevelcode&period=@period&year=" + Number($("#weekOfYear").val()) + "&start=" + Number($("#startWeek").val()) + "&end=" + Number($("#endWeek").val());
+
+                if ("@period" === "M")
+                    window.location.href = "/ChartPeriod/?kpilevelcode=@kpilevelcode&period=@period&year=" + Number($("#monthOfYear").val()) + "&start=" + Number($("#startMonth").val()) + "&end=" + Number($("#endMonth").val());
+
+                if ("@period" === "Q")
+                    window.location.href = "/ChartPeriod/?kpilevelcode=@kpilevelcode&period=@period&year=" + Number($("#quarterOfYear").val()) + "&start=" + Number($("#startQuarter").val()) + "&end=" + Number($("#endQuarter").val());
+
+                if ("@period" === "Y")
+                    window.location.href = "/ChartPeriod/?kpilevelcode=@kpilevelcode&period=@period&year=0&start=" + Number($("#startYear").val()) + "&end=" + Number($("#endYear").val());
+            },
+            getByID: function (actionplaneID) {
+                var value = actionplaneID;
+                $.ajax({
+                    url: "/ChartPeriod/GetByID/",
+                    data: { id: JSON.stringify(value) },
+                    type: "GET",
+                    contentType: "application/json;charset=UTF-8",
+                    dataType: "json",
+                    success: function (res) {
+                        $('.addTask .Title').val(res.Title);
+                        if (res.Description !== undefined) {
+                            let arr = res.Description.split(';');
+                            $.each(arr, function (i, item) {
+                                $('.addTask .Description ul').append("<li>" + item + "</li>")
                             })
+
                         }
-                    html += '</td>';
-                    html += '<td>' + item.Deadline + '</td>';
-                     html += '<td > ';
-                              html += '<div class="pretty p-icon p-round p-pulse">';
-                              html += '<input type="checkbox" />';
-                              html += '<div class="state p-success">';
-                                  html += '<i class="icon fa fa-check"></i>';
-                                  html += '<label>Done</label>';
-                              html += '</div>';
-                          html += '</div>';
+                        if (res.Tag !== null) {
+                            var arr2 = res.Tag.split(',');
+                            var value = '';
+                            $.each(arr2, function (i, item) {
+                                if (item.length > 1)
+                                    value += '@@' + item + ' ';
+                            })
+                            $('.addTask .Tag').val(value);
+                        }
+                        else {
+                            $('.addTask .Tag').val("");
+                        }
 
-                     html += '</td > ';
-                    html += '<td> <div class="pretty p-icon p-round p-jelly">';
-                      if (item.ApprovedStatus) {
-                        html += '<input type="checkbox" checked onclick="chartperiodController.approval('+item.ID+')" class="btnApproveActionPlan" />';
-                        html += '<div class="state p-success">';
-                        html += '<i class="icon fa fa-check"></i>';
-                        html += '<label class="black">Approved</label>';
-                      }
-                      else {
-                          html += '<input type="checkbox" onclick="chartperiodController.approval('+item.ID+')" class="btnApproveActionPlan" />';
-                          html += '<div class="state p-danger">';
-                          html += '<i class="icon fa fa-check"></i>';
-                          html += '<label class="black">Not approved</label>';
+                        $('.addTask .ID').val(res.ID);
+                        $('.listTag').val(res.Tag);
+                        $('.addTask .DueDate').val(res.Deadline);
+                    },
+                    error: function (err) {
+                        console.log(err);
                     }
-                               
-                    html += '</div>';
-                    html += '</div >';
-                    html += '</td > ';
-                   
-                    html += '<td>';
-                    html +='<div class="btn-group">';
-                    html +='<button type="button" onclick="chartperiodController.getByID('+item.ID+')" class="btn btn-success btn-sm btnEditActionPlan"><i class="fa fa-edit"></i></button>';
-                    html +='<button type="button"  onclick="chartperiodController.getByID('+item.ID+')" class="btn btn-warning btn-sm btnDeleteActionPlan"><i class="fa fa-remove"></i></button>';
-                        //html +='<button type="button" class="btn btn-info">1</button>';
-                    html +='</div>';
-                    html += '</div>';
-
-                    html += '</td>';
-                    html += '</tr>';
                 });
-                $('.tblActionPlan').empty();
-               $('.tblActionPlan').append(html);
-               chartperiodController.registerEvent();
-           }
-       });
-    },
-    //add-task
-    addActionPlan() {
-        var id = $('.addTask .ID').val();
-        console.log(id);
-               var res = chartperiodController.validate();
-            if (res === false) {
-                return false;
-            }
-            var KPILevelCodeAndPeriod = chartperiodController.getUrlParameter('kpilevelcode') + chartperiodController.getUrlParameter('period');
-                    var phrases = new Array();
-        //Dung de tham khao
-            //$('.Description').each(function(){
-            //    var phrase = '';
-            //    $(this).find('li').each(function(){
-            //        var current = $(this);
-            //        if(current.children().length > 0) {return true;}
-            //        phrase += $(this).text();
-            //    });
-            //    phrases.push(phrase);
-            //});
-         $('.Description').each(function(){
-                $(this).find('li').each(function(){
-                    var current = $(this);
-                    if(current.children().length > 0) {return true;}
-                     phrases.push($(this).text().trim());
-                });
+            },
+            LoadDataActionPlan(dataid, commentid) {
+                $.post('GetAll',
+                    {
+                        DataID: dataid,
+                        CommentID: commentid,
+                        UserID: $('#user').data('userid')
+                    },
+                    function (res) {
+                        console.log(res);
+                        if (res.status) {
+                            var data = res.data;
+                            var html = '';
+                            $.each(data, function (i, item) {
+                                $('.listTask .Approval').hide();
+                                $('.listTask .Option').hide();
+                                html += '<tr>';
+                                html += '<td>' + (i + 1) + '</td>';
+                                html += '<td class="text-bold" style="padding-left:15px;">' + item.Title + '</td>';
+                                html += '<td>';
+                                if (item.Description !== null) {
+                                    var array = item.Description.trim(';').split(';');
+                                    html += '<ul>';
+                                    $.each(array, function (i, item) {
+                                        if (item.trim().length > 0) {
+                                            html += '<li>' + item + '</li>';
+                                        }
+                                    })
+                                    html += '</ul>';
+                                }
+                                html += '</td>';
+                                html += '<td>';
+                                if (item.Tag !== null) {
+                                    var array2 = item.Tag.split(',');
+                                    $.each(array2, function (i, item2) {
+                                        if (item2.length > 1) {
+                                            html += '<span class="badge bg-default text-bold">' + item2 + '</span> ';
+                                        }
+                                    })
+                                }
+                                html += '</td>';
+                                html += '<td>' + item.Deadline + '</td>';
+                                html += '<td > ';
+                                html += '<div class="pretty p-icon p-round p-pulse">';
+                                if (item.Status) {
+                                    html += '<input type="checkbox" checked onclick="chartperiodController.done(' + item.ID + ')" />';
+                                    html += '<div class="state p-success">';
+                                    html += '<i class="icon fa fa-check"></i>';
+                                    html += '<label>Finished</label>';
+                                }
+                                else {
+                                    html += '<input type="checkbox" onclick="chartperiodController.done(' + item.ID + ')"/>';
+                                    html += '<div class="state p-danger">';
+                                    html += '<i class="icon fa fa-check"></i>';
+                                    html += '<label>Not finished</label>';
+                                }
+                                html += '</div>';
+                                html += '</div>';
 
-            });
-       var Description= phrases.join(';');
-        var obj = {
+                                html += '</td > ';
+                                if (item.IsBoss) {
+                                    $('.listTask .Approval').show();
+                                    $('.listTask .Option').show();
+                                    html += '<td> <div class="pretty p-icon p-round p-jelly">';
+                                    if (item.ApprovedStatus) {
+                                        html += '<input type="checkbox" checked  onclick="chartperiodController.approval(' + item.ID + ')" class="btnApproveActionPlan" />';
+                                        html += '<div class="state p-success">';
+                                        html += '<i class="icon fa fa-check"></i>';
+                                        html += '<label class="black">Approved</label>';
+                                    }
+                                    else {
+                                        html += '<input type="checkbox" onclick="chartperiodController.approval(' + item.ID + ')" class="btnApproveActionPlan" />';
+                                        html += '<div class="state p-danger">';
+                                        html += '<i class="icon fa fa-check"></i>';
+                                        html += '<label class="black">Not approved</label>';
+                                    }
+
+                                    html += '</div>';
+                                    html += '</div >';
+                                    html += '</td > ';
+
+                                    html += '<td>';
+                                    html += '<div class="btn-group">';
+                                    html += '<button type="button" onclick="chartperiodController.getByID(' + item.ID + ')" class="btn btn-success btn-sm btnEditActionPlan"><i class="fa fa-edit"></i></button>';
+                                    html += '<button type="button"  onclick="chartperiodController.getByID(' + item.ID + ')" class="btn btn-warning btn-sm btnDeleteActionPlan"><i class="fa fa-remove"></i></button>';
+                                    //html +='<button type="button" class="btn btn-info">1</button>';
+                                    html += '</div>';
+                                    html += '</div>';
+
+                                    html += '</td>';
+                                }
+
+                                html += '</tr>';
+                            });
+                            $('.tblActionPlan').empty();
+                            $('.tblActionPlan').append(html);
+                            chartperiodController.registerEvent();
+                        }
+                    });
+            },
+            //add-task
+            addActionPlan() {
+                var id = $('.addTask .ID').val();
+                console.log(id);
+                var res = chartperiodController.validate();
+                if (res === false) {
+                    return false;
+                }
+                var KPILevelCodeAndPeriod = getUrlParameter('kpilevelcode') + getUrlParameter('period');
+                var phrases = new Array();
+                //Dung de tham khao
+                //$('.Description').each(function(){
+                //    var phrase = '';
+                //    $(this).find('li').each(function(){
+                //        var current = $(this);
+                //        if(current.children().length > 0) {return true;}
+                //        phrase += $(this).text();
+                //    });
+                //    phrases.push(phrase);
+                //});
+                $('.Description').each(function () {
+                    $(this).find('li').each(function () {
+                        var current = $(this);
+                        if (current.children().length > 0) { return true; }
+                        phrases.push($(this).text().trim());
+                    });
+
+                });
+                var Description = phrases.join(';');
+                var obj = {
                     ID: id,
                     UserID: $('#user').data('userid'),
                     DataID: Number($('.dataid').text()),
@@ -811,410 +803,456 @@ var chartperiodController = {
                     KPILevelCodeAndPeriod: KPILevelCodeAndPeriod,
                     Description: Description,
                     Deadline: $('.addTask .datepicker').datepicker({ dateFormat: 'mm-dd-yy' }).val(),
-                    SubmitDate: chartperiodController.convertDate(new Date),
+                    SubmitDate: convertDate(new Date),
                 };
-        if (id === "") {
+                if (id === "") {
 
-            $.post('Add', { obj: obj }, function (res) {
-                console.log(res);
-                if (res) {
-                    var commentid = Number($('.commentid').text());
-                    var dataid = Number($('.dataid').text());
-                    chartperiodController.LoadDataActionPlan(dataid, commentid);
-                    chartperiodController.resetForm();
+                    $.post('Add', { obj: obj }, function (res) {
+                        console.log(res);
+                        if (res) {
+                            var commentid = Number($('.commentid').text());
+                            var dataid = Number($('.dataid').text());
+                            chartperiodController.LoadDataActionPlan(dataid, commentid);
+                            chartperiodController.resetForm();
+                            activaTab('pills-home');
+                        }
+                    });
+
                 }
-            });
+                if (Number(id) > 0) {
+                    $.post('Update', { obj: obj }, function (res) {
+                        console.log(res);
+                        if (res) {
+                            var commentid = Number($('.commentid').text());
+                            var dataid = Number($('.dataid').text());
+                            chartperiodController.LoadDataActionPlan(dataid, commentid);
+                            chartperiodController.resetForm();
+                        }
+                        activaTab('pills-home');
+                    });
 
-        }
-        if (Number(id) > 0) {
-            $.post('Update', { obj: obj }, function (res) {
-                 console.log(res);
-               if (res) {
-                   var commentid = Number($('.commentid').text());
-                    var dataid = Number($('.dataid').text());
-                   chartperiodController.LoadDataActionPlan(dataid,commentid);
-                     chartperiodController.resetForm();
-                 }
-           });
-
-        }
+                }
 
 
-    },
-     approval(id) {      
-        if (Number(id) > 0) {
-            $.post('Approval', { id: id,approveby:$('#user').data('userid') }, function (res) {
-                 console.log(res);
-               if (res) {
-                   var commentid = Number($('.commentid').text());
-                    var dataid = Number($('.dataid').text());
-                   chartperiodController.LoadDataActionPlan(dataid,commentid);
-                     chartperiodController.resetForm();
-                 }
-           });
-
-        }
-    },
-     convertDate: function(inputFormat) {
-          function pad(s) { return (s < 10) ? '0' + s : s; }
-          var d = new Date(inputFormat);
-          return [pad(d.getDate()), pad(d.getMonth()+1), d.getFullYear()].join('/');
-        },
-    resetForm: function () {
-        $('.Title').val("");
-        $('.ID').val("");
-       $('.Description').each(function(){
-           $(this).find('li').remove();
-       });
-            $('.Description ul').append("<li></li>")
-        $('.DueDate').val("");
-        $('.listTag').val("");
-         $('.Tag').val("");
-        $('.Title').css('border-color', 'lightgrey');
-        $('.DueDate').css('border-color', 'lightgrey');
-
-    },
-    validate: function () {
-        var isValid = true;
-        if ($('.Title').val().trim() === "") {
-            $('.Title').css('border-color', 'Red');
-            isValid = false;
-        }
-        else {
-            $('.Title').css('border-color', 'lightgrey');
-        }
-        //if ($('.Description').val().trim() === "") {
-        //    $('.Description').css('border-color', 'Red');
-        //    isValid = false;
-        //}
-        //else {
-        //    $('.Description').css('border-color', 'lightgrey');
-        //}
-        if ($('.DueDate').val().trim() === "") {
-            $('.DueDate').css('border-color', 'Red');
-            isValid = false;
-        }
-        else {
-            $('.DueDate').css('border-color', 'lightgrey');
-        }
-        return isValid;
-    },
-    addData() {
-        if ($('#comment').val() == "") {
-            Swal.fire({
-                title: 'Warning!',
-                text: 'Please enter message!',
-                type: 'warning',
-                confirmButtonText: 'OK'
-            });
-            return;
-        }
-        var cmt = $('#comment').val();
-
-        var mObj = {
-            DataID: Number($('.dataid').text()),
-            CommentMsg: $('#comment').val(),
-            UserID: Number($("#user").data('userid'))
-        };
-        $.ajax({
-            url: "/ChartPeriod/AddComment",
-            data: JSON.stringify(mObj),
-            type: "POST",
-            contentType: "application/json;charset=utf-8",
-            dataType: "json",
-            success: function (result) {
-                $('#comment').val("");
-                chartperiodController.loadDataComment();
             },
-            error: function (errormessage) {
-                //console.log(errormessage.responseText);
-            }
-        });
-    },
-    getUrlParameter: function(sParam) {
-    var sPageURL = window.location.search.substring(1),
-        sURLVariables = sPageURL.split('&'),
-        sParameterName,
-        i;
+            approval(id) {
+                if (Number(id) > 0) {
+                    $.post('Approval', { id: id, approveby: $('#user').data('userid') }, function (res) {
+                        console.log(res);
+                        if (res) {
+                            var commentid = Number($('.commentid').text());
+                            var dataid = Number($('.dataid').text());
+                            chartperiodController.LoadDataActionPlan(dataid, commentid);
+                            chartperiodController.resetForm();
+                        }
+                    });
 
-    for (i = 0; i < sURLVariables.length; i++) {
-        sParameterName = sURLVariables[i].split('=');
+                }
+            },
+            done(id) {
+                if (Number(id) > 0) {
+                    $.post('Done', { id: id }, function (res) {
+                        console.log(res);
+                        if (res) {
+                            var commentid = Number($('.commentid').text());
+                            var dataid = Number($('.dataid').text());
+                            chartperiodController.LoadDataActionPlan(dataid, commentid);
+                            chartperiodController.resetForm();
+                        }
+                    });
 
-        if (sParameterName[0] === sParam) {
-            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
-        }
-        }
-    },
-    addFavourite() {
-        var UserID = $('#user').data('userid');
-        if (UserID === 0 || UserID === "" || UserID === undefined) {
-            Swal.fire({
-                title: 'Warning!',
-                text: 'Error!',
-                type: 'warning',
-                confirmButtonText: 'OK'
-            });
-            return;
-        }
-        var mObj = {
-            KPILevelCode: "@kpilevelcode",
-            Period: "@period",
-            UserID: UserID,
-        };
-        $.ajax({
-            url: "/ChartPeriod/AddFavourite",
-            data: JSON.stringify(mObj),
-            type: "POST",
-            contentType: "application/json;charset=utf-8",
-            dataType: "json",
-            success: function (result) {
-                //
-                Swal.fire({
-                    title: 'success!',
-                    text: 'Add success!',
-                    type: 'success',
-                    confirmButtonText: 'OK'
+                }
+            },
+            resetForm: function () {
+                $('.Title').val("");
+                $('.ID').val("");
+                $('.Description').each(function () {
+                    $(this).find('li').remove();
                 });
+                $('.Description ul').append("<li></li>")
+                $('.DueDate').val("");
+                $('.listTag').val("");
+                $('.Tag').val("");
+                $('.Title').css('border-color', 'lightgrey');
+                $('.DueDate').css('border-color', 'lightgrey');
+
             },
-            error: function (errormessage) {
-                //console.log(errormessage.responseText);
-            }
-        });
-    },
-    remark(id) {
-
-        $.post("/ChartPeriod/Remark", { dataid: id }, function (data) {
-            var result = data.model;
-            var userid = $('#user').data('userid');
-             var arrays = [];
-           var users = data.users;
-
-             $('#Tag').suggest('@@', {
-                filter: {
-                    casesensitive: true,
-                    limit:10
-                },
-                data: users,
-               map: function (user) {
-                    return {
-                      value: user.Username,
-                      text: '<strong>Username: '+user.Username+' - </strong> <small>Full name : '+user.FullName+'</small>'
-                    }
-                },
-                onselect: function (e, item) {
-                    var arr = '';
-                    arr += item.value;
-                    arrays.push(arr)
-                    console.log(arrays);
-                    $('.listTag').text(arrays);
-                },
-
-
-             })
-
-            $('#comment').suggest('@@', {
-                filter: {
-                    casesensitive: true,
-                    limit:10
-                },
-                data: users,
-               map: function (user) {
-                    return {
-                      value: user.Username,
-                      text: '<strong>Username: '+user.Username+' - </strong> <small>Full name :'+user.FullName+'</small>'
-                    }
-                },
-                //onselect: function (e, item) {
-                //    console.log(item)
-                //},
-
-                })
-
-            //$("#remark").val(result.Remark);
-                $(".lastRemark").text(id);
-
-             //$("#textarea-remark").toggle(500);
-            if (result.Period === "W") {
-                if (result.Remark !== null) {
-                    $("#lastRemark").val(result.Remark);
-                    $("#remark").val("Week " + result.Week + " : " + result.Remark);
-                    $('.lastRemarkLabel').text("Week " + result.Week + " : ");
+            validate: function () {
+                var isValid = true;
+                if ($('.Title').val().trim() === "") {
+                    $('.Title').css('border-color', 'Red');
+                    isValid = false;
                 }
-             }
-            if (result.Period === "M") {
-                if (result.Remark !== null) {
-                    $("#lastRemark").val(result.Remark);
-                    $("#remark").val("Month " + result.Month + " : " + result.Remark);
-                    $('.lastRemarkLabel').text("Month " + result.Month + " : ");
+                else {
+                    $('.Title').css('border-color', 'lightgrey');
                 }
-             }
-             if (result.Period === "Q") {
-                 $("#lastRemark").val(result.Remark);
-                 $("#remark").val("Quarter " + result.Quater + " : " + result.Remark);
-                $('.lastRemarkLabel').text("Quarter " + result.Quater + " : " );
-
-             }
-            if (result.Period === "Y") {
-                 $("#lastRemark").val(result.Remark);
-                 $("#remark").val("Year " + result.Year + " : " + result.Remark);
-                $('.lastRemarkLabel').text("Year " + result.Year + " : ");
-
-             }
-        });
-    },
-    updateRemark() {
-        var remark = $('#lastRemark').val();
-        var dataid = Number($('.lastRemark').text());
-         $.post("/ChartPeriod/updateRemark", { dataid:dataid , remark:remark }, function (result) {
-            Swal.fire({
-                title: 'Success!',
-                text: 'Add successfully!',
-                type: 'success',
-                confirmButtonText: 'OK'
-            });
-        });
-    },
-    addCommentHistory(userid,dataid) {
-         $.post("/ChartPeriod/addCommentHistory", { userid: userid, dataid: dataid }, function (result) {
-             console.log("data add comment" + result);
-
-        });
-    },
-    loadDataProvide(changePageSize) {
-        var obj="@kpilevelcode,@period";
-          $.ajax({
-            url: "/ChartPeriod/LoadDataProvide/",
-                data: {
-                obj: obj,
-                page: chartperiodlConfig.pageIndex,
-                pageSize: chartperiodlConfig.pageSize
+                //if ($('.Description').val().trim() === "") {
+                //    $('.Description').css('border-color', 'Red');
+                //    isValid = false;
+                //}
+                //else {
+                //    $('.Description').css('border-color', 'lightgrey');
+                //}
+                if ($('.DueDate').val().trim() === "") {
+                    $('.DueDate').css('border-color', 'Red');
+                    isValid = false;
+                }
+                else {
+                    $('.DueDate').css('border-color', 'lightgrey');
+                }
+                return isValid;
             },
-            type: "GET",
-            contentType: "application/json;charset=utf-8",
-            dataType: "json",
-            success: function (data) {
-             var count = 1;
-             var html = '';
-             var template = $('#tblcomparechart-template').html();
-             $.each(data.listCompare, function (i, item) {
-                 html += Mustache.render(template, {
-                     No: count,
-                     KPILevelCode: item.KPILevelCode,
-                     LevelNumber:item.LevelNumber,
-                     Area: item.Area,
-                     Tooltip:item.StatusPublic==true?"":'data-toggle="tooltip" title="The publicity is private, not comparable!"',
-                     StatusPublicAttr: item.StatusPublic==true?"":"disabled",
-                     Status: item.Status==true?'<span class="label label-success">visible</span>' : '<span class="label bg-danger">not visible</span>',
-                     StatusPublic: item.StatusPublic==true?'<span class="label label-success">Public</span>' : '<span class="label bg-danger">Private</span>'
+            addData() {
+                if ($('#comment').val() == "") {
+                    Swal.fire({
+                        title: 'Warning!',
+                        text: 'Please enter message!',
+                        type: 'warning',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+                var cmt = $('#comment').val();
 
-                 });
-                 count++;
-             });
-                $('#tblcomparechart').html(html);
-                  chartperiodController.paging(data.total, function () {
-                        chartperiodController.loadDataProvide();
-                    }, changePageSize);
-                chartperiodController.registerEvent();
-
-                ///Lấy tất cả KPILevelCode và period khi click ghép lại thành chuỗi cách nhau bởi dấu (-) để gửi lên server.
-                 var old="";
-                $('#comparechart .compare').unbind('click').change(function (e) {
-                    var code = $(this).val();
-                    if (old.indexOf($(this).val()) == -1) {
-                        old += code + '-';
-                         $('.arrcompare').text(old);
+                var mObj = {
+                    DataID: Number($('.dataid').text()),
+                    CommentMsg: $('#comment').val(),
+                    UserID: Number($("#user").data('userid'))
+                };
+                $.ajax({
+                    url: "/ChartPeriod/AddComment",
+                    data: JSON.stringify(mObj),
+                    type: "POST",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        $('#comment').val("");
+                        chartperiodController.loadDataComment();
+                    },
+                    error: function (errormessage) {
+                        //console.log(errormessage.responseText);
                     }
                 });
-                //Gửi chuỗi ở trên lên server
-                $('#btnCompare-kpilevel').off('click').on('click', function () {
-
-                    var value = $('.arrcompare').text().toString();
-                    var obj = value.substring(value.length - 1, 0);
-                    var kpilevelcode = chartperiodController.getUrlParameter('kpilevelcode');
-                    var period = chartperiodController.getUrlParameter('period');
-                        obj = obj + '-' +kpilevelcode + ',' + period ;
-                    window.location.href = "/Compare/?obj=" + obj+";@standard,@unit";
-                 })
             },
-            error: function (errormessage) {
-                //console.log(errormessage.responseText);
-            }
-        });
-    } ,
-    paging: function (totalRow, callback, changePageSize) {
-        var totalPage = Math.ceil(totalRow / chartperiodlConfig.pageSize);
+            addFavourite() {
+                var UserID = $('#user').data('userid');
+                if (UserID === 0 || UserID === "" || UserID === undefined) {
+                    Swal.fire({
+                        title: 'Warning!',
+                        text: 'Error!',
+                        type: 'warning',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+                var mObj = {
+                    KPILevelCode: "@kpilevelcode",
+                    Period: "@period",
+                    UserID: UserID,
+                };
+                $.ajax({
+                    url: "/ChartPeriod/AddFavourite",
+                    data: JSON.stringify(mObj),
+                    type: "POST",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        //
+                        Swal.fire({
+                            title: 'success!',
+                            text: 'Add success!',
+                            type: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                    },
+                    error: function (errormessage) {
+                        //console.log(errormessage.responseText);
+                    }
+                });
+            },
+            remark(id) {
 
-        //Unbind pagination if it existed or click change pagesize
-        if ($('#pagination a').length === 0 || changePageSize === true) {
-            $('#pagination').empty();
-            $('#pagination').removeData("twbs-pagination");
-            $('#pagination').unbind("page");
+                $.post("/ChartPeriod/Remark", { dataid: id }, function (data) {
+                    var result = data.model;
+                    var userid = $('#user').data('userid');
+                    var arrays = [];
+                    var users = data.users;
+
+                    $('#Tag').suggest('@@', {
+                        filter: {
+                            casesensitive: true,
+                            limit: 10
+                        },
+                        data: users,
+                        map: function (user) {
+                            return {
+                                value: user.Username,
+                                text: '<strong>Username: ' + user.Username + ' - </strong> <small>Full name : ' + user.FullName + '</small>'
+                            }
+                        },
+                        onselect: function (e, item) {
+                            var arr = '';
+                            arr += item.value;
+                            arrays.push(arr)
+                            console.log(arrays);
+                            $('.listTag').text(arrays);
+                        },
+                    })
+
+                    $('#comment').suggest('@@', {
+                        filter: {
+                            casesensitive: true,
+                            limit: 10
+                        },
+                        data: users,
+                        map: function (user) {
+                            return {
+                                value: user.Username,
+                                text: '<strong>Username: ' + user.Username + ' - </strong> <small>Full name :' + user.FullName + '</small>'
+                            }
+                        },
+                        //onselect: function (e, item) {
+                        //    console.log(item)
+                        //},
+
+                    })
+
+                    //$("#remark").val(result.Remark);
+                    $(".lastRemark").text(id);
+
+                    //$("#textarea-remark").toggle(500);
+                    if (result.Period === "W") {
+                        if (result.Remark !== null) {
+                            $("#lastRemark").val(result.Remark);
+                            $("#remark").val("Week " + result.Week + " : " + result.Remark);
+                            $('.lastRemarkLabel').text("Week " + result.Week + " : ");
+                        }
+                    }
+                    if (result.Period === "M") {
+                        if (result.Remark !== null) {
+                            $("#lastRemark").val(result.Remark);
+                            $("#remark").val("Month " + result.Month + " : " + result.Remark);
+                            $('.lastRemarkLabel').text("Month " + result.Month + " : ");
+                        }
+                    }
+                    if (result.Period === "Q") {
+                        $("#lastRemark").val(result.Remark);
+                        $("#remark").val("Quarter " + result.Quater + " : " + result.Remark);
+                        $('.lastRemarkLabel').text("Quarter " + result.Quater + " : ");
+
+                    }
+                    if (result.Period === "Y") {
+                        $("#lastRemark").val(result.Remark);
+                        $("#remark").val("Year " + result.Year + " : " + result.Remark);
+                        $('.lastRemarkLabel').text("Year " + result.Year + " : ");
+
+                    }
+                });
+            },
+            updateRemark() {
+                var remark = $('#lastRemark').val();
+                var dataid = Number($('.lastRemark').text());
+                $.post("/ChartPeriod/updateRemark", { dataid: dataid, remark: remark }, function (result) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Add successfully!',
+                        type: 'success',
+                        confirmButtonText: 'OK'
+                    });
+                });
+            },
+            addCommentHistory(userid, dataid) {
+                $.post("/ChartPeriod/addCommentHistory", { userid: userid, dataid: dataid }, function (result) {
+                    console.log("data add comment" + result);
+
+                });
+            },
+            loadDataProvide(changePageSize) {
+                var obj = "@kpilevelcode,@period";
+                $.ajax({
+                    url: "/ChartPeriod/LoadDataProvide/",
+                    data: {
+                        obj: obj,
+                        page: chartperiodlConfig.pageIndex,
+                        pageSize: chartperiodlConfig.pageSize
+                    },
+                    type: "GET",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        var count = 1;
+                        var html = '';
+                        var template = $('#tblcomparechart-template').html();
+                        $.each(data.listCompare, function (i, item) {
+                            html += Mustache.render(template, {
+                                No: count,
+                                KPILevelCode: item.KPILevelCode,
+                                LevelNumber: item.LevelNumber,
+                                Area: item.Area,
+                                Tooltip: item.StatusPublic == true ? "" : 'data-toggle="tooltip" title="The publicity is private, not comparable!"',
+                                StatusPublicAttr: item.StatusPublic == true ? "" : "disabled",
+                                Status: item.Status == true ? '<span class="label label-success">visible</span>' : '<span class="label bg-danger">not visible</span>',
+                                StatusPublic: item.StatusPublic == true ? '<span class="label label-success">Public</span>' : '<span class="label bg-danger">Private</span>'
+
+                            });
+                            count++;
+                        });
+                        $('#tblcomparechart').html(html);
+                        chartperiodController.paging(data.total, function () {
+                            chartperiodController.loadDataProvide();
+                        }, changePageSize);
+                        chartperiodController.registerEvent();
+
+                        ///Lấy tất cả KPILevelCode và period khi click ghép lại thành chuỗi cách nhau bởi dấu (-) để gửi lên server.
+                        var old = "";
+                        $('#comparechart .compare').unbind('click').change(function (e) {
+                            var code = $(this).val();
+                            if (old.indexOf($(this).val()) == -1) {
+                                old += code + '-';
+                                $('.arrcompare').text(old);
+                            }
+                        });
+                        //Gửi chuỗi ở trên lên server
+                        $('#btnCompare-kpilevel').off('click').on('click', function () {
+
+                            var value = $('.arrcompare').text().toString();
+                            var obj = value.substring(value.length - 1, 0);
+                            var kpilevelcode = getUrlParameter('kpilevelcode');
+                            var period = getUrlParameter('period');
+                            obj = obj + '-' + kpilevelcode + ',' + period;
+                            window.location.href = "/Compare/?obj=" + obj + ";@standard,@unit";
+                        })
+                    },
+                    error: function (errormessage) {
+                        //console.log(errormessage.responseText);
+                    }
+                });
+            },
+            paging: function (totalRow, callback, changePageSize) {
+                var totalPage = Math.ceil(totalRow / chartperiodlConfig.pageSize);
+
+                //Unbind pagination if it existed or click change pagesize
+                if ($('#pagination a').length === 0 || changePageSize === true) {
+                    $('#pagination').empty();
+                    $('#pagination').removeData("twbs-pagination");
+                    $('#pagination').unbind("page");
+                }
+
+                $('#pagination').twbsPagination({
+                    totalPages: totalPage === 0 ? 1 : totalPage,
+                    first: "First",
+                    next: "Next",
+                    last: "Last",
+                    prev: "Previous",
+                    visiblePages: 10,
+                    onPageClick: function (event, page) {
+                        chartperiodlConfig.pageIndex = page;
+                        setTimeout(callback, 500);
+                    }
+                });
+            },
+            loadDataComment() {
+                $.ajax({
+                    url: '/ChartPeriod/LoadDataComment',
+                    type: "GET",
+                    data: {
+                        dataid: Number($(".dataid").text()),
+                        userid: Number($("#user").data('userid')),
+                    },
+                    dataType: "json",
+                    success: function (res) {
+                        var data = res.data;
+                        console.log("Lay ra tat ca comment");
+                        console.log(data);
+                        var total = res.total;
+
+                        $('.total-comments').text(total);
+                        var html = '';
+                        $.each(data, function (i, item) {
+
+                            var nowDate = new Date(parseInt(item.CommentedDate.substr(6)));
+                            var date = new Date(nowDate);
+                            var result = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+                            html += ' <li class="media">';
+                            html += '<a href="#" class="pull-left">';
+                            html += '    <img src="/Scripts/plugins/jquery-comments/user-icon.png" alt="" class="img-circle">';
+                            html += '</a>';
+                            html += '<div class="media-body">';
+                            html += '<span class="text-muted pull-right">';
+                            html += '    <small class="text-muted">' + JSONDateWithTime(item.CommentedDate) + '</small>';
+                            html += '</span>';
+                            html += '<strong class="text-success">' + item.FullName + '</strong>';
+                            if (item.Read) {
+                                html += '<span class="label bg-green"> new</span>';
+                            }
+                            if (item.IsHasTask) {
+                                html += '<p><a href="#modal-group-comment-data2" data-toggle="modal" data-commentid="' + item.CommentID + '" data-dismiss="modal" class="btn btn-xs btn-danger text-bold btnTask"><i class="fa fa-tags"></i> Task</a> </p>';
+                            }
+                            else {
+                                html += '<p><a href="#modal-group-comment-data2" data-toggle="modal" title="There are no task." data-commentid="' + item.CommentID + '" data-dismiss="modal" class="btn btn-xs btn-success text-bold btnTask tooltip-ui"><i class="fa fa-tags"></i> Task</a> </p>';
+                            }
+                            html += '<p>';
+                            html += item.CommentMsg;
+                            html += '</p>';
+                            html += '</div>';
+                            html += '</li >';
+                        });
+                        $('#media-list').empty();
+                        $('#media-list').append(html);
+                        chartperiodController.registerEvent();
+                    },
+                    error: function (err) {
+                    }
+                });
+            },
+            //signalR
+              ReloadReloadNotification(DataID,CommentID,Content,Tag) {
+            var notification = {
+                ID: 0,
+                UserID: $('#user').data('userid'),
+                DataID:DataID,
+                CommentID: CommentID,
+                Seen: false,
+                Content: Content,
+                Tag: Tag,
+                CreateTime= convertDate(new Date())
+            };
+            $.post('Notification', {notification:notification})
+                .done(function (response) {
+                   ///Load Notification
+                    if (!signalRHubInitialized)
+                        InitializeSignalRHubStore();
+                });
+            },
+            InitializeSignalRHubStore(DataID,CommentID,Content,Tag) {
+
+            if (signalRHubInitialized)
+                return;
+
+            try {
+
+                var clientHub = $.connection.notificationhub;
+
+                clientHub.client.broadcastMessage = function (message) {
+                    if (message === "Refresh")
+                       chartperiodController.ReloadNotification(DataID,CommentID,Content,Tag)
+                };
+
+                $.connection.hub.start().done(function () {
+                    clientHub.server.initialize($("#NotifierEntity").val());
+                    signalRHubInitialized = true;
+                });
+
+            } catch (err) {
+                signalRHubInitialized = false;
+            }
         }
 
-        $('#pagination').twbsPagination({
-            totalPages: totalPage === 0 ? 1 : totalPage,
-            first: "First",
-            next: "Next",
-            last: "Last",
-            prev: "Previous",
-            visiblePages: 10,
-            onPageClick: function (event, page) {
-                chartperiodlConfig.pageIndex = page;
-                setTimeout(callback, 500);
-            }
-        });
-    },
-    loadDataComment() {
-        $.ajax({
-            url: '/ChartPeriod/LoadDataComment',
-            type: "GET",
-            data: {
-                dataid: Number($(".dataid").text()),
-                userid: Number($("#user").data('userid')),
-            },
-            dataType: "json",
-            success: function (res) {
-                var data = res.data;
-                console.log("Lay ra tat ca comment");
-                console.log(data);
-                var total = res.total;
-
-                $('.total-comments').text(total);
-                var html = '';
-                $.each(data, function (i, item) {
-
-                    var nowDate = new Date(parseInt(item.CommentedDate.substr(6)));
-                    var date = new Date(nowDate);
-                    var result = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
-                     html +=' <li class="media">';
-                     html += '<a href="#" class="pull-left">';
-                     html += '    <img src="/Scripts/plugins/jquery-comments/user-icon.png" alt="" class="img-circle">';
-                     html += '</a>';
-                     html += '<div class="media-body">';
-                     html += '<span class="text-muted pull-right">';
-                     html += '    <small class="text-muted">'+result+'</small>';
-                     html += '</span>';
-                     html += '<strong class="text-success">' + item.FullName + '</strong>';
-                     if (item.Read) {
-                         html += '<span class="label bg-green"> new</span>';
-                     }
-
-                     html += '<p><a href="#modal-group-comment-data2" data-toggle="modal" data-commentid="'+item.CommentID+'" data-dismiss="modal" class="btn btn-xs btn-warning text-bold btnTask"><i class="fa fa-tags"></i> Task</a> </p>';
-                    html += '<p>';
-                    html += item.CommentMsg;
-                     html += '</p>';
-                     html +=    '</div>';
-                     html +='</li >';
-                });
-                $('#media-list').empty();
-                $('#media-list').append(html);
-                chartperiodController.registerEvent();
-            },
-            error: function (err) {
-            }
-        });
-    },
 }
+
+       
+
+
     </script>
 }
 <section id="chartperiod" class="animatedParent">

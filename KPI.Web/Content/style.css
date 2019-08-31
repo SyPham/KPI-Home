@@ -5,7 +5,10 @@
     height: 300px;
     overflow-y: scroll;
 }
-
+/*label.tooltip {
+    display: inline-block;
+    width: 5em;
+}*/
 .unselectable {
     cursor: not-allowed !important;
 }

@@ -14,5 +14,7 @@ namespace KPI.Model.ViewModel
         public string Tag { get; set; }
         public string Deadline { get; set; }
         public bool ApprovedStatus { get; set; }
+        public bool Status { get; set; }
+        public bool IsBoss { get; set; }
     }
 }

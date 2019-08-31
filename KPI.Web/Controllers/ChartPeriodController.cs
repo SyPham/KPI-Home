@@ -113,9 +113,9 @@ namespace KPI.Web.Controllers
         {
             return Json(new ActionPlanDAO().Delete(id), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetAll(int DataID, int CommentID)
+        public JsonResult GetAll(int DataID, int CommentID, int UserID)
         {
-            return Json(new ActionPlanDAO().GetAll(DataID,CommentID), JsonRequestBehavior.AllowGet);
+            return Json(new ActionPlanDAO().GetAll(DataID,CommentID, UserID), JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetByID(int id)
         {
@@ -124,6 +124,19 @@ namespace KPI.Web.Controllers
         public JsonResult Approval(int id,int approveby)
         {
             return Json(new ActionPlanDAO().Approval(id,approveby), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult Done(int id)
+        {
+            return Json(new ActionPlanDAO().Done(id), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult AddNotification(Notification notification)
+        {
+            return Json(new NotificationDAO().Add(notification), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult Notification(int userid,DateTime currentTime)
+        {
+            return Json(new NotificationDAO().Notification(userid, currentTime), JsonRequestBehavior.AllowGet);
         }
     }
 }
