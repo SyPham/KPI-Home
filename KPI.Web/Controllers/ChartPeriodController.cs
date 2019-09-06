@@ -134,9 +134,10 @@ namespace KPI.Web.Controllers
         {
             return Json(new NotificationDAO().Add(notification), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult Notification(int userid,DateTime currentTime)
-        {
-            return Json(new NotificationDAO().Notification(userid, currentTime), JsonRequestBehavior.AllowGet);
-        }
+        //public JsonResult Notification(int userid)
+        //{
+        //    return Json(new NotificationDAO().Notification(userid), JsonRequestBehavior.AllowGet);
+        //}
+       
     }
 }

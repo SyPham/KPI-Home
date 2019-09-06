@@ -1,6 +1,7 @@
 ﻿@using MvcBreadCrumbs;
 @using KPI.Model.helpers;
 @using KPI.Model.ViewModel
+@model IEnumerable<KPI.Model.EF.Notification>
 @{
     ViewBag.Title = "Home";
 }
@@ -13,7 +14,7 @@
     <div class="row animatedParent" id="home-admin">
         @foreach (var item in userProfile.Menus)
         {
-            if (item.Permission==1)
+            if (item.Permission == 1)
             {
                 <a href="@item.Link" class="col-md-3 col-sm-6 col-xs-12">
                     <div class="info-box">
@@ -37,7 +38,7 @@ else
     <div class="row animatedParent" id="home-client">
         @foreach (var item in userProfile.Menus)
         {
-            if (item.Permission!=1)
+            if (item.Permission != 1)
             {
                 <a href="@item.Link" class="col-md-3 col-sm-6 col-xs-12 animated swing">
                     <div class="info-box">
@@ -57,3 +58,6 @@ else
     </div>
 }
 
+@section Scripts{
+    
+}

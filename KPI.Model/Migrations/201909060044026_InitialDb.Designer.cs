@@ -7,13 +7,13 @@ namespace KPI.Model.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.0.0-20911")]
-    public sealed partial class removecommentchartanddetail : IMigrationMetadata
+    public sealed partial class InitialDb : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(removecommentchartanddetail));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(InitialDb));
         
         string IMigrationMetadata.Id
         {
-            get { return "201908191748118_removecommentchartanddetail"; }
+            get { return "201909060044026_InitialDb"; }
         }
         
         string IMigrationMetadata.Source

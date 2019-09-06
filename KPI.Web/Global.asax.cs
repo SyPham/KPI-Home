@@ -31,15 +31,16 @@ namespace KPI.Web
 
         protected void Session_Start(object sender, EventArgs e)
         {
-            NotificationDAO NC = new NotificationDAO();
-            var currentTime = DateTime.Now;
-            HttpContext.Current.Session["LastUpdated"] = currentTime;
+            
+            NotificationComponent nc = new NotificationComponent();
             var userprofile = Session["UserProfile"] as UserProfileVM;
-            if (userprofile == null)
+            if (userprofile != null)
             {
-               var model= NC.Notification(userprofile.User.ID,currentTime);
+                var currentTime = DateTime.Now;
+                HttpContext.Current.Session["LastUpdated"] = currentTime;
+                nc.RegisterNotification(currentTime);
             }
-           
+
         }
         protected void Application_End()
         {

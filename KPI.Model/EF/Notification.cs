@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
@@ -16,13 +17,13 @@ namespace KPI.Model.EF
         [DataMember]
         public int UserID { get; set; }
         [DataMember]
-        public int DataID { get; set; }
+        public string KPIName { get; set; }
         [DataMember]
-        public int CommentID { get; set; }
+        public string Period { get; set; }
         [DataMember]
         public bool Seen { get; set; }
         [DataMember]
-        public string Content { get; set; }
+        public string Link { get; set; }
         [DataMember]
         public DateTime CreateTime { get; set; }
         [DataMember]

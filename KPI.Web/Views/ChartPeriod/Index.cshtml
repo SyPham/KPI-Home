@@ -17,10 +17,11 @@
 }
 @Html.Raw(BreadCrumb.Display())
 @section Scripts{
-    <script src="~/Scripts/jquery.signalR-2.2.2.min.js"></script>
-    <script src="~/signalr/hubs"></script>
+
+  
     <script type="text/javascript">
-           var signalRHubInitialized = false;
+        
+     
         $("#modal-group-comment-data").on("shown.bs.modal", function () {
 
             activaTab('pills-home');
@@ -62,7 +63,7 @@
         var standard = "@standard";
         var unit = "@unit";
         $(function () {
-             
+            
             $('.standard').text(standard);
         if (period === "W") {
             //Thêm tiêu đề cho tr:first-child th
@@ -321,7 +322,7 @@
                       }
                 }]
             }
-            }
+}
 
                  var chart = new Chart('lineChart', {
                 type: 'line',
@@ -358,13 +359,13 @@
                 }
 
             chartperiodController.init();
-            //
+           
 });
 var chartperiodlConfig = {
     pageSize: 6,
     pageIndex: 1
 };
-        var chartperiodController = {
+var chartperiodController = {
             init() {
 
                 chartperiodController.loadDataProvide();
@@ -372,8 +373,6 @@ var chartperiodlConfig = {
 
             },
             registerEvent() {
-
-
                 $('.btnTask').unbind('click').on('click', function () {
                     var commentid = $(this).data('commentid');
                     $(".commentid").text(commentid)
@@ -384,6 +383,8 @@ var chartperiodlConfig = {
 
                 $('.btnSaveActionPlan').unbind('click').on('click', function () {
                     chartperiodController.addActionPlan();
+                    chartperiodController.addNotification();
+
                 })
                 $('#lastRemark').off('keypress').on('keypress', function (e) {
                     if (e.keyCode === 13) {
@@ -1205,53 +1206,38 @@ var chartperiodlConfig = {
                     }
                 });
             },
-            //signalR
-              ReloadReloadNotification(DataID,CommentID,Content,Tag) {
+            addNotification() {
             var notification = {
                 ID: 0,
                 UserID: $('#user').data('userid'),
-                DataID:DataID,
-                CommentID: CommentID,
+                KPIName: "@kpiname",
+                Period: "@period",
                 Seen: false,
-                Content: Content,
-                Tag: Tag,
-                CreateTime= convertDate(new Date())
-            };
-            $.post('Notification', {notification:notification})
-                .done(function (response) {
-                   ///Load Notification
-                    if (!signalRHubInitialized)
-                        InitializeSignalRHubStore();
-                });
-            },
-            InitializeSignalRHubStore(DataID,CommentID,Content,Tag) {
-
-            if (signalRHubInitialized)
-                return;
-
-            try {
-
-                var clientHub = $.connection.notificationhub;
-
-                clientHub.client.broadcastMessage = function (message) {
-                    if (message === "Refresh")
-                       chartperiodController.ReloadNotification(DataID,CommentID,Content,Tag)
+                Link: window.location.href,
+                Tag: $('.listTag').text().trim(),
+                CreateTime:chartperiodController.dateNow()
                 };
 
-                $.connection.hub.start().done(function () {
-                    clientHub.server.initialize($("#NotifierEntity").val());
-                    signalRHubInitialized = true;
+            $.post('AddNotification', {notification:notification})
+                .done(function (response) {
+                   //to do something
                 });
+            },
+             dateNow() {
+            var date = new Date();
+            var day = date.getDate();       // yields date
+            var month = date.getMonth() + 1;    // yields month (add one as '.getMonth()' is zero indexed)
+            var year = date.getFullYear();  // yields year
+            var hour = date.getHours();     // yields hours
+            var minute = date.getMinutes(); // yields minutes
+            var second = date.getSeconds(); // yields seconds
 
-            } catch (err) {
-                signalRHubInitialized = false;
-            }
+            // After this construct a string with the above results as below
+            var time = day + "/" + month + "/" + year + " " + hour + ':' + minute + ':' + second;
+            return time;
         }
-
 }
-
-       
-
+        
 
     </script>
 }

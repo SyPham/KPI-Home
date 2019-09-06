@@ -1,4 +1,4 @@
-﻿using SignalRWebApp.SqlServerNotifier;
+﻿using KPI.Model.SqlServerNotifier;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;

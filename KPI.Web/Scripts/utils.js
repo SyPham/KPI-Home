@@ -2,7 +2,7 @@
 
 function activaTab(tab) {
     $('.nav-pills a[href="#' + tab + '"]').tab('show');
-};
+}
 ///Tuan bat dau tu thu 2
 function getDateOfISOWeek(w, y) {
     var simple = new Date(y, 0, 1 + (w - 1) * 7);
@@ -149,4 +149,18 @@ function convertDate(inputFormat) {
     function pad(s) { return (s < 10) ? '0' + s : s; }
     var d = new Date(inputFormat);
     return [pad(d.getDate()), pad(d.getMonth() + 1), d.getFullYear()].join('/');
+}
+
+function dateNow() {
+    var date = new Date();
+    var day = date.getDate();       // yields date
+    var month = date.getMonth() + 1;    // yields month (add one as '.getMonth()' is zero indexed)
+    var year = date.getFullYear();  // yields year
+    var hour = date.getHours();     // yields hours 
+    var minute = date.getMinutes(); // yields minutes
+    var second = date.getSeconds(); // yields seconds
+
+    // After this construct a string with the above results as below
+    var time = day + "/" + month + "/" + year + " " + hour + ':' + minute + ':' + second; 
+    return time;
 }

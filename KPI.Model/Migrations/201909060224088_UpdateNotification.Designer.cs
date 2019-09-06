@@ -7,13 +7,13 @@ namespace KPI.Model.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.0.0-20911")]
-    public sealed partial class update : IMigrationMetadata
+    public sealed partial class UpdateNotification : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(update));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(UpdateNotification));
         
         string IMigrationMetadata.Id
         {
-            get { return "201908150740079_update"; }
+            get { return "201909060224088_UpdateNotification"; }
         }
         
         string IMigrationMetadata.Source

@@ -10,12 +10,16 @@ namespace KPI.Model
     public class KPIDbContext : DbContext
     {
         const String DefaultConnectionName = "KPIDbContext";
-        public KPIDbContext() : base(DefaultConnectionName)
+        public KPIDbContext() : this(DefaultConnectionName)
         {
-            this.Configuration.LazyLoadingEnabled = false;
         }
+        //public KPIDbContext() : base(DefaultConnectionName)
+        //{
+        //    this.Configuration.LazyLoadingEnabled = false;
+        //}
         public KPIDbContext(String sqlConnectionName) : base(String.Format("Name={0}", sqlConnectionName))
         {
+            this.Configuration.LazyLoadingEnabled = false;
         }
         public DbSet<EF.KPI> KPIs { get; set; }
         public DbSet<EF.KPILevel> KPILevels { get; set; }

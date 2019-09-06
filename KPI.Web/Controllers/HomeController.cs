@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Mvc;
 using KPI.Model.helpers;
 using KPI.Model.ViewModel;
+using System.Threading.Tasks;
 
 namespace KPI.Web.Controllers
 {
@@ -16,7 +17,7 @@ namespace KPI.Web.Controllers
         [BreadCrumb(Clear = true)]
         public ActionResult Index()
         {
-          
+
             BreadCrumb.Add("/", "Home");
             BreadCrumb.SetLabel("Dashboard");
             ViewBag.TotalUser = new UserAdminDAO().Total().ToInt();
@@ -29,7 +30,7 @@ namespace KPI.Web.Controllers
         public ActionResult UserDashBoard()
         {
             var userprofile = Session["UserProfile"] as UserProfileVM;
-            
+
             if (userprofile != null)
             {
                 return View();
@@ -38,6 +39,27 @@ namespace KPI.Web.Controllers
             {
                 return RedirectToAction("Index", "Login");
             }
+        }
+        public async Task<ActionResult> header()
+        {
+            var collection = await new NotificationDAO().NotifyCollection();
+            ViewBag.NotifierEntity = new NotificationDAO().GetNotifierEntity();
+            return PartialView(collection);
+        }
+      
+        public JsonResult GetNotifications()
+        {
+            var notificationRegisterTime = Session["LastUpdated"] != null ? Convert.ToDateTime(Session["LastUpdated"]) : DateTime.Now;
+            var userprofile = Session["UserProfile"] as UserProfileVM;
+            if (userprofile != null)
+            {
+                var listNotifications = new NotificationDAO().Notification(userprofile.User.ID, notificationRegisterTime);
+                //update session here for get only new added contacts (notification)
+                Session["LastUpdate"] = DateTime.Now;
+                return Json(listNotifications, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json("", JsonRequestBehavior.AllowGet);
         }
     }
 }

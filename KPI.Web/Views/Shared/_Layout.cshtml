@@ -16,91 +16,8 @@
 
     <!-- Site wrapper -->
     <div class="wrapper">
+        @Html.Partial("header")
 
-        <header class="main-header">
-            <!-- Logo -->
-            <a href="@Url.Action("Index","Home",null)" class="logo">
-                <!-- mini logo for sidebar mini 50x50 pixels -->
-                <span class="logo-mini"><b>KPI System</b></span>
-                <!-- logo for regular state and mobile devices -->
-                <span class="logo-lg"><b>KPI System</b></span>
-            </a>
-            <!-- Header Navbar: style can be found in header.less -->
-            <nav class="navbar navbar-static-top">
-                <!-- Sidebar toggle button-->
-                <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </a>
-
-                <div class="navbar-custom-menu">
-                    <ul class="nav navbar-nav">
-                        <!-- Notifications: style can be found in dropdown.less -->
-
-                        <li class="dropdown notifications-menu">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                <i class="fa fa-commenting-o"></i>
-                                <span class="label label-warning">3</span>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li class="header">You have 3 notifications</li>
-                                <li>
-                                    <!-- inner menu: contains the actual data -->
-                                    <ul class="menu">
-                                        <li>
-                                            <a href="#">
-                                                <i class="fa fa-user text-success"></i> You have update 2 KPIs on 30th 2019
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#">
-                                                <i class="fa fa-user text-success"></i> You got new message from KPI system
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#">
-                                                <i class="fa fa-user text-success"></i> You team member was late on updating KPI Please pay attention on their jobs
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li class="footer"><a href="#">View all</a></li>
-                            </ul>
-                        </li>
-                        <!-- User Account: style can be found in dropdown.less -->
-                        <li class="dropdown user user-menu">
-                            <a href="/" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                <img src="/Content/dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
-
-                                @if (@userProfile.User.Username != null)
-                                {
-                                    <span id="user" data-userid="@userProfile.User.ID.ToString()">
-                                        @userProfile.User.Username.ToString()
-                                    </span>
-                                }
-
-                            </a>
-                            <ul class="dropdown-menu">
-                                <!-- User image -->
-                                <li class="user-body">
-                                    <a style="cursor:pointer" data-toggle="modal" data-target="#modal-group-change-password">
-                                        <i class="fa fa-moon-o"></i>  Change password
-                                    </a>
-                                </li>
-
-                            </ul>
-                        </li>
-                        <li class="dropdown user user-menu">
-                            <a href='@Url.Action("Logout","Login")'>
-                                <span class="hidden-xs"><i class="fa fa-sign-out"></i> Sign-out</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        </header>
 
         <!-- =============================================== -->
         <!-- Left side column. contains the sidebar -->
@@ -231,7 +148,148 @@
     </div>
     @RenderPage("_Script.cshtml")
     @RenderSection("Scripts", required: false)
-    <a data-config="commands=*;size=30;status=off;theme=logo;language=en;bgcolor=#2a92f3;hostname=www.skaip.org" id="skaip-buttons" href="http://www.skaip.org/">Skype</a>
-    <script src="https://apps.skaip.org/buttons/widget/core.min.js" defer="defer"></script>
+    <script src="~/Scripts/jquery.signalR-2.2.2.min.js"></script>
+    <script src="~/signalr/hubs"></script>
+    <script>
+          
+        //var signalRHubInitialized = false;
+
+        //$(function () {
+        //    InitializeSignalRHubStore();
+        //});
+
+        //function InitializeSignalRHubStore() {
+
+        //    if (signalRHubInitialized)
+        //        return;
+
+        //    try {
+        //        var clientHub = $.connection.NotificationHub;
+
+                //clientHub.client.broadcastMessage = function (message) {
+
+                //    if (message === "Refresh")
+                //        ReloadNotification();
+                //};
+
+                //$.connection.hub.start().done(function () {
+                //    console.log('bat dau hub');
+                //   ReloadNotification();
+                //    signalRHubInitialized = true;
+                //});
+                  //signalr method for push server message to client
+        //        notificationHub.client.notify = function (message) {
+        //            if (message && message.toLowerCase() == "added") {
+        //                updateNotificationCount();
+        //            }
+        //        }
+        //    } catch (err) {
+        //        signalRHubInitialized = false;
+        //    }
+        //};
+
+        //function ReloadNotification() {
+         @*$.post('@(Url.Action("header", "Home", null, Request.Url.Scheme))')
+                .done(function (response) {
+                    console.log('Load lai');
+                    console.log(response);
+                    $("#liNotify").html(response)
+                    if (!signalRHubInitialized)
+                        InitializeSignalRHubStore();
+                });*@
+        //    $.post('/Home/GetNotifications')
+        //        .done(function (response) {
+        //            var data = response.data;
+        //            var total = response.total;
+        //            console.log(response);
+        //            console.log('Load lai');
+
+        //            var htmlNotification = '';
+        //            $.each(data, function (i, item) {
+        //                htmlNotification += `<li>
+        //                                                    <a href="${item.Link}">
+        //                                                        <i class="fa fa-user text-success"></i> ${item.Content}
+        //                                                    </a>
+        //                                                </li>`
+        //            })
+
+        //            var html = `<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+        //                                        <i class="fa fa-commenting-o"></i>
+        //                                        <span class="label label-warning">${total}</span>
+        //                                    </a>
+        //                                    <ul class="dropdown-menu">
+        //                                        <li class="header">You have ${total} notifications</li>
+        //                                        <li>
+        //                                            <!-- inner menu: contains the actual data -->
+        //                                            <ul class="menu">
+        //                                               ${htmlNotification}
+        //                                            </ul>
+        //                                        </li>
+        //                                        <li class="footer"><a href="#">View all</a></li>
+        //                                    </ul>`
+        //            $(".notifications-menu").empty();
+        //            $(".notifications-menu").html(html);
+        //            if (!signalRHubInitialized)
+        //                InitializeSignalRHubStore();
+        //        });
+        //};
+
+        ////////////////////////////////////
+        $(function () {
+            // Click on notification icon for show notification
+             $('#liNotify').on('show.bs.dropdown', function () {
+                 var count = 0;
+                   count = parseInt($('#liNotify span.count').html()) || 0;
+                //only load notification if not already loaded
+                if (count > 0) {
+                    updateNotification();
+                }
+                $('span.count', this).html('&nbsp;');
+            })
+
+            // update notification 
+            function updateNotification() {
+                $('#liNotify').empty();
+                //$('#notiContent').append($('<li>Loading...</li>'));
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/home/GetNotifications',
+                    success: function (response) {
+                        $('#notiContent').empty();
+                        if (response.length  == 0) {
+                            $('#liNotify').append($('<li>No data available</li>'));
+                        }
+                        $.each(response, function (index, value) {
+                            $('#liNotify').append($('<li>New contact : ' + value.KPIName +' added</li>'));
+                        });
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                })
+            }
+            // update notification count
+            function updateNotificationCount() {
+                var count = 0;
+                count = parseInt($('span.count').html()) || 0;
+                count++;
+                $('span.count').html(count);
+            }
+            // signalr js code for start hub and send receive notification
+            var notificationHub = $.connection.NotificationHub;
+            $.connection.hub.start().done(function () {
+                console.log('Notification hub started');
+            });
+
+            //signalr method for push server message to client
+            notificationHub.client.notify = function (message) {
+                if (message && message.toLowerCase() == "added") {
+                    updateNotificationCount();
+                }
+            }
+
+        })
+    </script>
 </body>
 </html>
