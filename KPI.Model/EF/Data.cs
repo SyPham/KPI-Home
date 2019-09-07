@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace KPI.Model.EF
 {
-    public class Data 
+    public class Data
     {
         public int ID { get; set; }
         public string KPILevelCode { get; set; }
@@ -22,6 +22,7 @@ namespace KPI.Model.EF
         public int Year { get; set; }
         public string DateUpload { get; set; }
         public string Remark { get; set; }
+        public double Target { get; set; }
         private DateTime? createTime = null;
         public DateTime CreateTime
         {

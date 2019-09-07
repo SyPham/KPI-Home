@@ -5,6 +5,8 @@
     ViewBag.Title = "Chart";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var datasets = ViewBag.Datasets as int[];
+    var targets = ViewBag.Targets as double[];
+    var standards = ViewBag.Standards as int[];
     var dataremarks = (List<KPI.Model.ViewModel.Dataremark>)ViewBag.Dataremarks;
     var labels = ViewBag.Labels as string[];
     var label = ViewBag.Label as string;
@@ -18,10 +20,10 @@
 @Html.Raw(BreadCrumb.Display())
 @section Scripts{
 
-  
+
     <script type="text/javascript">
-        
-     
+
+
         $("#modal-group-comment-data").on("shown.bs.modal", function () {
 
             activaTab('pills-home');
@@ -54,17 +56,19 @@
                         type: 'error'
                     });
              }
-         var borderWith = 0;
+        var borderWith = 0;
         var labels =@Html.Raw(Json.Encode(labels));
         var dataremarks =@Html.Raw(Json.Encode(dataremarks));
+        var targets =@Html.Raw(Json.Encode(targets));
+        var standards =@Html.Raw(Json.Encode(standards));
         var label = "@label";
         var period = "@period";
         var kpilevelcode = "@kpilevelcode";
         var standard = "@standard";
         var unit = "@unit";
         $(function () {
-            
-            $('.standard').text(standard);
+
+
         if (period === "W") {
             //Thêm tiêu đề cho tr:first-child th
                 $("#tblDataChart tr:first-child").append("<th>Week</th>");
@@ -212,11 +216,11 @@
             //var standards = [];
 
             //---------------------------------------------------------------------------------
-            for (var i = 0; i < datasets.length; i++) {
-                if (datasets[i] === 0) {
-                    datasets[i] = undefined;
-                }
-            }
+            //for (var i = 0; i < datasets.length; i++) {
+            //    if (datasets[i] === 0) {
+            //        datasets[i] = undefined;
+            //    }
+            //}
 
             var listData = {
                 label: label,
@@ -235,25 +239,49 @@
                 }
                 }
             };
+
+            var listTargets = {
+                label: "Numberic",
+                //spanGaps: false, //data=undefined thi k draw line
+                backgroundColor: "#3c8d8a",
+                borderColor: "#3c8d8a",
+                data: targets,
+                datalabels: {
+                    align: 'center',
+                    anchor: 'center'
+                }
+            };
+
+               var listStandards = {
+                label: "Standard",
+                //spanGaps: false, //data=undefined thi k draw line
+                backgroundColor: "#3c8d8a",
+                borderColor: "#3c8d8a",
+                data: standards,
+                datalabels: {
+                    align: 'center',
+                    anchor: 'center'
+                }
+            };
             var options = {
 
-                annotation: {
-                  annotations: [{
-                    type: 'line',
-                    mode: 'horizontal',
-                    scaleID: 'y-axis-0',
-                    value: standard,
-                    borderColor: '#3c8d8a',
-                    borderWidth: borderWith,
-                    label: {
-                      enabled: true,
-                        //content: 'standard',
-                        backgroundColor: '#3c8d8a',
-                        fontSize: 12,
-                      fontStyle: "bold",
-                    }
-                  }]
-             },
+             //   annotation: {
+             //     annotations: [{
+             //     type: 'line',
+             //     mode: 'horizontal',
+             //     scaleID: 'y-axis-0',
+             //     value: standard,
+             //     borderColor: '#3c8d8a',
+             //     borderWidth: borderWith,
+             //     label: {
+             //           enabled: true,
+             //           //content: 'standard',
+             //           backgroundColor: '#3c8d8a',
+             //           fontSize: 12,
+             //           fontStyle: "bold",
+             //       }
+             //     }]
+             //},
                     plugins: {
                         datalabels: {
                             backgroundColor: function (context) {
@@ -267,9 +295,8 @@
                             },
                             formatter: Math.round,
                             display: function (context) {
-                                if (context.dataset.data[1] !== 0)
-                                    return context.dataset.data;
-                                else return false;
+                                 console.log(context.dataset.label)
+                                return context.dataset.label !=="Standard";
                             }
                         }
                     }
@@ -323,16 +350,26 @@
                 }]
             }
 }
+            var dataChart;
+            if (unit === "Numbreric") {
+                dataChart = {
+                    labels: labels,
+                    datasets: [listTargets, listData]
+                }
+            } else {
+                 dataChart = {
+                    labels: labels,
+                    datasets: [listStandards, listData]
+                }
+            }
 
                  var chart = new Chart('lineChart', {
                 type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [listData]
-                },
+                data: dataChart,
                 options: options
                  });
-            var chartdatasets = chart.data.datasets[0].data
+
+            var chartdatasets = chart.data.datasets[1].data
               if (chartdatasets.length > 0) borderWith = 3;
             var m;
             for (var i = chartdatasets.length; i > 0; i--) {
@@ -343,23 +380,27 @@
                     m = 0;
                 }
             }
-
+            console.log(m)
+            if (unit !== "Numbreric") {
                 if (m < standard) {
-                    chart.data.datasets[0].borderColor = "#e7263b";
-                     chart.data.datasets[0].backgroundColor="#e7263b";
+
+                    chart.data.datasets[1].borderColor = "#e7263b";
+                     chart.data.datasets[1].backgroundColor="#e7263b";
                      chart.update();
                 }else if(m===0){
-                    chart.data.datasets[0].borderColor = "#e7263b";
-                    chart.data.datasets[0].backgroundColor="#e7263b";
+                    chart.data.datasets[1].borderColor = "#e7263b";
+                    chart.data.datasets[1].backgroundColor="#e7263b";
                      chart.update();
                 } else {
-                    chart.data.datasets[0].borderColor = "green";
-                    chart.data.datasets[0].backgroundColor="green";
+                    chart.data.datasets[1].borderColor = "green";
+                    chart.data.datasets[1].backgroundColor="green";
                      chart.update();
                 }
+            }
+
 
             chartperiodController.init();
-           
+
 });
 var chartperiodlConfig = {
     pageSize: 6,
@@ -1237,7 +1278,7 @@ var chartperiodController = {
             return time;
         }
 }
-        
+
 
     </script>
 }
@@ -1298,7 +1339,11 @@ var chartperiodController = {
                     {
                         <button type="button" class="btn btn-default  margin btnLike pull-right disabled" disabled id="btnLike"><i class="fa fa-heart"></i> Added Favourite</button>
                     }
-                    <button type="button" class="btn margin pull-right animated swing fast" style="background-color:#3c8d8a;color:#fff"><i class="fa fa-star"></i> <span>Standard : </span><span class="standard text-bold" style="">0</span></button>
+                    @if (@unit != "Numbreric")
+                    {
+                        <button type="button" class="btn margin pull-right animated swing fast" style="background-color:#3c8d8a;color:#fff"><i class="fa fa-star"></i> <span>Standard : </span><span class="standard text-bold" style="">@standard</span></button>
+                    }
+
                     @*<button class="btn margin pull-right btn-skype" style="background-color:#fff;border:1px solid #d2d6de;color:#000">*@
                     <button class="btn margin btn-primary pull-right btn-skype">
                         @*<a href="skype:phamtiensy8696_1">

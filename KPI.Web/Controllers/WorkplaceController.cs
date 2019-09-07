@@ -56,7 +56,7 @@ namespace KPI.Web.Controllers
                         item.KPILevelCode = workSheet.Cells[rowIterator, 1].Value.ToSafetyString().ToUpper();
                         //item.KPIName = workSheet.Cells[rowIterator, 2].Value.ToSafetyString().ToUpper();
                         item.Value = workSheet.Cells[rowIterator, 3].Value.ToInt();
-                        //item.PeriodValue = workSheet.Cells[rowIterator, 5].Value.ToInt();
+                        item.TargetValue = workSheet.Cells[rowIterator, 4].Value.ToDouble();
                         //item.Year = workSheet.Cells[rowIterator, 6].Value.ToInt();
                         //item.Area = workSheet.Cells[rowIterator, 7].Value.ToSafetyString();
                         //item.UpdateTime = workSheet.Cells[rowIterator, 8].Value.ToSafetyString().Trim();
@@ -141,18 +141,17 @@ namespace KPI.Web.Controllers
             var now = DateTime.Now;
             var end = now.GetEndOfQuarter();
             var tt = end.Subtract(now).Days;
-            var targetValue = 90;
+            //var targetValue = "";
 
             DataTable Dt = new DataTable();
             Dt.Columns.Add("KPILevel Code", typeof(string));
             Dt.Columns.Add("KPI Name", typeof(string));
             Dt.Columns.Add("Actual Value", typeof(int));
-            Dt.Columns.Add("Target Value", typeof(int));
+            Dt.Columns.Add("Target Value", typeof(object));
             Dt.Columns.Add("Period Value", typeof(string));
             Dt.Columns.Add("Year", typeof(int));
             Dt.Columns.Add("Area", typeof(string));
             Dt.Columns.Add("Update Time", typeof(object));
-            Dt.Columns.Add("Remark", typeof(string));
             Dt.Columns.Add("Start Date", typeof(string));
             Dt.Columns.Add("End Date", typeof(string));
             foreach (var item in model)
@@ -168,7 +167,7 @@ namespace KPI.Web.Controllers
                         var endDayOfWeek = CodeUtility.ToGetSaturdayOfWeek(currentYear, i).ToString("MM/dd/yyyy");
 
                         var updateTimeW = item.UploadTimeW.ConvertNumberDayOfWeekToString() + ", Week " + i;
-                        Dt.Rows.Add(item.KPILevelCode + "W", item.KPIName, item.Value,targetValue, i, currentYear, item.Area, updateTimeW, item.Remark, startDayOfWeek, endDayOfWeek);
+                        Dt.Rows.Add(item.KPILevelCode + "W", item.KPIName, item.Value, item.TargetValueW, i, currentYear, item.Area, updateTimeW, startDayOfWeek, endDayOfWeek);
                     }
                 }
                 // nếu tuần hiện tại trừ tuần MAX >= 1 thì export từ tuần kế tiếp tuần MAX cho đến tuần hiện tại
@@ -181,8 +180,8 @@ namespace KPI.Web.Controllers
                         {
                             var startDayOfWeek = CodeUtility.ToGetMondayOfWeek(currentYear, i).ToString("MM/dd/yyyy");
                             var endDayOfWeek = CodeUtility.ToGetSaturdayOfWeek(currentYear, i).ToString("MM/dd/yyyy");
-
-                            Dt.Rows.Add(item.KPILevelCode + "W", item.KPIName, item.Value,targetValue, i, currentYear, item.Area, item.UploadTimeW.ToSafetyString(), item.Remark, startDayOfWeek, endDayOfWeek);
+                            var updateTimeW = item.UploadTimeW.ConvertNumberDayOfWeekToString() + ", Week " + i;
+                            Dt.Rows.Add(item.KPILevelCode + "W", item.KPIName, item.Value, item.TargetValueW, i, currentYear, item.Area, updateTimeW, startDayOfWeek, endDayOfWeek);
                         }
                     }
                 }
@@ -194,7 +193,7 @@ namespace KPI.Web.Controllers
                 {
                     for (int i = 1; i <= currentMonth; i++)
                     {
-                        Dt.Rows.Add(item.KPILevelCode + "M", item.KPIName, item.Value,targetValue, i, currentYear, item.Area, item.UploadTimeM.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
+                        Dt.Rows.Add(item.KPILevelCode + "M", item.KPIName, item.Value, item.TargetValueW, i, currentYear, item.Area, item.UploadTimeM.ToSafetyString().Split(' ')[0].ToSafetyString());
                     }
                 }
                 // nếu tháng hiện tại trừ tháng MAX >= 1 thì export từ tháng kế tiếp tháng MAX cho đến tháng hiện tại
@@ -204,7 +203,7 @@ namespace KPI.Web.Controllers
                     {
                         for (int i = item.PeriodValueM + 1; i <= currentMonth; i++)
                         {
-                            Dt.Rows.Add(item.KPILevelCode + "M", item.KPIName, item.Value,targetValue, i, currentYear, item.Area, item.UploadTimeM.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
+                            Dt.Rows.Add(item.KPILevelCode + "M", item.KPIName, item.Value, item.TargetValueW, i, currentYear, item.Area, item.UploadTimeM.ToSafetyString().Split(' ')[0].ToSafetyString());
                         }
                     }
                 }
@@ -214,11 +213,11 @@ namespace KPI.Web.Controllers
                 {
                     for (int i = 1; i < currentQuarter - 1; i++)
                     {
-                        Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, item.Value,targetValue, i, currentYear, item.Area, item.UploadTimeQ.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
+                        Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, item.Value, item.TargetValueW, i, currentYear, item.Area, item.UploadTimeQ.ToSafetyString().Split(' ')[0].ToSafetyString());
                     }
                     if (tt <= 30)
                     {
-                        Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, item.Value,targetValue, currentQuarter, currentYear, item.Area, item.UploadTimeQ.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
+                        Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, item.Value, item.TargetValueW, currentQuarter, currentYear, item.Area, item.UploadTimeQ.ToSafetyString().Split(' ')[0].ToSafetyString());
                     }
                 }
                 if (item.PeriodValueQ > 0 && item.StateQ == true)
@@ -230,7 +229,7 @@ namespace KPI.Web.Controllers
                     {
                         for (int i = item.PeriodValueQ; i < currentQuarter; i++)
                         {
-                            Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, item.Value,targetValue, i, currentYear, item.Area, item.UploadTimeQ.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
+                            Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, item.Value, item.TargetValueW, i, currentYear, item.Area, item.UploadTimeQ.ToSafetyString().Split(' ')[0].ToSafetyString());
                         }
                     }
                     //, Nếu quý hiện tại trừ quý MAX trong bảng DATA bằng 1 thì 
@@ -239,7 +238,7 @@ namespace KPI.Web.Controllers
                     {
                         if (tt <= 30)
                         {
-                            Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, item.Value,targetValue, currentQuarter, currentYear, item.Area, item.UploadTimeQ.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
+                            Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, item.Value, item.TargetValueW, currentQuarter, currentYear, item.Area, item.UploadTimeQ.ToSafetyString().Split(' ')[0].ToSafetyString());
                         }
                     }
                 }
@@ -250,7 +249,7 @@ namespace KPI.Web.Controllers
                 {
                     if (currentMonth == 12)
                     {
-                        Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, item.Value,targetValue, currentYear, currentYear, item.Area, item.UploadTimeY.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
+                        Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, item.Value, item.TargetValueW, currentYear, currentYear, item.Area, item.UploadTimeY.ToSafetyString().Split(' ')[0].ToSafetyString());
                     }
                 }
                 if (item.PeriodValueY > 0 && item.StateY == true)
@@ -260,7 +259,7 @@ namespace KPI.Web.Controllers
                     {
                         for (int i = item.PeriodValueY + 1; i <= currentYear; i++)
                         {
-                            Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, item.Value,targetValue, i, currentYear, item.Area, item.UploadTimeY.ToSafetyString().Split(' ')[0], item.Remark.ToSafetyString());
+                            Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, item.Value, item.TargetValueW, i, currentYear, item.Area, item.UploadTimeY.ToSafetyString().Split(' ')[0].ToSafetyString());
                         }
                     }
                     //Nếu năm hiện tại - năm max trong bảng DATA == 1 thì kiểm tra tháng, nếu là tháng 12 thì export năm hiện tại
@@ -268,7 +267,7 @@ namespace KPI.Web.Controllers
                     {
                         if (currentMonth == 12)
                         {
-                            Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, item.Value,targetValue, currentYear, currentYear, item.Area, item.UploadTimeY.ToSafetyString().Split(' ')[0], item.Remark);
+                            Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, item.Value, item.TargetValueW, currentYear, currentYear, item.Area, item.UploadTimeY.ToSafetyString().Split(' ')[0]);
                         }
                     }
                 }
@@ -292,8 +291,6 @@ namespace KPI.Web.Controllers
                 Session["DownloadExcel_FileManager"] = excelPackage.GetAsByteArray();
                 return Json("", JsonRequestBehavior.AllowGet);
             }
-
-
 
         }
 

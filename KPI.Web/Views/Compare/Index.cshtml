@@ -190,7 +190,7 @@
                     anchor: 'center'
                 }
             };
-          
+
             var compareData;
             if (list4.data !== null) {
                 if (list4.data.length === 0) {
@@ -232,7 +232,7 @@
                                 weight: 'bold'
                             },
                          formatter: Math.round,
-                             display: function (context) {
+                         display: function (context) {
                                 console.log(context.dataset.label)
                                 return context.dataset.label !=="Standard"; // display labels with an odd index
                             }

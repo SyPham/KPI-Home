@@ -43,13 +43,23 @@ namespace KPI.Model.DAO
                 var unit = _dbContext.KPIs.FirstOrDefault(x => x.ID == item.KPIID);
                 if (unit == null) return new ChartVM();
                 var unitName = _dbContext.Units.FirstOrDefault(x => x.ID == unit.Unit).Name.ToSafetyString();
+
                 if (period == "W".ToUpper())
                 {
+                    var standard = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == kpilevelcode && x.WeeklyChecked == true).WeeklyStandard;
+                    var statusFavourites = _dbContext.Favourites.FirstOrDefault(x => x.KPILevelCode == kpilevelcode && x.Period == period) == null ? false : true;
+
                     //Tạo ra 1 mảng tuần mặc định bằng 0
                     List<int> listDatasets = new List<int>();
 
-                    //labels của chartjs mặc định có 53 phần tử = 0
+                    //labels của chartjs mặc định có 53 phần tử
                     List<string> listLabels = new List<string>();
+
+                    //labels của chartjs mặc định có 53 phần tử
+                    List<string> listTargets = new List<string>();
+
+                    //labels của chartjs mặc định có 53 phần tử
+                    List<int> listStandards = new List<int>();
 
                     var Dataremarks = new List<Dataremark>();
                     //Search range
@@ -59,21 +69,21 @@ namespace KPI.Model.DAO
 
                         var listValues = model.Where(x => x.Period == "W").OrderBy(x => x.Week).Select(x => x.Value).ToArray();
                         var listLabelsW = model.Where(x => x.Period == "W").OrderBy(x => x.Week).Select(x => x.Week).ToArray();
-
+                        var listtargetsW = model.Where(x => x.Period == "W").OrderBy(x => x.Week).Select(x => x.Target).ToArray();
+                        for (int i = 0; i < listValues.Length; i++)
+                        {
+                            listStandards.Add(standard);
+                        }
                         //Convert sang list string
                         var listStringLabels = Array.ConvertAll(listLabelsW, x => x.ToSafetyString());
 
+                        //Convert sang list string
+                        var listStringTargets = Array.ConvertAll(listtargetsW, x => x.ToSafetyString());
+
                         listDatasets.AddRange(listValues);
                         listLabels.AddRange(listStringLabels);
-                        //var countData = listDatasets.Count;
-                        //int a = (end.Value - countData);
-                        //if (a != 0)
-                        //{
-                        //    for (int i = 0; i < a; i++)
-                        //    {
-                        //        listDatasets.Add(0);
-                        //    }
-                        //}
+                        listTargets.AddRange(listStringTargets);
+
                         Dataremarks = model
                            .Where(x => x.Period == "W")
                            .OrderBy(x => x.Week)
@@ -89,35 +99,54 @@ namespace KPI.Model.DAO
                     return new ChartVM
                     {
                         Unit = unitName,
-                        Standard = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == kpilevelcode && x.WeeklyChecked == true).WeeklyStandard,
+                        Standard = standard,
                         Dataremarks = Dataremarks,
                         datasets = listDatasets.ToArray(),
                         labels = listLabels.ToArray(),
                         label = label,
+                        targets = listTargets.ToArray(),
+                        standards = listStandards.ToArray(),
                         kpiname = kpiname,
                         period = "W",
                         kpilevelcode = kpilevelcode,
-                        statusfavorite = _dbContext.Favourites.FirstOrDefault(x => x.KPILevelCode == kpilevelcode && x.Period == period) == null ? false : true
+                        statusfavorite = statusFavourites
                     };
 
                 }
                 else if (period == "M".ToUpper())
                 {
+                    var standard = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == kpilevelcode && x.MonthlyChecked == true).MonthlyStandard;
+                    var statusFavourites = _dbContext.Favourites.FirstOrDefault(x => x.KPILevelCode == kpilevelcode && x.Period == period) == null ? false : true;
+
                     //Tạo ra 1 mảng tuần mặc định bằng 0
                     List<int> listDatasets = new List<int>();
 
-                    //labels của chartjs mặc định có 53 phần tử = 0
+                    //labels của chartjs mặc định có 12 phần tử = 0
                     List<string> listLabels = new List<string>();
 
+                    //labels của chartjs mặc định có 12 phần tử
+                    List<string> listTargets = new List<string>();
+                    //Tạo ra 1 mảng tuần mặc định bằng 0
+                    List<int> listStandards = new List<int>();
                     var Dataremarks = new List<Dataremark>();
+
 
                     //Search range
                     if (start > 0 && end > 0)
                     {
                         model = model.Where(x => x.CreateTime.Year == year && x.Month >= start && x.Month <= end);
 
-                        var listValues = model.Where(x => x.Period == "M").OrderBy(x => x.Month).Select(x => x.Value).ToList();
-                        var listLabelsW = model.Where(x => x.Period == "M").OrderBy(x => x.Month).Select(x => x.Month).ToList();
+                        var listValues = model.Where(x => x.Period == "M").OrderBy(x => x.Month).Select(x => x.Value).ToArray();
+                        var listLabelsW = model.Where(x => x.Period == "M").OrderBy(x => x.Month).Select(x => x.Month).ToArray();
+                        var listtargetsW = model.Where(x => x.Period == "M").OrderBy(x => x.Week).Select(x => x.Target).ToArray();
+                        //Convert sang list string
+                        var listStringTargets = Array.ConvertAll(listtargetsW, x => x.ToSafetyString());
+                        listTargets.AddRange(listStringTargets);
+
+                        for (int i = 0; i < listValues.Length; i++)
+                        {
+                            listStandards.Add(standard);
+                        }
                         foreach (var a in listLabelsW)
                         {
                             switch (a)
@@ -169,33 +198,52 @@ namespace KPI.Model.DAO
                     return new ChartVM
                     {
                         Unit = unitName,
-                        Standard = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == kpilevelcode && x.MonthlyChecked == true).MonthlyStandard,
+                        Standard = standard,
                         Dataremarks = Dataremarks,
                         datasets = listDatasets.ToArray(),
                         labels = listLabels.ToArray(),
+                        targets = listTargets.ToArray(),
+                        standards = listStandards.ToArray(),
                         label = label,
                         kpiname = kpiname,
                         period = "M",
                         kpilevelcode = kpilevelcode,
-                        statusfavorite = _dbContext.Favourites.FirstOrDefault(x => x.KPILevelCode == kpilevelcode && x.Period == period) == null ? false : true
+                        statusfavorite = statusFavourites
                     };
                 }
                 else if (period == "Q".ToUpper())
                 {
+                    var standard = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == kpilevelcode && x.QuarterlyChecked == true).QuarterlyStandard;
+                    var statusFavourites = _dbContext.Favourites.FirstOrDefault(x => x.KPILevelCode == kpilevelcode && x.Period == period) == null ? false : true;
+
                     //Tạo ra 1 mảng tuần mặc định bằng 0
                     List<int> listDatasets = new List<int>();
 
                     //labels của chartjs mặc định có 53 phần tử = 0
                     List<string> listLabels = new List<string>();
+
+                    //labels của chartjs mặc định có 12 phần tử
+                    List<string> listTargets = new List<string>();
+                    //labels của chartjs mặc định có 12 phần tử
+                    List<int> listStandards = new List<int>();
                     var Dataremarks = new List<Dataremark>();
 
 
                     if (year > 0 && start > 0 && end > 0)
                     {
                         model = model.Where(x => x.CreateTime.Year == year && x.Quarter >= start && x.Quarter <= end);
-                        var listValues = model.Where(x => x.Period == "Q").OrderBy(x => x.Quarter).Select(x => x.Value).ToList();
-                        var listLabelsW = model.Where(x => x.Period == "Q").OrderBy(x => x.Quarter).Select(x => x.Quarter).ToList();
+                        var listValues = model.Where(x => x.Period == "Q").OrderBy(x => x.Quarter).Select(x => x.Value).ToArray();
+                        var listLabelsW = model.Where(x => x.Period == "Q").OrderBy(x => x.Quarter).Select(x => x.Quarter).ToArray();
                         listDatasets.AddRange(listValues);
+                        var listtargetsW = model.Where(x => x.Period == "M").OrderBy(x => x.Week).Select(x => x.Target).ToArray();
+
+                        //Convert sang list string
+                        var listStringTargets = Array.ConvertAll(listtargetsW, x => x.ToSafetyString());
+                        listTargets.AddRange(listStringTargets);
+                        for (int i = 0; i < listValues.Length; i++)
+                        {
+                            listStandards.Add(standard);
+                        }
                         foreach (var i in listLabelsW)
                         {
                             switch (i)
@@ -225,15 +273,17 @@ namespace KPI.Model.DAO
                     return new ChartVM
                     {
                         Unit = unitName,
-                        Standard = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == kpilevelcode && x.QuarterlyChecked == true).QuarterlyStandard,
+                        Standard = standard,
                         Dataremarks = Dataremarks,
                         datasets = listDatasets.ToArray(),
                         labels = listLabels.ToArray(),
+                        targets = listTargets.ToArray(),
+                        standards = listStandards.ToArray(),
                         label = label,
                         kpiname = kpiname,
                         period = "Q",
                         kpilevelcode = kpilevelcode,
-                        statusfavorite = _dbContext.Favourites.FirstOrDefault(x => x.KPILevelCode == kpilevelcode && x.Period == period) == null ? false : true
+                        statusfavorite = statusFavourites
                     };
                 }
                 else if (period == "Y".ToUpper())
@@ -309,7 +359,7 @@ namespace KPI.Model.DAO
                     listDatasets.Add(valueWeek.Value);
                     listLabels.Add(valueWeek.Week.ToString());
                 }
-               
+
                 model.datasets = listDatasets.ToArray();
                 model.labels = listLabels.ToArray();
                 model.period = period;

@@ -15,37 +15,26 @@ namespace KPI.Web
 {
     public class MvcApplication : System.Web.HttpApplication
     {
-        protected String SqlConnectionString { get; set; }
+        string con = ConfigurationManager.ConnectionStrings["KPIDbContext"].ConnectionString;
         protected void Application_Start()
         {
-            using (var context = new KPIDbContext())
-                SqlConnectionString = context.Database.Connection.ConnectionString;
-
             AreaRegistration.RegisterAllAreas();
-            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
-            BundleConfig.RegisterBundles(BundleTable.Bundles);
-            if (!String.IsNullOrEmpty(SqlConnectionString))
-                SqlDependency.Start(SqlConnectionString);
+            //here in Application Start we will start Sql Dependency
+            SqlDependency.Start(con);
         }
 
         protected void Session_Start(object sender, EventArgs e)
         {
-            
-            NotificationComponent nc = new NotificationComponent();
-            var userprofile = Session["UserProfile"] as UserProfileVM;
-            if (userprofile != null)
-            {
-                var currentTime = DateTime.Now;
-                HttpContext.Current.Session["LastUpdated"] = currentTime;
-                nc.RegisterNotification(currentTime);
-            }
-
+            NotificationComponent NC = new NotificationComponent();
+            var currentTime = DateTime.Now;
+            HttpContext.Current.Session["LastUpdated"] = currentTime;
+            NC.RegisterNotification(currentTime);
         }
         protected void Application_End()
         {
-            if (!String.IsNullOrEmpty(SqlConnectionString))
-                SqlDependency.Start(SqlConnectionString);
+            //here we will stop Sql Dependency
+            SqlDependency.Stop(con);
         }
     }
 

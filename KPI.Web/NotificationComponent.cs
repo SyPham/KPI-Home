@@ -6,6 +6,8 @@ using System.Web;
 using System.Data.SqlClient;
 using Microsoft.AspNet.SignalR;
 using KPI.Model.EF;
+using KPI.Model;
+using KPI.Model.helpers;
 
 namespace KPI.Web
 {
@@ -14,22 +16,21 @@ namespace KPI.Web
         //Here we will add a function for register notification (will add sql dependency)
         public void RegisterNotification(DateTime currentTime)
         {
-            string conStr = ConfigurationManager.ConnectionStrings["sqlConString"].ConnectionString;
-            string sqlCommand = @"SELECT [ContactID],[ContactName],[ContactNo] from [dbo].[Contacts] where [AddedOn] > @AddedOn";
-            string sqlCommand2 = @"SELECT [ID]
-                                  ,[UserID]
-                                  ,[KPIName]
-                                  ,[Period]
-                                  ,[Seen]
-                                  ,[Link]
-                                  ,[CreateTime]
-                                  ,[Tag]
-                              FROM [KPI].[dbo].[Notifications] where [CreateTime] > @AddedOn"; 
-                            
+            string conStr = ConfigurationManager.ConnectionStrings["KPIDbContext"].ConnectionString.ToSafetyString();
+            //string sqlCommand = @"SELECT [ContactID],[ContactName],[ContactNo] from [dbo].[Contacts] where [AddedOn] > @AddedOn";
+            string sql = @"SELECT [ID]
+                          ,[UserID]
+                          ,[KPIName]
+                          ,[Period]
+                          ,[Seen]
+                          ,[Link]
+                          ,[CreateTime]
+                          ,[Tag]
+                      FROM [dbo].[Notifications]  WHERE [CreateTime] > @AddedOn";
             //you can notice here I have added table name like this [dbo].[Contacts] with [dbo], its mendatory when you use Sql Dependency
             using (SqlConnection con = new SqlConnection(conStr))
             {
-                SqlCommand cmd = new SqlCommand(sqlCommand2, con);
+                SqlCommand cmd = new SqlCommand(sql, con);
                 cmd.Parameters.AddWithValue("@AddedOn", currentTime);
                 if (con.State != System.Data.ConnectionState.Open)
                 {
@@ -63,12 +64,12 @@ namespace KPI.Web
             }
         }
 
-        //public List<Notification> GetContacts(DateTime afterDate)
-        //{
-        //    using (var dc = new MyPushNotificationEntities())
-        //    {
-        //        return dc.Contacts.Where(a => a.AddedOn > afterDate).OrderByDescending(a => a.AddedOn).ToList();
-        //    }
-        //}
+        public List<Notification> GetContacts(DateTime afterDate)
+        {
+            using (KPIDbContext dc = new KPIDbContext())
+            {
+                return dc.Notifications.Where(a => a.CreateTime > afterDate).OrderByDescending(a => a.CreateTime).ToList();
+            }
+        }
     }
 }

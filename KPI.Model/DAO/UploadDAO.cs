@@ -12,7 +12,7 @@ using System.Configuration;
 
 namespace KPI.Model.DAO
 {
-    public class UploadDAO :IDisposable
+    public class UploadDAO : IDisposable
     {
         public KPIDbContext _dbContext = null;
         public UploadDAO() => _dbContext = new KPIDbContext();
@@ -98,13 +98,18 @@ namespace KPI.Model.DAO
             var listUpdate = new List<Data>();
             var listDataUpload = new List<UploadKPIVM>();
             var model = _dbContext.Datas;
+            var kpiLevel = _dbContext.KPILevels;
+            var kpi = _dbContext.KPIs;
+
             try
             {
                 foreach (var item in entity)
                 {
+
                     var value = item.KPILevelCode;
                     var code = value.Substring(0, value.Length - 1);
                     var period = value.Substring(value.Length - 1, 1);
+
 
                     var updateW = model.FirstOrDefault(x => x.KPILevelCode == code && x.Period == period && x.Week == item.PeriodValue);
                     var updateM = model.FirstOrDefault(x => x.KPILevelCode == code && x.Period == period && x.Month == item.PeriodValue);
@@ -119,18 +124,23 @@ namespace KPI.Model.DAO
                         dataAdd.Week = item.PeriodValue;
                         dataAdd.CreateTime = item.CreateTime;
                         dataAdd.Period = period;
+                        if (item.TargetValue > 0)
+                            dataAdd.Target = item.TargetValue;
+
                         listAdd.Add(dataAdd);
 
                     }
                     else if (period == "W" && updateW != null)
                     {
+
                         var dataUpdate = new Data();
                         dataUpdate.KPILevelCode = code;
                         dataUpdate.Value = item.Value;
                         dataUpdate.Week = item.PeriodValue;
                         dataUpdate.CreateTime = item.CreateTime;
                         dataUpdate.Period = period;
-
+                        if (item.TargetValue > 0)
+                            dataUpdate.Target = item.TargetValue;
                         listUpdate.Add(dataUpdate);
                     }
                     else if (period == "M" && updateM == null)
@@ -141,6 +151,8 @@ namespace KPI.Model.DAO
                         dataAdd.Month = item.PeriodValue;
                         dataAdd.CreateTime = item.CreateTime;
                         dataAdd.Period = period;
+                        if (item.TargetValue > 0)
+                            dataAdd.Target = item.TargetValue;
                         listAdd.Add(dataAdd);
 
                     }
@@ -152,7 +164,8 @@ namespace KPI.Model.DAO
                         dataUpdate.Month = item.PeriodValue;
                         dataUpdate.CreateTime = item.CreateTime;
                         dataUpdate.Period = period;
-
+                        if (item.TargetValue > 0)
+                            dataUpdate.Target = item.TargetValue;
                         listUpdate.Add(dataUpdate);
                     }
                     else if (period == "Q" && updateM == null)
@@ -163,6 +176,8 @@ namespace KPI.Model.DAO
                         dataAdd.Quarter = item.PeriodValue;
                         dataAdd.CreateTime = item.CreateTime;
                         dataAdd.Period = period;
+                        if (item.TargetValue > 0)
+                            dataAdd.Target = item.TargetValue;
                         listAdd.Add(dataAdd);
 
 
@@ -175,7 +190,8 @@ namespace KPI.Model.DAO
                         dataUpdate.Quarter = item.PeriodValue;
                         dataUpdate.CreateTime = item.CreateTime;
                         dataUpdate.Period = period;
-
+                        if (item.TargetValue > 0)
+                            dataUpdate.Target = item.TargetValue;
                         listUpdate.Add(dataUpdate);
                     }
                     else if (period == "Y" && updateY == null)
@@ -186,6 +202,8 @@ namespace KPI.Model.DAO
                         dataAdd.Year = item.PeriodValue;
                         dataAdd.CreateTime = item.CreateTime;
                         dataAdd.Period = period;
+                        if (item.TargetValue > 0)
+                            dataAdd.Target = item.TargetValue;
                         listAdd.Add(dataAdd);
                     }
                     else if (period == "Y" && updateM != null)
@@ -196,7 +214,8 @@ namespace KPI.Model.DAO
                         dataUpdate.Year = item.PeriodValue;
                         dataUpdate.CreateTime = item.CreateTime;
                         dataUpdate.Period = period;
-
+                        if (item.TargetValue > 0)
+                            dataUpdate.Target = item.TargetValue;
                         listUpdate.Add(dataUpdate);
                     }
                 }
@@ -403,7 +422,7 @@ namespace KPI.Model.DAO
                              UploadTimeM = kpiLevel.Monthly,
                              UploadTimeQ = kpiLevel.Quarterly,
                              UploadTimeY = kpiLevel.Yearly,
-
+                             TargetValueW = kpis.FirstOrDefault(x => x.ID == kpiLevel.KPIID).Unit == 1 ? "not require" : "require",
                          }).ToList();
 
             return model.ToList();

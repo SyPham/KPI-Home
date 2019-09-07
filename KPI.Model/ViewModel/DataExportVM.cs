@@ -27,10 +27,10 @@ namespace KPI.Model.ViewModel
         public bool StateQ { get; set; }
         public bool StateY { get; set; }
 
-        public int TargetValueW { get; set; }
-        public int TargetValueM { get; set; }
-        public int TargetValueQ { get; set; }
-        public int TargetValueY { get; set; }
+        public string TargetValueW { get; set; }
+        public string TargetValueM { get; set; }
+        public string TargetValueQ { get; set; }
+        public string TargetValueY { get; set; }
 
         public int Year { get; set; }
         public string Remark { get; set; }

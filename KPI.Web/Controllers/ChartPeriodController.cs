@@ -39,6 +39,8 @@ namespace KPI.Web.Controllers
             var model = new DataChartDAO().ListDatas(kpilevelcode, period, year, start, end);
             ViewBag.Datasets = model.datasets;
             ViewBag.Labels = model.labels;
+            ViewBag.Targets = model.targets;
+            ViewBag.Standards = model.standards;
             ViewBag.Label = model.label;
             ViewBag.KPIName = model.kpiname;
             ViewBag.Period = model.period;
@@ -55,9 +57,9 @@ namespace KPI.Web.Controllers
         {
             return Json(new KPILevelDAO().AddComment(entity), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult LoadDataComment(int dataid,int userid)
+        public JsonResult LoadDataComment(int dataid, int userid)
         {
-            return Json(new KPILevelDAO().ListComments(dataid,userid), JsonRequestBehavior.AllowGet);
+            return Json(new KPILevelDAO().ListComments(dataid, userid), JsonRequestBehavior.AllowGet);
         }
         public JsonResult AddCommentHistory(int userid, int dataid)
         {
@@ -73,7 +75,7 @@ namespace KPI.Web.Controllers
         }
         public JsonResult LoadDataProvide(string obj, int page, int pageSize)
         {
-            return Json(new KPILevelDAO().LoadDataProvide(obj, page,pageSize), JsonRequestBehavior.AllowGet);
+            return Json(new KPILevelDAO().LoadDataProvide(obj, page, pageSize), JsonRequestBehavior.AllowGet);
         }
         public JsonResult UpdateRemark(int dataid, string remark)
         {
@@ -115,15 +117,15 @@ namespace KPI.Web.Controllers
         }
         public JsonResult GetAll(int DataID, int CommentID, int UserID)
         {
-            return Json(new ActionPlanDAO().GetAll(DataID,CommentID, UserID), JsonRequestBehavior.AllowGet);
+            return Json(new ActionPlanDAO().GetAll(DataID, CommentID, UserID), JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetByID(int id)
         {
             return Json(new ActionPlanDAO().GetByID(id), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult Approval(int id,int approveby)
+        public JsonResult Approval(int id, int approveby)
         {
-            return Json(new ActionPlanDAO().Approval(id,approveby), JsonRequestBehavior.AllowGet);
+            return Json(new ActionPlanDAO().Approval(id, approveby), JsonRequestBehavior.AllowGet);
         }
         public JsonResult Done(int id)
         {
@@ -138,6 +140,6 @@ namespace KPI.Web.Controllers
         //{
         //    return Json(new NotificationDAO().Notification(userid), JsonRequestBehavior.AllowGet);
         //}
-       
+
     }
 }

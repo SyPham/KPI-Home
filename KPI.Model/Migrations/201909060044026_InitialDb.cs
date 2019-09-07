@@ -1,7 +1,8 @@
+
+using System;
+using System.Data.Entity.Migrations;
 namespace KPI.Model.Migrations
 {
-    using System;
-    using System.Data.Entity.Migrations;
     
     public partial class InitialDb : DbMigration
     {

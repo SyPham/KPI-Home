@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 
 namespace KPI.Model.ViewModel
 {
-   public class ChartVM
+    public class ChartVM
     {
         public int[] datasets { get; set; }
         public string[] labels { get; set; }
+        public string[] targets { get; set; }
+        public int[] standards { get; set; }
 
         public string label { get; set; }
         public string kpiname { get; set; }
@@ -26,7 +28,7 @@ namespace KPI.Model.ViewModel
 
         public List<Dataremark> Dataremarks { get; set; }
     }
-    public  class Dataremark
+    public class Dataremark
     {
         public int ID { get; set; }
         public string KPILevelCode { get; set; }
