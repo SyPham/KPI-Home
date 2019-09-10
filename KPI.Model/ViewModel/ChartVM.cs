@@ -9,7 +9,7 @@ namespace KPI.Model.ViewModel
 {
     public class ChartVM
     {
-        public int[] datasets { get; set; }
+        public string[] datasets { get; set; }
         public string[] labels { get; set; }
         public string[] targets { get; set; }
         public int[] standards { get; set; }
@@ -28,12 +28,25 @@ namespace KPI.Model.ViewModel
 
         public List<Dataremark> Dataremarks { get; set; }
     }
+    public class ChartVM2
+    {
+        public string[] datasets { get; set; }
+        public string[] labels { get; set; }
+        public string[] targets { get; set; }
+        public int[] standards { get; set; }
+        public int Standard { get; set; }
+        public string label { get; set; }
+        public string kpiname { get; set; }
+        public string period { get; set; }
+        public string kpilevelcode { get; set; }
+        public string Unit { get; set; }
+    }
     public class Dataremark
     {
         public int ID { get; set; }
         public string KPILevelCode { get; set; }
         public string KPIKind { get; set; }
-        public int Value { get; set; }
+        public string Value { get; set; }
         public int Week { get; set; }
         public int Month { get; set; }
         public int Quater { get; set; }

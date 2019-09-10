@@ -43,6 +43,9 @@ namespace KPI.Model
         public DbSet<Revise> Revises { get; set; }
         public DbSet<ActionPlan> ActionPlans { get; set; }
         public DbSet <Notification> Notifications { get; set; }
+        public DbSet<ActionPlanDetail> ActionPlanDetails { get; set; }
+        public DbSet<NotificationDetail> NotificationDetails { get; set; }
+        public DbSet<Tag> Tags { get; set; }
         protected override void OnModelCreating(DbModelBuilder builder)
         {
             //builder.Entity<IdentityUserRole>().HasKey(i => new { i.UserId, i.RoleId });

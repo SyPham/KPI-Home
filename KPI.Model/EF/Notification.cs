@@ -28,5 +28,7 @@ namespace KPI.Model.EF
         public DateTime CreateTime { get; set; }
         [DataMember]
         public string Tag { get; set; }
+        [Column("TagID")]
+        public int TagID { get; set; }
     }
 }

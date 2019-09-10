@@ -26,6 +26,8 @@ namespace KPI.Web.Controllers
             var unit = value[1].ToString();
             var comp = obj.Split(';')[0].ToString();
             var compare = new DataChartDAO().Compare(comp);
+            //var compare2 = new DataChartDAO().Compare2(comp);
+
             if (compare.list1 == null)
             {
                 compare.list1 = new Model.ViewModel.ChartVM();

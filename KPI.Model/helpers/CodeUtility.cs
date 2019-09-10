@@ -11,6 +11,19 @@ namespace KPI.Model.helpers
 {
     public static class CodeUtility
     {
+        public static bool IsDouble(this object value)
+        {
+            var flag = false;
+            if (value == null || value.ToString() == string.Empty)
+
+                return flag;
+
+            double result = 0;
+
+            double.TryParse(value.ToString(), out result);
+
+            return false;
+        }
         
         public static DateTime ToGetMondayOfWeek(this int year, int week)
         {

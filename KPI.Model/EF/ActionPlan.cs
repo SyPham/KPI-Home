@@ -20,6 +20,8 @@ namespace KPI.Model.EF
         public string Description { get; set; }
         [Column("Tag")]
         public string Tag { get; set; }
+        [Column("TagID")]
+        public int TagID { get; set; }
         public int ApprovedBy { get; set; }
 
         private DateTime? createTime = null;

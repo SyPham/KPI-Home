@@ -81,7 +81,7 @@ namespace KPI.Model.DAO
             {
                 var iteam = _dbContext.KPIs.FirstOrDefault(x => x.ID == entity.ID);
                 iteam.Name = entity.Name;
-                iteam.Code = entity.Code;
+                //iteam.Code = entity.Code;
                 iteam.LevelID = entity.LevelID;
                 iteam.CategoryID = entity.CategoryID;
                 iteam.Unit = entity.Unit;

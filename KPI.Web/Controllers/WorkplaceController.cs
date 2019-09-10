@@ -36,6 +36,7 @@ namespace KPI.Web.Controllers
         {
             HttpPostedFileBase file = Request.Files["UploadedFile"];
             var datasList = new List<UploadDataVM>();
+            //var datasList2 = new List<UploadDataVM2>();
             if ((file != null) && (file.ContentLength > 0) && !string.IsNullOrEmpty(file.FileName))
             {
                 string fileName = file.FileName;
@@ -55,8 +56,9 @@ namespace KPI.Web.Controllers
                         var item = new UploadDataVM();
                         item.KPILevelCode = workSheet.Cells[rowIterator, 1].Value.ToSafetyString().ToUpper();
                         //item.KPIName = workSheet.Cells[rowIterator, 2].Value.ToSafetyString().ToUpper();
-                        item.Value = workSheet.Cells[rowIterator, 3].Value.ToInt();
+                        item.Value = workSheet.Cells[rowIterator, 3].Value.ToSafetyString();
                         item.TargetValue = workSheet.Cells[rowIterator, 4].Value.ToDouble();
+                        item.PeriodValue = workSheet.Cells[rowIterator, 5].Value.ToInt();
                         //item.Year = workSheet.Cells[rowIterator, 6].Value.ToInt();
                         //item.Area = workSheet.Cells[rowIterator, 7].Value.ToSafetyString();
                         //item.UpdateTime = workSheet.Cells[rowIterator, 8].Value.ToSafetyString().Trim();

@@ -83,11 +83,14 @@
     <Compile Include="DAO\AdminCategoryDAO.cs" />
     <Compile Include="DAO\NotificationDAO.cs" />
     <Compile Include="DbContextExtensions.cs" />
+    <Compile Include="EF\ActionPlanDetail.cs" />
     <Compile Include="EF\ActionPlan.cs" />
     <Compile Include="EF\CommentChart.cs" />
     <Compile Include="EF\CommentChartDetail.cs" />
+    <Compile Include="EF\NotificationDetail.cs" />
     <Compile Include="EF\Notification.cs" />
     <Compile Include="EF\Revise.cs" />
+    <Compile Include="EF\Tag.cs" />
     <Compile Include="EntityBase.cs" />
     <Compile Include="helpers\ConfigHelper.cs" />
     <Compile Include="DAO\FavouriteDAO.cs" />
@@ -135,6 +138,22 @@
     <Compile Include="Migrations\201909090839231_addTagTblComment.Designer.cs">
       <DependentUpon>201909090839231_addTagTblComment.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201909100210177_modifyValueTblData.cs" />
+    <Compile Include="Migrations\201909100210177_modifyValueTblData.Designer.cs">
+      <DependentUpon>201909100210177_modifyValueTblData.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909100818221_AddActionPlanDetailNotificationDetail.cs" />
+    <Compile Include="Migrations\201909100818221_AddActionPlanDetailNotificationDetail.Designer.cs">
+      <DependentUpon>201909100818221_AddActionPlanDetailNotificationDetail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909100821030_AddActionPlanDetailNotificationDetail1.cs" />
+    <Compile Include="Migrations\201909100821030_AddActionPlanDetailNotificationDetail1.Designer.cs">
+      <DependentUpon>201909100821030_AddActionPlanDetailNotificationDetail1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909100831039_AddActionPlanDetailNotificationDetail2.cs" />
+    <Compile Include="Migrations\201909100831039_AddActionPlanDetailNotificationDetail2.Designer.cs">
+      <DependentUpon>201909100831039_AddActionPlanDetailNotificationDetail2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="ObjectQueryExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -181,6 +200,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201909090839231_addTagTblComment.resx">
       <DependentUpon>201909090839231_addTagTblComment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909100210177_modifyValueTblData.resx">
+      <DependentUpon>201909100210177_modifyValueTblData.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909100818221_AddActionPlanDetailNotificationDetail.resx">
+      <DependentUpon>201909100818221_AddActionPlanDetailNotificationDetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909100821030_AddActionPlanDetailNotificationDetail1.resx">
+      <DependentUpon>201909100821030_AddActionPlanDetailNotificationDetail1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909100831039_AddActionPlanDetailNotificationDetail2.resx">
+      <DependentUpon>201909100831039_AddActionPlanDetailNotificationDetail2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

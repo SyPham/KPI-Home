@@ -91,7 +91,6 @@ namespace KPI.Model.DAO
             }
             return true;
         }
-
         public SendMailVM UploadData(List<UploadDataVM> entity)
         {
             var listAdd = new List<Data>();
@@ -230,7 +229,7 @@ namespace KPI.Model.DAO
                     foreach (var item in listAdd)
                     {
                         var standard = modelKPILevel.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode);
-                        if (item.Value < standard.WeeklyStandard)
+                        if (item.Value.ToInt() < standard.WeeklyStandard || item.Value.ToInt() < item.Target)
                         {
                             var dataUploadKPIVM = new UploadKPIVM()
                             {
@@ -284,7 +283,7 @@ namespace KPI.Model.DAO
                     foreach (var item in listUpdate)
                     {
                         var standard = modelKPILevel.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode);
-                        if (item.Value < standard.WeeklyStandard)
+                        if (item.Value.ToInt() < standard.WeeklyStandard || item.Value.ToInt() < item.Target)
                         {
                             var dataUploadKPIVM = new UploadKPIVM()
                             {

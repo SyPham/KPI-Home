@@ -235,6 +235,7 @@ var adminKPIController = {
             contentType: "application/json;charset=UTF-8",
             dataType: "json",
             success: function (result) {
+                console.log(result);
                 $('#modal-group2 .ID').val(result.ID);
                 $('#modal-group2 .Name').val(result.Name);
                 $('#modal-group2 .Code').val(result.Code);

@@ -50,7 +50,7 @@ namespace KPI.Model.DAO
                     var statusFavourites = _dbContext.Favourites.FirstOrDefault(x => x.KPILevelCode == kpilevelcode && x.Period == period) == null ? false : true;
 
                     //Tạo ra 1 mảng tuần mặc định bằng 0
-                    List<int> listDatasets = new List<int>();
+                    List<string> listDatasets = new List<string>();
 
                     //labels của chartjs mặc định có 53 phần tử
                     List<string> listLabels = new List<string>();
@@ -119,7 +119,7 @@ namespace KPI.Model.DAO
                     var statusFavourites = _dbContext.Favourites.FirstOrDefault(x => x.KPILevelCode == kpilevelcode && x.Period == period) == null ? false : true;
 
                     //Tạo ra 1 mảng tuần mặc định bằng 0
-                    List<int> listDatasets = new List<int>();
+                    List<string> listDatasets = new List<string>();
 
                     //labels của chartjs mặc định có 12 phần tử = 0
                     List<string> listLabels = new List<string>();
@@ -217,7 +217,7 @@ namespace KPI.Model.DAO
                     var statusFavourites = _dbContext.Favourites.FirstOrDefault(x => x.KPILevelCode == kpilevelcode && x.Period == period) == null ? false : true;
 
                     //Tạo ra 1 mảng tuần mặc định bằng 0
-                    List<int> listDatasets = new List<int>();
+                    List<string> listDatasets = new List<string>();
 
                     //labels của chartjs mặc định có 53 phần tử = 0
                     List<string> listLabels = new List<string>();
@@ -335,8 +335,10 @@ namespace KPI.Model.DAO
         public ChartVM Compare(string kpilevelcode, string period)
         {
 
+            var model2 = new DataCompareVM2();
 
             var model = new ChartVM();
+
             var item = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == kpilevelcode);
             model.kpiname = _dbContext.KPIs.Find(item.KPIID).Name;
             model.label = _dbContext.Levels.FirstOrDefault(x => x.ID == item.LevelID).Name;
@@ -348,7 +350,7 @@ namespace KPI.Model.DAO
             if (period == "W")
             {
                 //Tạo ra 1 mảng tuần mặc định bằng 0
-                List<int> listDatasets = new List<int>();
+                List<string> listDatasets = new List<string>();
 
                 //labels của chartjs mặc định có 53 phần tử = 0
                 List<string> listLabels = new List<string>();
@@ -368,7 +370,7 @@ namespace KPI.Model.DAO
             if (period == "M")
             {
                 //Tạo ra 1 mảng tuần mặc định bằng 0
-                List<int> listDatasets = new List<int>();
+                List<string> listDatasets = new List<string>();
 
                 //labels của chartjs mặc định có 53 phần tử = 0
                 List<string> listLabels = new List<string>();
@@ -414,7 +416,129 @@ namespace KPI.Model.DAO
             if (period == "Q")
             {
                 //Tạo ra 1 mảng tuần mặc định bằng 0
-                List<int> listDatasets = new List<int>();
+                List<string> listDatasets = new List<string>();
+
+                //labels của chartjs mặc định có 53 phần tử = 0
+                List<string> listLabels = new List<string>();
+                var datas = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Quarter).Select(x => new { x.Quarter, x.Value }).ToList();
+                foreach (var quarterly in datas)
+                {
+                    listDatasets.Add(quarterly.Value);
+                    switch (quarterly.Quarter)
+                    {
+                        case 1:
+                            listLabels.Add("Quarter 1"); break;
+                        case 2:
+                            listLabels.Add("Quarter 2"); break;
+                        case 3:
+                            listLabels.Add("Quarter 3"); break;
+                        case 4:
+                            listLabels.Add("Quarter 4"); break;
+                    }
+                }
+                model.datasets = listDatasets.ToArray();
+                model.labels = listLabels.ToArray();
+                model.period = period;
+                model.Unit = unitName;
+                model.Standard = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == kpilevelcode && x.QuarterlyChecked == true).QuarterlyStandard;
+            }
+            if (period == "Y")
+            {
+                var datasetsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Year).Select(x => x.Value).ToArray();
+                var labelsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Year).Select(x => x.Year).ToArray();
+                var labels1 = Array.ConvertAll(labelsKPILevel1, x => x.ToSafetyString());
+                model.datasets = datasetsKPILevel1;
+                model.labels = labels1;
+                model.period = period;
+            }
+            return model;
+        }
+
+        public object Compare2(string kpilevelcode, string period)
+        {
+
+            var model2 = new DataCompareVM2();
+
+            var model = new ChartVM2();
+
+            var item = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == kpilevelcode);
+            model.kpiname = _dbContext.KPIs.Find(item.KPIID).Name;
+            model.label = _dbContext.Levels.FirstOrDefault(x => x.ID == item.LevelID).Name;
+            model.kpilevelcode = kpilevelcode;
+
+            var unit = _dbContext.KPIs.FirstOrDefault(x => x.ID == item.KPIID).Unit;
+            var unitName = _dbContext.Units.FirstOrDefault(x => x.ID == unit).Name;
+
+            if (period == "W")
+            {
+                //Tạo ra 1 mảng tuần mặc định bằng 0
+                List<string> listDatasets = new List<string>();
+
+                //labels của chartjs mặc định có 53 phần tử = 0
+                List<string> listLabels = new List<string>();
+
+                var datas = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Week).Select(x => new { x.Value, x.Week }).ToList();
+                foreach (var valueWeek in datas)
+                {
+                    listDatasets.Add(valueWeek.Value);
+                    listLabels.Add(valueWeek.Week.ToString());
+                }
+
+                model.datasets = listDatasets.ToArray();
+                model.labels = listLabels.ToArray();
+                model.period = period;
+
+            }
+            if (period == "M")
+            {
+                //Tạo ra 1 mảng tuần mặc định bằng 0
+                List<string> listDatasets = new List<string>();
+
+                //labels của chartjs mặc định có 53 phần tử = 0
+                List<string> listLabels = new List<string>();
+
+
+                var datas = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Month).Select(x => new { x.Month, x.Value }).ToList();
+                foreach (var monthly in datas)
+                {
+                    listDatasets.Add(monthly.Value);
+                    switch (monthly.Month)
+                    {
+                        case 1:
+                            listLabels.Add("Jan"); break;
+                        case 2:
+                            listLabels.Add("Feb"); break;
+                        case 3:
+                            listLabels.Add("Mar"); break;
+                        case 4:
+                            listLabels.Add("Apr"); break;
+                        case 5:
+                            listLabels.Add("May"); break;
+                        case 6:
+                            listLabels.Add("Jun"); break;
+                        case 7:
+                            listLabels.Add("Jul"); break;
+                        case 8:
+                            listLabels.Add("Aug"); break;
+                        case 9:
+                            listLabels.Add("Sep");
+                            break;
+                        case 10:
+                            listLabels.Add("Oct"); break;
+                        case 11:
+                            listLabels.Add("Nov"); break;
+                        case 12:
+                            listLabels.Add("Dec"); break;
+                    }
+                }
+                model.datasets = listDatasets.ToArray();
+                model.labels = listLabels.ToArray();
+                model.period = period;
+            }
+            if (period == "Q")
+            {
+                //Tạo ra 1 mảng tuần mặc định bằng 0
+                List<string> listDatasets = new List<string>();
 
                 //labels của chartjs mặc định có 53 phần tử = 0
                 List<string> listLabels = new List<string>();
@@ -460,14 +584,43 @@ namespace KPI.Model.DAO
                 users = _dbContext.Users.ToList()
             };
         }
+
+        public DataCompareVM2 Compare2(string obj)
+        {
+
+            var model = new DataCompareVM2();
+            obj = obj.ToSafetyString();
+
+            var value = obj.Split('-');
+            model.Period = value[1].Split(',')[1];
+            var size = value.Length;
+            foreach (var item in value)
+            {
+                var kpilevelcode = item.Split(',')[0];
+                var period = item.Split(',')[1];
+                var list = Compare2(kpilevelcode, period);
+                if (list != null)
+                    model.datas.Add(list);
+            }
+
+            return new DataCompareVM2();
+        }
         public DataCompareVM Compare(string obj)
         {
+
             var model = new DataCompareVM();
             obj = obj.ToSafetyString();
 
             var value = obj.Split('-');
             model.Period = value[1].Split(',')[1];
             var size = value.Length;
+            foreach (var item in value)
+            {
+                var kpilevelcode = item.Split(',')[0];
+                var period = item.Split(',')[1];
+                model.list1 = Compare(kpilevelcode, period);
+            }
+
             if (size == 2)
             {
                 var kpilevelcode1 = value[0].Split(',')[0];
