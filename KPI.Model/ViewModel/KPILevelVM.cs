@@ -46,5 +46,7 @@ namespace KPI.Model.ViewModel
         public bool StatusEmptyDataM { get; set; }
         public bool StatusEmptyDataQ { get; set; }
         public bool StatusEmptyDataY { get; set; }
+
+        public string Unit { get; set; }
     }
 }

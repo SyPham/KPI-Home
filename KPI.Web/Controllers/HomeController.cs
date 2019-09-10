@@ -49,26 +49,30 @@ namespace KPI.Web.Controllers
       
         public JsonResult GetNotifications()
         {
-            var notificationRegisterTime = Session["LastUpdated"] != null ? Convert.ToDateTime(Session["LastUpdated"]) : DateTime.Now;
-            var userprofile = Session["UserProfile"] as UserProfileVM;
-            if (userprofile != null)
+            var userprofile = Session["UserProfile"] as UserProfileVM; 
+            if(userprofile==null)
+                return Json("", JsonRequestBehavior.AllowGet);
+            var listNotifications = new MessagesRepository().GetAllNotifications(userprofile.User.Username);
+            var total = 0;
+            var listID = new List<int>();
+            foreach (var item in listNotifications)
             {
-                var listNotifications = new NotificationDAO().Notification(userprofile.User.ID, notificationRegisterTime);
-                //update session here for get only new added contacts (notification)
-                Session["LastUpdate"] = DateTime.Now;
-                return Json(listNotifications, JsonRequestBehavior.AllowGet);
+                if (item.Seen == false)
+                {
+                    total++;
+                    listID.Add(item.ID);
+                }
+                   
             }
-
-            return Json("", JsonRequestBehavior.AllowGet);
+            return Json( new {arrayID = listID.ToArray(), total = total, data = listNotifications }, JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetNotificationContacts()
+       public ActionResult ListHistoryNotification()
         {
-            var notificationRegisterTime = Session["LastUpdated"] != null ? Convert.ToDateTime(Session["LastUpdated"]) : DateTime.Now;
-            NotificationComponent NC = new NotificationComponent();
-            var list = NC.GetContacts(notificationRegisterTime);
-            //update session here for get only new added contacts (notification)
-            Session["LastUpdate"] = DateTime.Now;
-            return new JsonResult { Data = list, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+            var userprofile = Session["UserProfile"] as UserProfileVM;
+            if (userprofile == null)
+                return Json("", JsonRequestBehavior.AllowGet);
+            IEnumerable<NotificationViewModel> model = new NotificationDAO().GetHistoryNotification(userprofile.User.ID);
+            return View(model);
         }
     }
 }

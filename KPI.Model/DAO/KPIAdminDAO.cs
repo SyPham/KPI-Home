@@ -180,7 +180,9 @@ namespace KPI.Model.DAO
             {
                 data = model,
                 total = totalRow,
-                status = true
+                status = true,
+                page,
+                pageSize
             };
         }
 

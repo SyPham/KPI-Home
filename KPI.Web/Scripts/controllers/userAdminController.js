@@ -1,6 +1,7 @@
 ﻿$(document).ready(function () {
     adminUserController.init();
 });
+
 var userConfig = {
     pageSize: 10,
     pageIndex: 1
@@ -363,13 +364,19 @@ var adminUserController = {
                 $("#main-loading-delay").show();
             },
             success: function (response) {
-
+                var count = 1;
                 if (response.status) {
                     $("#main-loading-delay").hide();
-                    var count = 1;
+                   
                     //console.log(response.data);
                     var data = response.data;
-                    console.log(data);
+                    let page = response.page;
+                    let pageSize = response.pageSize;
+                    count = (page - 1) * pageSize;
+                    if (count === 0)
+                        count = 1;
+                    else count = count + 1;
+                    console.log(response);
                     var html = '';
                     var template = $('#tbluser-template').html();
                     $.each(data, function (i, item) {

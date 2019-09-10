@@ -151,145 +151,95 @@
     <script src="~/Scripts/jquery.signalR-2.4.1.min.js"></script>
     <script src="~/signalr/hubs"></script>
     <script>
-       //var clientHub = $.connection.notificationHub;
-        //var signalRHubInitialized = false;
 
-        //$(function () {
-        //    InitializeSignalRHubStore();
-        //});
+$(function () {
+// Declare a proxy to reference the hub.
+var notifications = $.connection.notificationHub;
 
-        //function InitializeSignalRHubStore() {
 
-        //    if (signalRHubInitialized)
-        //        return;
+// Create a function that the hub can call to broadcast messages.
+notifications.client.updateMessages = function () {
+    getAllNotifications();
 
-        //    try {
-        //        var clientHub = $.connection.NotificationHub;
+};
+// Start the connection.
+$.connection.hub.start().done(function () {
+    console.log("connection started")
+    getAllNotifications();
+}).fail(function (e) {
+    console.log(e);
+});
 
-                //clientHub.client.broadcastMessage = function (message) {
+$('#liNotify ').off('click').on('click', function () {
+    var listID = $('#liNotify .listNotifies').data('id');
+    $.ajax({
+        url: '/Notification/UpdateRange',
+        data: { listID: listID },
+        type: 'GET',
+        dataType: 'json',
+        success: function (response) {
+            if (response) {
+                //alert("Update success");
+            }
+        }
+    })
+});
+});
+function getAllNotifications() {
 
-                //    if (message === "Refresh")
-                //        ReloadNotification();
-                //};
+$.ajax({
+    url: '/Home/GetNotifications',
+    contentType: 'application/html ; charset:utf-8',
+    type: 'GET',
+    dataType: "json",
+    success: function (response) {
+        console.log(response);
+        var data = response.data;
+        var total = response.total;
+        var arrays = response.arrayID;
+        console.log(response);
+        console.log('Load lai');
 
-                //$.connection.hub.start().done(function () {
-                //    console.log('bat dau hub');
-                //   ReloadNotification();
-                //    signalRHubInitialized = true;
-                //});
-                  //signalr method for push server message to client
-        //        notificationHub.client.notify = function (message) {
-        //            if (message && message.toLowerCase() == "added") {
-        //                updateNotificationCount();
-        //            }
-        //        }
-        //    } catch (err) {
-        //        signalRHubInitialized = false;
-        //    }
-        //};
+        var htmlNotification = '';
+        var period = "";
+        $.each(data, function (i, item) {
+            switch (item.Period) {
+                case "W": period = "Weekly"; break;
+                case "M": period = "Monthly"; break;
+                case "Q": period = "Quarterly"; break;
+                case "Y": period = "Yearly"; break;
+                default: period = "Not found"; break;
+            }
+            htmlNotification += `<li>
+          <a href="${item.Link}">
+             <i class="fa fa-user text-success"></i><b style="background-color:#0068ff;color:#fff;border-radius:5px;padding:0 5px 0 5px">${item.Username}</b> mentioned you in ${item.KPIName} KPI ${period}
 
-        //function ReloadNotification() {
-         @*$.post('@(Url.Action("header", "Home", null, Request.Url.Scheme))')
-                .done(function (response) {
-                    console.log('Load lai');
-                    console.log(response);
-                    $("#liNotify").html(response)
-                    if (!signalRHubInitialized)
-                        InitializeSignalRHubStore();
-                });*@
-        //    $.post('/Home/GetNotifications')
-        //        .done(function (response) {
-        //            var data = response.data;
-        //            var total = response.total;
-        //            console.log(response);
-        //            console.log('Load lai');
+          </a>
+    </li>`
+        })
 
-        //            var htmlNotification = '';
-        //            $.each(data, function (i, item) {
-        //                htmlNotification += `<li>
-        //                                                    <a href="${item.Link}">
-        //                                                        <i class="fa fa-user text-success"></i> ${item.Content}
-        //                                                    </a>
-        //                                                </li>`
-        //            })
+        var html = `<a href="#" data-id="${arrays}" class="dropdown-toggle listNotifies" data-toggle="dropdown">
+        <i class="fa fa-bell-o"></i>
+        <span class="label label-warning ${total === 0 ? "hidden" : ""}">${total}</span>
+    </a>
+    <ul class="dropdown-menu">
+        <li class="header">You have ${total} notifications</li>
+        <li>
+            <!-- inner menu: contains the actual data -->
+            <ul class="menu">
+               ${htmlNotification}
+            </ul>
+        </li>
+        <li class="footer"><a id=ViewAll href="/Home/ListHistoryNotification">View all</a></li>
+    </ul>`
+        $(".notifications-menu").empty();
+        $(".notifications-menu").html(html);
+    }, error: function (e) { console.log(e) }
+})
+}
 
-        //            var html = `<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-        //                                        <i class="fa fa-commenting-o"></i>
-        //                                        <span class="label label-warning">${total}</span>
-        //                                    </a>
-        //                                    <ul class="dropdown-menu">
-        //                                        <li class="header">You have ${total} notifications</li>
-        //                                        <li>
-        //                                            <!-- inner menu: contains the actual data -->
-        //                                            <ul class="menu">
-        //                                               ${htmlNotification}
-        //                                            </ul>
-        //                                        </li>
-        //                                        <li class="footer"><a href="#">View all</a></li>
-        //                                    </ul>`
-        //            $(".notifications-menu").empty();
-        //            $(".notifications-menu").html(html);
-        //            if (!signalRHubInitialized)
-        //                InitializeSignalRHubStore();
-        //        });
-        //};
-
-        ////////////////////////////////////
-     $(function () {
-         // Click on notification icon for show notification
-          $('#liNotify').on('show.bs.dropdown', function () {
-              var count = 0;
-                count = parseInt($('#liNotify span.count').html()) || 0;
-             //only load notification if not already loaded
-             if (count > 0) {
-                 updateNotification();
-             }
-             $('span.count', this).html('&nbsp;');
-         })
-    
-         // update notification 
-         function updateNotification() {
-             $('#liNotify').empty();
-             //$('#notiContent').append($('<li>Loading...</li>'));
-    
-             $.ajax({
-                 type: 'GET',
-                 url: '/home/GetNotifications',
-                 success: function (response) {
-                     $('#notiContent').empty();
-                     if (response.length  == 0) {
-                         $('#liNotify').append($('<li>No data available</li>'));
-                     }
-                     $.each(response, function (index, value) {
-                         $('#liNotify').append($('<li>New contact : ' + value.KPIName +' added</li>'));
-                     });
-                 },
-                 error: function (error) {
-                     console.log(error);
-                 }
-             })
-         }
-         // update notification count
-         function updateNotificationCount() {
-             var count = 0;
-             count = parseInt($('span.count').html()) || 0;
-             count++;
-             $('span.count').html(count);
-         }
-         // signalr js code for start hub and send receive notification
-         var notificationHub = $.connection.notificationHub;
-         $.connection.hub.start().done(function () {
-             console.log('Notification hub started');
-         });
-    
-         //signalr method for push server message to client
-         notificationHub.client.notify = function (message) {
-             if (message && message.toLowerCase() == "added") {
-                 updateNotificationCount();
-             }
-         }
-    
-     })
     </script>
+
+
 </body>
 </html>

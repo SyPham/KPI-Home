@@ -29,7 +29,7 @@ namespace KPI.Web
             NotificationComponent NC = new NotificationComponent();
             var currentTime = DateTime.Now;
             HttpContext.Current.Session["LastUpdated"] = currentTime;
-            NC.RegisterNotification(currentTime);
+            //NC.RegisterNotification(currentTime);
         }
         protected void Application_End()
         {

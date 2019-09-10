@@ -131,6 +131,10 @@
       <DependentUpon>201909060224088_UpdateNotification.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201909070047370_addTargettblData.cs" />
+    <Compile Include="Migrations\201909090839231_addTagTblComment.cs" />
+    <Compile Include="Migrations\201909090839231_addTagTblComment.Designer.cs">
+      <DependentUpon>201909090839231_addTagTblComment.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="ObjectQueryExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -174,6 +178,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201909060224088_UpdateNotification.resx">
       <DependentUpon>201909060224088_UpdateNotification.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909090839231_addTagTblComment.resx">
+      <DependentUpon>201909090839231_addTagTblComment.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

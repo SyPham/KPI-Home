@@ -53,7 +53,7 @@
                     handleCursorKeys: true
                 },
                 focus: function (event, data) {
-
+                    event.preventDefault();
                     logEvent(event, data, ", targetType=" + data.targetType);
 
                     $('#box .kpi-name h3').text('KPI - ' + data.node.title);
@@ -97,7 +97,7 @@
             });
 
         });
-
+        
         var kpiLevelConfig = {
             pageSize: 6,
             pageIndex: 1
@@ -122,7 +122,7 @@
                     $('#updateKpi .ID').val(level + levelcode + codekpilevel + 'PO');
                     $('#updateKpi .Weekly').val(level + levelcode + codekpilevel + 'POW');
                     $('#updateKpi .Monthly').val(level + levelcode + codekpilevel + 'POM');
-                    $('#updateKpi .Quarterly').val(level + levelcode + codekpilevel + 'POQ');
+                    $('#updateKpi .Quaterly').val(level + levelcode + codekpilevel + 'POQ');
                     $('#updateKpi .Yearly').val(level + levelcode + codekpilevel + 'POY');
 
                 });
@@ -198,7 +198,12 @@
                         $('#modal-group-weekly').modal('show').fadeIn(1000);
                         $('#modal-group-weekly select').attr('data-id', KPIID);
                     }
-
+                  var unit = $(this).parent().parent().parent().find('td:nth-child(2)').data("unit");
+                    if (unit === "Numeric") {
+                        $('#modal-group-weekly .containStandard').hide();
+                    } else {
+                        $('#modal-group-weekly .containStandard').show();
+                    }
                 });
                 //update monthly checked kpilevel
                 $('#tblkpilevel .monthly').off('click').on('click', function () {
@@ -233,6 +238,12 @@
                         $('#modal-group-monthly').modal('show').fadeIn(1000);
                         $('#modal-group-monthly .monthly').attr('data-id', KPIID);
                     }
+                     var unit = $(this).parent().parent().parent().find('td:nth-child(2)').data("unit");
+                    if (unit === "Numeric") {
+                        $('#modal-group-monthly .containStandard').hide();
+                    } else {
+                        $('#modal-group-monthly .containStandard').show();
+                    }
                 });
                 //update quaterly checked kpilevel
                 $('#tblkpilevel .quaterly').off('click').on('click', function () {
@@ -266,6 +277,12 @@
                         $('#modal-group-quarterly').modal('show').fadeIn(1000);
                         $('#modal-group-quarterly .quaterly').attr('data-id', KPIID);
                     }
+                     var unit = $(this).parent().parent().parent().find('td:nth-child(2)').data("unit");
+                    if (unit === "Numeric") {
+                        $('#modal-group-quarterly .containStandard').hide();
+                    } else {
+                        $('#modal-group-quartly .containStandard').show();
+                    }
                 });
                 //update yearly checked kpilevel
                 $('#tblkpilevel .yearly').off('click').on('click', function () {
@@ -298,6 +315,12 @@
                     if ($(this).is(':checked')) {
                         $('#modal-group-yearly').modal('show').fadeIn(1000);
                         $('#modal-group-yearly .yearly').attr('data-id', KPIID);
+                    }
+                     var unit = $(this).parent().parent().parent().find('td:nth-child(2)').data("unit");
+                    if (unit === "Numeric") {
+                        $('#modal-group-yearly .containStandard').hide();
+                    } else {
+                        $('#modal-group-yearly .containStandard').show();
                     }
                 });
 
@@ -470,7 +493,7 @@
                         }
                     },
                     error: function (errormessage) {
-                        console.log(errormessage.responseText);
+                        //console.log(errormessage.responseText);
                     }
                 });
             },
@@ -505,15 +528,22 @@
                     dataType: "json",
                     success: function (response) {
                         if (response.status) {
-                            var count = 1;
-                            var data = response.data;
-                            console.table(data);
-                            var html = '';
-                            var template = $('#tblkpilevel-template').html();
+                            var count,
+                                data = response.data,
+                                page = response.page,
+                                pageSize = response.pageSize;
+                          
+                            if (page === 1)
+                                count = 1;
+                            else count = pageSize + 1;
+                            console.log(response);
+                            var html = '',
+                                template = $('#tblkpilevel-template').html();
                             $.each(data, function (i, item) {
                                 html += Mustache.render(template, {
                                     No: count,
                                     ID: item.ID,
+                                    Unit:item.Unit,
                                     LevelNumber: item.LevelNumber,
                                     LevelCode: item.LevelCode,
                                     KPIName: item.KPIName,
@@ -522,12 +552,13 @@
                                     MonthlyChecked: item.MonthlyChecked === true ? '<input class="monthly" data-code="' + item.KPICode + '"  value="' + item.KPIID + '" type="checkbox" checked />' : '<input class="monthly" data-code="' + item.KPICode + '"  value="' + item.KPIID + '" type="checkbox" />',
                                     QuarterlyChecked: item.QuarterlyChecked === true ? '<input class="quaterly" data-code="' + item.KPICode + '"  value="' + item.KPIID + '" type="checkbox" checked />' : '<input class="quaterly" data-code="' + item.KPICode + '"  value="' + item.KPIID + '" type="checkbox" />',
                                     YearlyChecked: item.YearlyChecked === true ? '<input class="yearly" data-code="' + item.KPICode + '"   value="' + item.KPIID + '"type="checkbox" checked />' : '<input class="yearly" data-code="' + item.KPICode + '"  value="' + item.KPIID + '" type="checkbox" />',
-
+                
                                 });
                                 count++;
                             });
                             $('#tblkpilevel').html(html);
                             kpiController.pagingKPILevel(response.total, function () {
+                                console.log("loadDataKPILevel")
                                 kpiController.loadDataKPILevel("", level);
                             }, changePageSize);
                             kpiController.registerEvent();
@@ -546,45 +577,25 @@
                     contentType: "application/json;charset=UTF-8",
                     dataType: "json",
                     success: function (result) {
-                        console.log(result);
+                        //console.log(result);
                             $('#modal-group-weekly .weekly').val(result.Weekly);
                             $('#modal-group-weekly input[name=weekpublic]').val(result.WeeklyPublic);
                             $('#modal-group-weekly .standard').val(result.WeeklyStandard);
-
-                            let milliM = result.Monthly.replace(/\/Date\((-?\d+)\)\//, '$1');
-                            let dateM = new Date(parseInt(milliM));
-                            let ddM = String(dateM.getDate()).padStart(2, '0');
-                            let mmM = String(dateM.getMonth() + 1).padStart(2, '0'); //January is 0!
-                            let yyyyM = dateM.getFullYear();
-                            dateM = mmM + '/' + ddM + '/' + yyyyM;
-                         if (dateM === undefined) dateM = 0;
-                            $('#modal-group-monthly .monthly').val(dateM);
+                            
+                            $('#modal-group-monthly .monthly').val(kpiController.convertDateJson(result.Monthly));
                             $('#modal-group-monthly input[name=monthpublic]').val(result.MonthlyChecked);
                             $('#modal-group-monthly .standard').val(result.MonthlyStandard);
-                            let milliQ = result.Quarterly.replace(/\/Date\((-?\d+)\)\//, '$1');
-                            let dateQ = new Date(parseInt(milliQ));
-                            let ddQ = String(dateQ.getDate()).padStart(2, '0');
-                            let mmQ = String(dateQ.getMonth() + 1).padStart(2, '0'); //January is 0!
-                            let yyyyQ = dateQ.getFullYear();
-                            dateQ = mmQ + '/' + ddQ + '/' + yyyyQ;
-                        if (dateQ === undefined) dateQ = 0;
-                            $('#modal-group-quarterly .quaterly').val(dateQ);
+                      
+                            $('#modal-group-quarterly .quaterly').val(kpiController.convertDateJson(result.Quarterly));
                             $('#modal-group-quarterly input[name=quarterpublic]').val(result.QuarterlyChecked);
                             $('#modal-group-quarterly .standard').val(result.QuarterlyStandard);
-                            let milliY = result.Yearly.replace(/\/Date\((-?\d+)\)\//, '$1');
-                            let dateY = new Date(parseInt(milliY));
-                            let ddY = String(dateY.getDate()).padStart(2, '0');
-                            let mmY = String(dateY.getMonth() + 1).padStart(2, '0'); //January is 0!
-                            let yyyyY = dateY.getFullYear();
-                            dateY = mmY + '/' + ddY + '/' + yyyyY;
-                         if (dateY === undefined) dateY = 0;
-
-                            $('#modal-group-yearly .yearly').val(dateY);
+                       
+                            $('#modal-group-yearly .yearly').val(kpiController.convertDateJson(result.Yearly));
                             $('#modal-group-yearly input[name=quaterpublic]').val(result.YearlyChecked);
                             $('#modal-group-yearly .standard').val(result.YearlyStandard);
                     },
                     error: function (err) {
-                        console.log(err);
+                        //console.log(err);
                     }
                 });
             },
@@ -610,6 +621,17 @@
                         setTimeout(callback, 500);
                     }
                 });
+            },
+            convertDateJson(d) {
+                if (d === null)
+                    d = "/Date(1000000000000)/";
+                
+                let milli = d.replace(/\/Date\((-?\d+)\)\//, '$1');
+                            let date = new Date(parseInt(milli));
+                            let dd = String(date.getDate()).padStart(2, '0');
+                            let mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
+                            let yyyy = date.getFullYear();
+                           return  mm + '/' + dd + '/' + yyyy;
             }
         }
     </script>

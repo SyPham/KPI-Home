@@ -318,11 +318,17 @@ var adminKPIController = {
             success: function (response) {
                 if (response.status) {
                     $("#main-loading-delay").hide();
-                    var count = 1;
+                     
                     console.log(response.data);
-                    var data = response.data;
-                    var html = '';
-                    var template = $('#tblkpi-template').html();
+                    var data = response.data,
+                        count = 1,
+                        html = '',
+                        template = $('#tblkpi-template').html(),
+                        page = response.page,
+                        pageSize = response.pageSize;
+                    if (page === 1)
+                        count = 1;
+                    else count = pageSize;
                     $.each(data, function (i, item) {
                         html += Mustache.render(template, {
                             No: count,

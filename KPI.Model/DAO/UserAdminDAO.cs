@@ -263,7 +263,9 @@ namespace KPI.Model.DAO
             {
                 data = model.ToList(),
                 total = totalRow,
-                status = true
+                status = true,
+                page,
+                pageSize
             };
         }
         public object LoadDataUser(string code, int page, int pageSize)
@@ -293,7 +295,7 @@ namespace KPI.Model.DAO
         }
         public object LoadDataUser(int teamid, string code, int page, int pageSize)
         {
-            IQueryable<EF.User> model = _dbContext.Users.Where(x => x.State == true && x.TeamID == teamid);
+            IQueryable<EF.User> model = _dbContext.Users.Where(x => x.State == true && x.LevelID == teamid);
             if (!string.IsNullOrEmpty(code))
             {
                 model = model.Where(a => a.Username.Contains(code));

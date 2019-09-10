@@ -25,6 +25,7 @@ namespace KPI.Model.EF
 
             set { this.commentedDate = value; }
         }
+        public string Tag { get; set; }
         public string Period { get; set; }
     }
 }

@@ -1,6 +1,11 @@
 ﻿body.modal-open {
     overflow: hidden;
 }
+
+.skin-blue .main-header .navbar, .skin-blue .main-header .logo {
+    background-color: #3c41bc !important;
+}
+
 #ListKPI {
     height: 300px;
     overflow-y: scroll;

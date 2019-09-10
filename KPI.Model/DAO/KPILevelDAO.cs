@@ -170,6 +170,7 @@ namespace KPI.Model.DAO
             var model = from kpiLevel in _dbContext.KPILevels
                         where kpiLevel.LevelID == levelID
                         join kpi in _dbContext.KPIs on kpiLevel.KPIID equals kpi.ID
+                        join unit in _dbContext.Units on kpi.Unit equals unit.ID
                         join level in _dbContext.Levels on kpiLevel.LevelID equals level.ID
                         select new ViewModel.KPILevelVM
                         {
@@ -197,7 +198,7 @@ namespace KPI.Model.DAO
                             TimeCheck = kpiLevel.TimeCheck,
 
                             CreateTime = kpiLevel.CreateTime,
-
+                            Unit=unit.Name,
                             CategoryID = kpi.CategoryID,
                             KPIName = kpi.Name,
                             LevelCode = level.Code,
@@ -218,7 +219,8 @@ namespace KPI.Model.DAO
             {
                 data = model,
                 total = totalRow,
-                status = true
+                status = true,
+                page,pageSize
             };
         }
         /// <summary>

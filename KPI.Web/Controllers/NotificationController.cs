@@ -1,4 +1,5 @@
 ﻿using KPI.Model.DAO;
+using KPI.Model.ViewModel;
 using MvcBreadCrumbs;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,9 @@ namespace KPI.Web.Controllers
         {
             return View();
         }
-        
+        public JsonResult UpdateRange(string listID)
+        {
+            return Json(new NotificationDAO().UpdateRange(listID), JsonRequestBehavior.AllowGet);
+        }
     }
 }

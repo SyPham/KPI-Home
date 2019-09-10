@@ -1,0 +1,82 @@
+﻿@model IEnumerable<KPI.Model.ViewModel.NotificationViewModel>
+@using KPI.Model.ViewModel
+@{
+    ViewBag.Title = "ListHistoryNotification";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var userProfile = Session["UserProfile"] as UserProfileVM;
+}
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box  box-primary">
+            <div class="box-header">
+                <h3 class="box-title">List Histories Notifications</h3>
+
+
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body table-responsive table-bordered">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th width="10">No.</th>
+                            <th>Notification</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            var i = 1;
+                            var period = string.Empty;
+                            foreach (var item in Model)
+                            {
+                                switch (item.Period)
+                                {
+                                    case "W": period = "Weekly"; break;
+                                    case "M": period = "Monthly"; break;
+                                    case "Q": period = "Quarterly"; break;
+                                    case "Y": period = "Yearly"; break;
+
+                                }
+                                var tag = item.Tag.Split(',');
+
+                                <tr>
+                                    <td>@(i++)</td>
+                                    <td>
+                                        <p style="font-size:13px;font-style:italic">
+                                            Create Time: @item.CreateTime.ToString("MM/dd/yyy HH:mm:ss")
+                                        </p>
+
+                                        <b style="background-color:#0068ff;color:#fff;border-radius:5px;padding:0 5px 0 5px">
+                                            @item.Username
+                                        </b>
+                                        mentioned you 
+                                        @foreach (var a in tag)
+                                        {
+                                            if (userProfile != null)
+                                            {
+                                                if (a != userProfile.User.Username)
+                                                {
+                                                    <span>and</span> 
+                                                    <b style="background-color:#0068ff;color:#fff;border-radius:5px;padding:0 5px 0 5px">
+                                                        @a
+                                                    </b>
+                                                    <span>&nbsp;</span>
+                                                }
+                                            }
+
+                                        }
+                                        in <a href="@item.Link">@item.KPIName KPI @period.</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+    </div>
+</div>
+

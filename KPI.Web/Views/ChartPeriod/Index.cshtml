@@ -351,7 +351,7 @@
             }
 }
             var dataChart;
-            if (unit === "Numbreric") {
+            if (unit === "Numeric") {
                 dataChart = {
                     labels: labels,
                     datasets: [listTargets, listData]
@@ -381,7 +381,7 @@
                 }
             }
             console.log(m)
-            if (unit !== "Numbreric") {
+            if (unit !== "Numeric") {
                 if (m < standard) {
 
                     chart.data.datasets[1].borderColor = "#e7263b";
@@ -1278,8 +1278,6 @@ var chartperiodController = {
             return time;
         }
 }
-
-
     </script>
 }
 <section id="chartperiod" class="animatedParent">
@@ -1339,7 +1337,7 @@ var chartperiodController = {
                     {
                         <button type="button" class="btn btn-default  margin btnLike pull-right disabled" disabled id="btnLike"><i class="fa fa-heart"></i> Added Favourite</button>
                     }
-                    @if (@unit != "Numbreric")
+                    @if (@unit != "Numeric")
                     {
                         <button type="button" class="btn margin pull-right animated swing fast" style="background-color:#3c8d8a;color:#fff"><i class="fa fa-star"></i> <span>Standard : </span><span class="standard text-bold" style="">@standard</span></button>
                     }

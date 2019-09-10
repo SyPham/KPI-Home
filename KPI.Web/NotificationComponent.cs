@@ -14,7 +14,7 @@ namespace KPI.Web
     public class NotificationComponent
     {
         //Here we will add a function for register notification (will add sql dependency)
-        public void RegisterNotification(DateTime currentTime)
+        public void RegisterNotification()
         {
             string conStr = ConfigurationManager.ConnectionStrings["KPIDbContext"].ConnectionString.ToSafetyString();
             //string sqlCommand = @"SELECT [ContactID],[ContactName],[ContactNo] from [dbo].[Contacts] where [AddedOn] > @AddedOn";
@@ -26,12 +26,12 @@ namespace KPI.Web
                           ,[Link]
                           ,[CreateTime]
                           ,[Tag]
-                      FROM [dbo].[Notifications]  WHERE [CreateTime] > @AddedOn";
+                      FROM [dbo].[Notifications]";
             //you can notice here I have added table name like this [dbo].[Contacts] with [dbo], its mendatory when you use Sql Dependency
             using (SqlConnection con = new SqlConnection(conStr))
             {
                 SqlCommand cmd = new SqlCommand(sql, con);
-                cmd.Parameters.AddWithValue("@AddedOn", currentTime);
+                
                 if (con.State != System.Data.ConnectionState.Open)
                 {
                     con.Open();
@@ -51,16 +51,7 @@ namespace KPI.Web
         {
             if (e.Type == SqlNotificationType.Change)
             {
-                SqlDependency sqlDep = sender as SqlDependency;
-                sqlDep.OnChange -= sqlDep_OnChange;
-
-                //from here we will send notification message to client
-                var notificationHub = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
-                notificationHub.Clients.All.notify("added");
-
-                //re-register notification
-                RegisterNotification(DateTime.Now);
-
+                NotificationHub.SendNotifications();
             }
         }
 

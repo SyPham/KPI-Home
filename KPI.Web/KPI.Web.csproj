@@ -211,6 +211,7 @@
     <Compile Include="NotificationComponent.cs" />
     <Compile Include="NotificationHub.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SigalR\NotificationsRepository.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -8818,6 +8819,7 @@
     <Content Include="Scripts\plugins\lobilist\src\less\mixins.less" />
     <Content Include="Scripts\plugins\lobilist\src\less\variables.less" />
     <Content Include="Views\Shared\header.cshtml" />
+    <Content Include="Views\Home\ListHistoryNotification.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
