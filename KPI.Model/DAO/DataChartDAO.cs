@@ -335,7 +335,7 @@ namespace KPI.Model.DAO
         public ChartVM Compare(string kpilevelcode, string period)
         {
 
-            var model2 = new DataCompareVM2();
+            var model2 = new DataCompareVM();
 
             var model = new ChartVM();
 
@@ -454,10 +454,10 @@ namespace KPI.Model.DAO
             return model;
         }
 
-        public object Compare2(string kpilevelcode, string period)
+        public ChartVM2 Compare2(string kpilevelcode, string period)
         {
 
-            var model2 = new DataCompareVM2();
+            var model2 = new DataCompareVM();
 
             var model = new ChartVM2();
 
@@ -581,33 +581,28 @@ namespace KPI.Model.DAO
             return new
             {
                 model = model,
-                users = _dbContext.Users.ToList()
+                users = _dbContext.Users.Where(x => x.Permission > 1).ToList()
             };
         }
 
-        public DataCompareVM2 Compare2(string obj)
-        {
-
-            var model = new DataCompareVM2();
+        public List<ChartVM2> Compare2(string obj)
+        { 
             obj = obj.ToSafetyString();
-
+            var listChartVM = new List<ChartVM2>();
             var value = obj.Split('-');
-            model.Period = value[1].Split(',')[1];
+          
             var size = value.Length;
             foreach (var item in value)
             {
                 var kpilevelcode = item.Split(',')[0];
                 var period = item.Split(',')[1];
-                var list = Compare2(kpilevelcode, period);
-                if (list != null)
-                    model.datas.Add(list);
+                listChartVM.Add(Compare2(kpilevelcode, period));
             }
-
-            return new DataCompareVM2();
+            return listChartVM;
         }
         public DataCompareVM Compare(string obj)
         {
-
+            var listChartVM = new List<ChartVM>();
             var model = new DataCompareVM();
             obj = obj.ToSafetyString();
 
@@ -618,6 +613,7 @@ namespace KPI.Model.DAO
             {
                 var kpilevelcode = item.Split(',')[0];
                 var period = item.Split(',')[1];
+                listChartVM.Add(Compare(kpilevelcode, period));
                 model.list1 = Compare(kpilevelcode, period);
             }
 

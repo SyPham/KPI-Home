@@ -49,13 +49,13 @@ namespace KPI.Web.Controllers
             return Json(new KPILevelDAO().Update(entity), JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult AddComment(Model.EF.Comment entity)
-        {
-            var value = entity.KPILevelCode;
-            entity.KPILevelCode = value.Substring(0, value.Length - 1);
-            entity.Period = value.Substring(value.Length - 1, 1).ToUpper();
-            return Json(new KPILevelDAO().AddComment(entity), JsonRequestBehavior.AllowGet);
-        }
+        //public JsonResult AddComment(Model.EF.Comment entity)
+        //{
+        //    var value = entity.KPILevelCode;
+        //    entity.KPILevelCode = value.Substring(0, value.Length - 1);
+        //    entity.Period = value.Substring(value.Length - 1, 1).ToUpper();
+        //    return Json(new KPILevelDAO().AddComment(entity), JsonRequestBehavior.AllowGet);
+        //}
 
         public JsonResult LoadDataComment(int dataid,int userid)
         {

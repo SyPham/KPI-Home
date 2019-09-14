@@ -4,13 +4,9 @@
 
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    var list1 = (KPI.Model.ViewModel.ChartVM)ViewBag.List1;
-
-    var list2 = (KPI.Model.ViewModel.ChartVM)ViewBag.List2;
-    var list3 = (KPI.Model.ViewModel.ChartVM)ViewBag.List3;
-    var list4 = (KPI.Model.ViewModel.ChartVM)ViewBag.List4;
-    var period = list1.period;
-    var kpiname = list1.kpiname;
+    var chartVM2s = (List<KPI.Model.ViewModel.ChartVM2>)ViewBag.ChartVM2s;
+    var period = chartVM2s[0].period;
+    var kpiname = chartVM2s[0].kpiname;
     var standard = (int)ViewBag.Standard;
     var unit = (string)ViewBag.Unit;
     var periodText = (string)ViewBag.PeriodText;
@@ -21,91 +17,18 @@
 @section Scripts{
     <script>
 
-        var listData1 = @Html.Raw(Json.Encode(list1)),
-            listData2 = @Html.Raw(Json.Encode(list2)),
-            listData3 = @Html.Raw(Json.Encode(list3)),
-            listData4 = @Html.Raw(Json.Encode(list4));
-
+        var chartVM2s = @Html.Raw(Json.Encode(chartVM2s));
         $(function () {
+          
 
-             var labelString;
-        if ("@period" === "W"){
-            labelString = " Weeks in year ";
-            if (listData1.datasets.length !== 0) {
-                $("#tblkpi tr:first-child").append("<th>Week</th>");
-                $.each(listData1.labels, function (key, item) {
-                    $("#tblkpi tr:first-child").append("<th >" + item + "</th>");
-                });
-
-                $("#tblkpi tr:nth-child(2)").append("<th >"+listData1.label+"</th>");
-                $.each(listData1.datasets, function (key, item) {
-                    $("#tblkpi tr:nth-child(2)").append("<td>" + item + "</td>");
-                });
-            }
-            if (listData2.datasets.length !== 0) {
-                 $("#tblkpi tr:nth-child(3)").append("<th >"+listData2.label+"</th>");
-                $.each(listData2.datasets, function (key, item) {
-                    $("#tblkpi tr:nth-child(3)").append("<td>" + item + "</td>");
-                });
-            }
-            if (listData3.datasets !== null) {
-                if (listData3.datasets.length !== 0) {
-                    $("#tblkpi tr:nth-child(4)").append("<th >" + listData3.label + "</th>");
-                    $.each(listData3.datasets, function (key, item) {
-                        $("#tblkpi tr:nth-child(4)").append("<td>" + item + "</td>");
-                    });
-                }
-            }
-            if (listData4.datasets !== null) {
-                if (listData4.datasets.length !== 0) {
-                    $("#tblkpi tr:nth-child(5)").append("<th >" + listData4.label + "</th>");
-                    $.each(listData4.datasets, function (key, item) {
-                        $("#tblkpi tr:nth-child(5)").append("<td>" + item + "</td>");
-                    });
-                }
-            }
-        }
-
-        if ("@period" === "M") {
-            labelString = "Months in year";
-                $("#tblkpi tr:first-child").append("<th >Month</th>");
-            $.each(listData1.labels, function (key, item) {
-                $("#tblkpi tr:first-child").append("<th >" + item + "</th>");
-            });
-            $("#tblkpi tr:nth-child(2)").append("<th >"+listData1.label+"</th>");
-            $.each(listData1.datasets, function (key, item) {
-                $("#tblkpi tr:nth-child(2)").append("<td>" + item + "</td>");
-            });
-        }
-        if ("@period" === "Q") {
-            labelString = "Quarters in year";
-                $("#tblkpi tr:first-child").append("<th >Quarter</th>");
-            $.each(listData1.labels, function (key, item) {
-                $("#tblkpi tr:first-child").append("<th >" + item + "</th>");
-            });
-            $("#tblkpi tr:nth-child(2)").append("<th >"+listData1.label+"</th>");
-            $.each(listData1.datasets, function (key, item) {
-                $("#tblkpi tr:nth-child(2)").append("<td>" + item + "</td>");
-            });
-        }
-
-        if ("@period" === "Y") {
-            labelString = "Year";
-                $("#tblkpi tr:first-child").append("<th >Year</th>");
-            $.each(listData1.labels, function (key, item) {
-                $("#tblkpi tr:first-child").append("<th >" + item + "</th>");
-            });
-            $("#tblkpi tr:nth-child(2)").append("<th >"+listData1.label+"</th>");
-            $.each(listData1.datasets, function (key, item) {
-                $("#tblkpi tr:nth-child(2)").append("<td>" + item + "</td>");
-            });
-        }
+         var labelString;
             var densityCanvas = document.getElementById("lineChart");
             Chart.defaults.global.defaultFontFamily = "Lato";
             Chart.defaults.global.defaultFontSize = 12;
 
             var standards = [];
-            for (var i = 0; i < @Html.Raw(Json.Encode(@list1.datasets).Length); i++) {
+
+            for (var i = 0; i < chartVM2s[0].lenght; i++) {
                 standards.push(@standard);
             }
             var standard = {
@@ -118,108 +41,30 @@
                     anchor: 'center'
                 }
             }
+            if (chartVM2s.Unit === "Numeric") {
 
-             for (var i = 0; i < listData1.datasets.length; i++) {
-                if (listData1.datasets[i] === 0) {
-                    listData1.datasets[i] = undefined;
-                }
             }
-             for (var i = 0; i < listData2.datasets.length; i++) {
-                if (listData2.datasets[i] === 0) {
-                    listData2.datasets[i] = undefined;
-                }
+            var list1;
+            for (let item of chartVM2s) {
+                let a = item;
+                list1 = {
+                        label: item.label,
+                        spanGaps: false, //data=undefined thi k draw line
+                        backgroundColor: Samples.color(3),
+                        borderColor: Samples.color(3),
+                        data: item.datasets,
+                        datalabels: {
+                            align: 'center',
+                            anchor: 'center'
+                        }
+                };
             }
-            if (listData3.datasets !== null) {
-                for (var i = 0; i < listData3.datasets.length; i++) {
-                if (listData3.datasets[i] === 0) {
-                    listData3.datasets[i] = undefined;
-                }
-                }
-            }
-              if (listData4.datasets !== null) {
-             for (var i = 0; i < listData4.datasets.length; i++) {
-                if (listData4.datasets[i] === 0) {
-                    listData4.datasets[i] = undefined;
-                }
-                  }
-                  }
-            var list1 = {
-                label: "@Html.Raw(@list1.label)",
-                spanGaps: false, //data=undefined thi k draw line
-                backgroundColor: Samples.color(3),
-                borderColor: Samples.color(3),
-                data: listData1.datasets,
-                datalabels: {
-                    align: 'center',
-                    anchor: 'center'
-                }
-            };
 
-            var list2= {
-                label: "@Html.Raw(@list2.label)",
-                 spanGaps: false, //data=undefined thi k draw line
-                data:  listData2.datasets,
-                backgroundColor: Samples.color(4),
-                borderColor: Samples.color(4),
-                datalabels: {
-                    align: 'center',
-                    anchor: 'center'
-                }
-            };
 
-            var list3 = {
-                label: "@Html.Raw(@list3.label)",
-                spanGaps: false, //data=undefined thi k draw line
-                data:  listData3.datasets,
-                 backgroundColor: Samples.color(6),
-                borderColor: Samples.color(6),
-                datalabels: {
-                    align: 'center',
-                    anchor: 'center'
-                }
-            };
-
-            var list4= {
-                label: "@Html.Raw(@list4.label)",
-                spanGaps: false, //data=undefined thi k draw line
-                data:  listData4.datasets,
-                  backgroundColor: Samples.color(5),
-                borderColor: Samples.color(5),
-                datalabels: {
-                    align: 'center',
-                    anchor: 'center'
-                }
-            };
-
-            var compareData;
-            if (list4.data !== null) {
-                if (list4.data.length === 0) {
-
-                  compareData = {
-                    labels: listData1.labels,
-                    datasets: [standard,list1, list2, list3]
-                    };
-             }
-            }
-            //if (list4.data !== null && list3.data !== null) {
-
-            //    if (list3.data.length === 0 && list4.data.length === 0) {
-
-                    compareData = {
-                        labels: listData1.labels,
-                        datasets: [standard, list1, list2]
-                    };
-            //    }
-            //}
-            if (list4.data !== null && list3.data !== null&&list2.data !== null && list1.data !== null) {
-                if (list1.data.length !== 0 && list2.data.length !== 0 && list3.data.length !== 0 && list4.data.length !== 0) {
-
-                    compareData = {
+            var compareData = {
                         labels: listData1.labels,
                         datasets: [standard, list1, list2, list3, list4]
                     };
-                }
-            }
             var chartOptions = {
                  plugins: {
                         datalabels: {

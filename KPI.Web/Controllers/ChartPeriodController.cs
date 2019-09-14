@@ -36,6 +36,8 @@ namespace KPI.Web.Controllers
             {
                 BreadCrumb.SetLabel("Chart / Yearly");
             }
+
+
             var model = new DataChartDAO().ListDatas(kpilevelcode, period, year, start, end);
             ViewBag.Datasets = model.datasets;
             ViewBag.Labels = model.labels;
@@ -50,10 +52,18 @@ namespace KPI.Web.Controllers
             ViewBag.Standard = model.Standard;
             ViewBag.Unit = model.Unit;
             ViewBag.Dataremarks = model.Dataremarks;
+
+            if (model.period == "W") { ViewBag.PeriodText = "Weekly"; };
+            if (model.period == "M") { ViewBag.PeriodText = "Monthly"; };
+            if (model.period == "Q") { ViewBag.PeriodText = "Quarterly"; };
+            if (model.period == "Y") { ViewBag.PeriodText = "Yearly";  };
             return View();
         }
-
-        public JsonResult AddComment(Model.EF.Comment entity)
+        public JsonResult GetAllComments(int dataid,int userid,int commentid)
+        {
+            return Json(new CommentRepository().GetAllComments(userid,dataid,commentid), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult AddComment(AddCommentViewModel entity)
         {
             return Json(new KPILevelDAO().AddComment(entity), JsonRequestBehavior.AllowGet);
         }

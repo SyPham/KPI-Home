@@ -19,11 +19,23 @@ namespace KPI.Model.DAO
         }
         public bool Add(ActionPlan entity)
         {
-
+            var user = _dbContext.Users;
+            var itemActionPlanDetail = new ActionPlanDetail();
             try
             {
                 _dbContext.ActionPlans.Add(entity);
                 _dbContext.SaveChanges();
+
+                var list = entity.Tag.Split(',');
+                foreach (var item in list)
+                {
+                    var username = item.ToSafetyString();
+                    itemActionPlanDetail.Seen = false;
+                    itemActionPlanDetail.USerID = (int?)user.FirstOrDefault(x => x.Username == username).ID ?? 0;
+                    itemActionPlanDetail.ActionPlanID = entity.ID;
+                    _dbContext.ActionPlanDetails.Add(itemActionPlanDetail);
+                    _dbContext.SaveChanges();
+                }
                 return true;
             }
             catch (Exception ex)

@@ -198,7 +198,7 @@ namespace KPI.Model.DAO
                             TimeCheck = kpiLevel.TimeCheck,
 
                             CreateTime = kpiLevel.CreateTime,
-                            Unit=unit.Name,
+                            Unit = unit.Name,
                             CategoryID = kpi.CategoryID,
                             KPIName = kpi.Name,
                             LevelCode = level.Code,
@@ -220,7 +220,8 @@ namespace KPI.Model.DAO
                 data = model,
                 total = totalRow,
                 status = true,
-                page,pageSize
+                page,
+                pageSize
             };
         }
         /// <summary>
@@ -413,19 +414,41 @@ namespace KPI.Model.DAO
             }
         }
 
-        public bool AddComment(EF.Comment entity)
+        public bool AddComment(AddCommentViewModel entity)
         {
             try
             {
-                _dbContext.Comments.Add(entity);
+                //add vao comment
+                var comment = new Comment();
+                comment.CommentMsg = entity.CommentMsg;
+                comment.DataID = entity.DataID;
+                comment.UserID = entity.UserID;
+                _dbContext.Comments.Add(comment);
                 _dbContext.SaveChanges();
 
+                //Add vao seencomment
                 var seenComment = new SeenComment();
-                seenComment.CommentID = entity.ID;
+                seenComment.CommentID = comment.ID;
                 seenComment.UserID = entity.UserID;
                 seenComment.Status = true;
                 _dbContext.SeenComments.Add(seenComment);
                 _dbContext.SaveChanges();
+                //Add vao Tag
+                var list = entity.Tag.Split(',');
+                var itemtag = new Tag();
+                //var listTag = new List<Tag>();
+                var commentID = comment.ID;
+                var user = _dbContext.Users;
+                foreach (var item in list)
+                {
+                    var username = item.ToSafetyString();
+                    itemtag.UserID = (int?)user.FirstOrDefault(x => x.Username == username).ID ?? 0;
+                    itemtag.CommentID = commentID;
+                    //listTag.Add(itemtag);
+                    _dbContext.Tags.Add(itemtag);
+                    _dbContext.SaveChanges();
+                  
+                }
                 return true;
             }
             catch (Exception)
@@ -488,10 +511,10 @@ namespace KPI.Model.DAO
                    CommentID = x.ID,
                    UserID = x.UserID,
                    CommentMsg = x.CommentMsg,
-                   KPILevelCode = x.KPILevelCode,
+                   //KPILevelCode = x.KPILevelCode,
                    CommentedDate = x.CommentedDate,
                    FullName = user.FirstOrDefault(a => a.ID == x.UserID).FullName,
-                   Period = x.Period,
+                   //Period = x.Period,
                    Read = seenCMT.FirstOrDefault(a => a.CommentID == x.ID && a.UserID == userid) == null ? true : false,
                    IsHasTask = actionPlan.FirstOrDefault(a => a.DataID == dataid && a.CommentID == x.ID) == null ? false : true
                })
@@ -506,33 +529,33 @@ namespace KPI.Model.DAO
 
         }
 
-        public object LoadData(string obj)
-        {
-            var value = obj.ToSafetyString().Split(',');
-            var code = value[0].Substring(0, value[0].Length - 1).ToSafetyString();
-            var period = value[0].Substring(value[0].Length - 1, 1).ToUpper().ToSafetyString();
-            var userid = value[1].ToInt();
-            var data = _dbContext.Comments
-               .Where(x => x.KPILevelCode == code)
-               .Select(x => new CommentVM
-               {
-                   CommentMsg = x.CommentMsg,
-                   KPILevelCode = x.KPILevelCode,
-                   CommentedDate = x.CommentedDate,
-                   FullName = _dbContext.Users.FirstOrDefault(a => a.ID == x.UserID).FullName,
-                   Period = x.Period,
-                   Read = _dbContext.SeenComments.FirstOrDefault(b => b.CommentID == x.ID && b.UserID == userid).Status
-               })
-               .OrderByDescending(x => x.CommentedDate)
-               .Take(4).ToList();
+        //public object LoadData(string obj)
+        //{
+        //    var value = obj.ToSafetyString().Split(',');
+        //    var code = value[0].Substring(0, value[0].Length - 1).ToSafetyString();
+        //    var period = value[0].Substring(value[0].Length - 1, 1).ToUpper().ToSafetyString();
+        //    var userid = value[1].ToInt();
+        //    var data = _dbContext.Comments
+        //       .Where(x => x.KPILevelCode == code)
+        //       .Select(x => new CommentVM
+        //       {
+        //           CommentMsg = x.CommentMsg,
+        //           KPILevelCode = x.KPILevelCode,
+        //           CommentedDate = x.CommentedDate,
+        //           FullName = _dbContext.Users.FirstOrDefault(a => a.ID == x.UserID).FullName,
+        //           Period = x.Period,
+        //           Read = _dbContext.SeenComments.FirstOrDefault(b => b.CommentID == x.ID && b.UserID == userid).Status
+        //       })
+        //       .OrderByDescending(x => x.CommentedDate)
+        //       .Take(4).ToList();
 
-            return new
-            {
-                data,
-                total = _dbContext.Comments.Where(x => x.KPILevelCode == code).Count()
-            };
+        //    return new
+        //    {
+        //        data,
+        //        total = _dbContext.Comments.Where(x => x.KPILevelCode == code).Count()
+        //    };
 
-        }
+        //}
         /// <summary>
         /// Lấy ra danh sách để so sánh chart với nhau.
         /// </summary>

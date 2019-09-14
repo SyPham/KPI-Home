@@ -44,6 +44,27 @@ namespace KPI.Model.DAO
         public bool Add(Notification entity)
         {
             _dbContext.Notifications.Add(entity);
+            var list = entity.Tag.Split(',');
+            var itemtag = new Tag();
+            var itemNotificationDetail = new NotificationDetail();
+            //var listTag = new List<Tag>();
+            var commentID = entity.ID;
+            var user = _dbContext.Users;
+
+            foreach (var item in list)
+            {
+                var username = item.ToSafetyString();
+                itemtag.UserID = (int?)user.FirstOrDefault(x => x.Username == username).ID ?? 0;
+                itemtag.CommentID = commentID;
+                itemNotificationDetail.UserID= (int?)user.FirstOrDefault(x => x.Username == username).ID ?? 0;
+                itemNotificationDetail.NotificationID = entity.ID;
+                itemNotificationDetail.Seen = false;
+
+                //listTag.Add(itemtag);
+                _dbContext.Tags.Add(itemtag);
+                _dbContext.NotificationDetails.Add(itemNotificationDetail);
+                _dbContext.SaveChanges();
+            }
 
             try
             {

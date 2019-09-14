@@ -10,6 +10,8 @@ namespace KPI.Model.ViewModel
     public class WorkplaceVM
     {
         public int total { get; set; }
+        public int page { get; set; }
+        public int pageSize { get; set; }
         public List<KPIUpLoadVM> KPIUpLoads { get; set; }
     }
     public class KPIUpLoadVM
@@ -20,5 +22,11 @@ namespace KPI.Model.ViewModel
         public bool StateM { get; set; }
         public bool StateQ { get; set; }
         public bool StateY { get; set; }
+
+
+        public bool StateDataW { get; set; }
+        public bool StateDataM { get; set; }
+        public bool StateDataQ { get; set; }
+        public bool StateDataY { get; set; }
     }
 }

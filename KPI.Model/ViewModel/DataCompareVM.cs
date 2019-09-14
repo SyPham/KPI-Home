@@ -16,12 +16,5 @@ namespace KPI.Model.ViewModel
         public string Unit { get; set; }
         public string Period { get; set; }
     }
-    public class DataCompareVM2
-    {
-        public List<object> datas { get; set; }
-        public int Standard { get; set; }
-        public string Unit { get; set; }
-        public string Period { get; set; }
-    }
 
 }

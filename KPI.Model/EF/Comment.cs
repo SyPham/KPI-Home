@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace KPI.Model.EF
         public int ID { get; set; }
         public string CommentMsg { get; set; }
         public int UserID { get; set; }
-        public string KPILevelCode { get; set; }
+        
         public int DataID { get; set; }
         private DateTime? commentedDate = null;
         public DateTime CommentedDate
@@ -25,7 +26,7 @@ namespace KPI.Model.EF
 
             set { this.commentedDate = value; }
         }
-        public string Tag { get; set; }
-        public string Period { get; set; }
+        
+      
     }
 }

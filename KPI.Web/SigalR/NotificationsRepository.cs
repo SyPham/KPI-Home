@@ -12,7 +12,7 @@ using System.Web;
 
 namespace KPI.Web
 {
-    public class MessagesRepository
+    public class NotificationsRepository
     {
         readonly string _connString = ConfigurationManager.ConnectionStrings["KPIDbContext"].ConnectionString;
 
@@ -33,7 +33,7 @@ namespace KPI.Web
                           ,CreateTime
                           ,Tag
                 FROM dbo.Notifications  
-                INNER JOIN dbo.Users on dbo.Notifications.UserID =dbo.Users.ID
+                INNER JOIN dbo.Users on dbo.Notifications.UserID = dbo.Users.ID
                 WHERE Tag like @Tag";
                 using (var command = new SqlCommand(sql, connection))
                 {

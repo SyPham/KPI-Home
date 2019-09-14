@@ -381,7 +381,13 @@ namespace KPI.Model.DAO
                              StateW = item.WeeklyChecked == true && datas.Where(x => x.KPILevelCode == item.KPILevelCode).Max(x => x.Week) > 0 ? true : false,
                              StateM = item.MonthlyChecked == true && datas.Where(x => x.KPILevelCode == item.KPILevelCode).Max(x => x.Month) > 0 ? true : false,
                              StateQ = item.QuarterlyChecked == true && datas.Where(x => x.KPILevelCode == item.KPILevelCode).Max(x => x.Quarter) > 0 ? true : false,
-                             StateY = item.YearlyChecked == true && datas.Where(x => x.KPILevelCode == item.KPILevelCode).Max(x => x.Year) > 0 ? true : false
+                             StateY = item.YearlyChecked == true && datas.Where(x => x.KPILevelCode == item.KPILevelCode).Max(x => x.Year) > 0 ? true : false,
+
+                             StateDataW = (bool?)item.WeeklyChecked ?? false,
+                             StateDataM = (bool?)item.MonthlyChecked ?? false,
+                             StateDataQ = (bool?)item.QuarterlyChecked ?? false,
+                             StateDataY = (bool?)item.YearlyChecked ?? false,
+
                          });
             int totalRow = model.Count();
             model = model.OrderByDescending(x => x.KPIName)
@@ -390,9 +396,41 @@ namespace KPI.Model.DAO
             var vm = new WorkplaceVM()
             {
                 KPIUpLoads = model.ToList(),
-                total = totalRow
+                total = totalRow,
+                page = page,
+                pageSize = pageSize
             };
             return vm;
+        }
+
+        public string GetValueData(string KPILevelCode, string CharacterPeriod, int period)
+        {
+            var value = CharacterPeriod.ToSafetyString();
+            string obj = "0";
+            switch (value)
+            {
+                case "W":
+                    var item = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == KPILevelCode && x.Period == "W" && x.Week == period);
+                    if (item != null)
+                        obj = item.Value;
+                    break;
+                case "M":
+                    var item1 = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == KPILevelCode && x.Period == "M" && x.Month == period);
+                    if (item1 != null)
+                        obj = item1.Value;
+                    break;
+                case "Q":
+                    var item2 = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == KPILevelCode && x.Period == "Q" && x.Quarter == period);
+                    if (item2 != null)
+                        obj = item2.Value;
+                    break;
+                case "Y":
+                    var item3 = _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == KPILevelCode && x.Period == "Y" && x.Year == period);
+                    if (item3 != null)
+                        obj = item3.Value;
+                    break;
+            }
+            return obj;
         }
         public List<DataExportVM> DataExport(int userid)
         {
@@ -473,7 +511,7 @@ namespace KPI.Model.DAO
                          }).AsEnumerable()
                          .Select(x => new DataExportVM
                          {
-                             Value = 0,
+                             Value = "0",
                              Year = currentYear,
                              KPILevelCode = x.KPILevelCode,
                              KPIName = x.KPIName,
@@ -523,7 +561,13 @@ namespace KPI.Model.DAO
                     StateW = item.WeeklyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Week > 0) != null ? true : false,
                     StateM = item.MonthlyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Month > 0) != null ? true : false,
                     StateQ = item.QuarterlyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Quarter > 0) != null ? true : false,
-                    StateY = item.YearlyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Year > 0) != null ? true : false
+                    StateY = item.YearlyChecked == true && _dbContext.Datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Year > 0) != null ? true : false,
+                    
+                    StateDataW = (bool?)item.WeeklyChecked ?? false,
+                    StateDataM = (bool?)item.MonthlyChecked ?? false,
+                    StateDataQ = (bool?)item.QuarterlyChecked ?? false,
+                    StateDataY = (bool?)item.YearlyChecked ?? false,
+
                 };
                 list.Add(data);
             }
@@ -584,7 +628,9 @@ namespace KPI.Model.DAO
             return new
             {
                 model = list,
-                total
+                total,
+                page,
+                pageSize
             };
         }
         /// <summary>
@@ -635,8 +681,12 @@ namespace KPI.Model.DAO
                         StateW = item.WeeklyChecked == true && datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Week > 0) != null ? true : false,
                         StateM = item.MonthlyChecked == true && datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Month > 0) != null ? true : false,
                         StateQ = item.QuarterlyChecked == true && datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Quarter > 0) != null ? true : false,
-                        StateY = item.YearlyChecked == true && datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Year > 0) != null ? true : false
+                        StateY = item.YearlyChecked == true && datas.FirstOrDefault(x => x.KPILevelCode == item.KPILevelCode && x.Year > 0) != null ? true : false,
 
+                          StateDataW = (bool?)item.WeeklyChecked ?? false,
+                        StateDataM = (bool?)item.MonthlyChecked ?? false,
+                        StateDataQ = (bool?)item.QuarterlyChecked ?? false,
+                        StateDataY = (bool?)item.YearlyChecked ?? false,
                     };
                     list.Add(data);
                 }
@@ -646,6 +696,8 @@ namespace KPI.Model.DAO
                 {
                     model = list,
                     total,
+                    page,
+                    pageSize,
                     status = true
                 };
             }

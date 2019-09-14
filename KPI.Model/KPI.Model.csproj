@@ -154,6 +154,26 @@
     <Compile Include="Migrations\201909100831039_AddActionPlanDetailNotificationDetail2.Designer.cs">
       <DependentUpon>201909100831039_AddActionPlanDetailNotificationDetail2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201909120331168_tagComment.cs" />
+    <Compile Include="Migrations\201909120331168_tagComment.Designer.cs">
+      <DependentUpon>201909120331168_tagComment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909120351476_tagComment1.cs" />
+    <Compile Include="Migrations\201909120351476_tagComment1.Designer.cs">
+      <DependentUpon>201909120351476_tagComment1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909120459044_tagComment2.cs" />
+    <Compile Include="Migrations\201909120459044_tagComment2.Designer.cs">
+      <DependentUpon>201909120459044_tagComment2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909120822165_ModifiTag.cs" />
+    <Compile Include="Migrations\201909120822165_ModifiTag.Designer.cs">
+      <DependentUpon>201909120822165_ModifiTag.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909130307562_newversion.cs" />
+    <Compile Include="Migrations\201909130307562_newversion.Designer.cs">
+      <DependentUpon>201909130307562_newversion.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="ObjectQueryExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -165,9 +185,11 @@
     <Compile Include="ViewModel\ActionPlanViewModel.cs" />
     <Compile Include="ViewModel\ActionPlanGetAllViewModel.cs" />
     <Compile Include="ViewModel\ActionPlanViewModel2.cs" />
+    <Compile Include="ViewModel\AddCommentViewModel.cs" />
     <Compile Include="ViewModel\DataExportVM.cs" />
     <Compile Include="ViewModel\LevelVM.cs" />
     <Compile Include="ViewModel\NotificationViewModel.cs" />
+    <Compile Include="ViewModel\QuarterVM.cs" />
     <Compile Include="ViewModel\ToDoList.cs" />
     <Compile Include="ViewModel\UploadKPIVM.cs" />
     <Compile Include="ViewModel\WorkplaceVM.cs" />
@@ -186,6 +208,7 @@
     <Compile Include="ViewModel\UploadDataVM.cs" />
     <Compile Include="ViewModel\UserProfileVM.cs" />
     <Compile Include="ViewModel\UserSession.cs" />
+    <Compile Include="ViewModel\YearVM.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -212,6 +235,21 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201909100831039_AddActionPlanDetailNotificationDetail2.resx">
       <DependentUpon>201909100831039_AddActionPlanDetailNotificationDetail2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909120331168_tagComment.resx">
+      <DependentUpon>201909120331168_tagComment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909120351476_tagComment1.resx">
+      <DependentUpon>201909120351476_tagComment1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909120459044_tagComment2.resx">
+      <DependentUpon>201909120459044_tagComment2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909120822165_ModifiTag.resx">
+      <DependentUpon>201909120822165_ModifiTag.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909130307562_newversion.resx">
+      <DependentUpon>201909130307562_newversion.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

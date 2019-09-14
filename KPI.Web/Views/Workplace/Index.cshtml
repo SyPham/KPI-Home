@@ -55,13 +55,13 @@
             </div>
         </div>
     </div>
-    
+
 </div>
 <div class="row">
     <div class="col-md-12 content-header margin-bottom">
-            <h1>
-                List related KPI Levels
-            </h1>
+        <h1>
+            List related KPI Levels
+        </h1>
     </div>
     <div class="col-md-4">
         <div class="box box-widget">
@@ -203,22 +203,22 @@
 
         });
         var config = {
-            pageSize: 5,
+            pageSize: 6,
             pageIndex: 1
         }
         var workplaceConfig = {
-            pageSize: 5,
+            pageSize: 6,
             pageIndex: 1
         }
         var workplaceTrackConfig = {
-            pageSize: 5,
+            pageSize: 6,
             pageIndex: 1
         }
         var workplaceController = {
             init() {
                 workplaceController.loadData();
                 workplaceController.registerEvent();
-               
+
             },
             registerEvent() {
                 $('#box input').off('keypress').on('keypress', function (e) {
@@ -254,7 +254,7 @@
 
                 });
             },
-            TrackKPI(changePageSize,levelid) {
+            TrackKPI(changePageSize, levelid) {
                 $.get('/Workplace/KPIRelated',
                     {
                         levelid: levelid,
@@ -262,34 +262,39 @@
                         pageSize: config.pageSize
                     },
                     function (res) {
-                    if (res.status) {
-                        var data = res.model;
-                        var total = res.total;
-                        console.log(data);
-                        var html = '';
-                        var template = $('#tbluser-template').html();
-                        $.each(data, function (i, item) {
-                            html += Mustache.render(template, {
-                                KPIName: item.KPIName,
-                                StateW: item.StateW == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>',
-                                StateM: item.StateM == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>',
-                                StateQ: item.StateQ == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>',
-                                StateY: item.StateY == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>',
-
+                        if (res.status) {
+                            var data = res.model;
+                            var total = res.total;
+                            var page = res.page;
+                            var count;
+                            var pageSize = res.pageSize;
+                            console.log(data);
+                            var html = '';
+                            var template = $('#tbluser-template').html();
+                            if (page === 1) count = 1; else count = pageSize + 1;
+                            $.each(data, function (i, item) {
+                                html += Mustache.render(template, {
+                                    No: count,
+                                    KPIName: item.KPIName,
+                                    StateW: item.StateDataW == true ? (item.StateW == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>') : '<span class="badge bg-gray">N/A</span>',
+                                    StateM: item.StateDataM == true ? (item.StateM == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>') : '<span class="badge bg-gray">N/A</span>',
+                                    StateQ: item.StateDataQ == true ? (item.StateQ == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>') : '<span class="badge bg-gray">N/A</span>',
+                                    StateY: item.StateDataY == true ? (item.StateY == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>') : '<span class="badge bg-gray">N/A</span>',
+                                });
+                                count++;
                             });
-                        });
-                        $('#tbluser').html(html);
-                         workplaceController.TrackKPIPaging(total, function () {
-                                workplaceController.TrackKPI("",levelid);
+                            $('#tbluser').html(html);
+                            workplaceController.TrackKPIPaging(total, function () {
+                                workplaceController.TrackKPI("", levelid);
                             }, changePageSize);
                             workplaceController.registerEvent();
-                    } else {
+                        } else {
 
-                    }
-                })
+                        }
+                    })
             },
             TrackKPIPaging(totalRow, callback, changePageSize) {
-                 var totalPage = Math.ceil(totalRow / config.pageSize);
+                var totalPage = Math.ceil(totalRow / config.pageSize);
 
                 //Unbind pagination if it existed or click change pagesize
                 if ($('#paginationKPILevel a').length === 0 || changePageSize === true) {
@@ -325,18 +330,29 @@
                     function (data, status) {
                         var KPIUpLoads = data.KPIUpLoads;
                         var total = data.total;
+                        var page = data.page;
+                        var pageSize = data.pageSize;
+
                         $('.total').text("Total record : " + total);
                         var html = '';
                         var count = 1;
+                        if (page === 1) count = 1; else count = pageSize + 1;
+
+
                         var template = $('#tableWorkplace-template').html();
                         $.each(KPIUpLoads, function (i, item) {
                             html += Mustache.render(template, {
                                 No: count,
                                 KPIName: item.KPIName,
-                                StateW: item.StateW == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>',
-                                StateM: item.StateM == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>',
-                                StateQ: item.StateQ == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>',
-                                StateY: item.StateY == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>',
+                                //StateW: item.StateW == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>',
+                                //StateM: item.StateM == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>',
+                                //StateQ: item.StateQ == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>',
+                                //StateY: item.StateY == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>',
+
+                                StateW: item.StateDataW == true ? (item.StateW == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>') : '<span class="badge bg-gray">N/A</span>',
+                                StateM: item.StateDataM == true ? (item.StateM == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>') : '<span class="badge bg-gray">N/A</span>',
+                                StateQ: item.StateDataQ == true ? (item.StateQ == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>') : '<span class="badge bg-gray">N/A</span>',
+                                StateY: item.StateDataY == true ? (item.StateY == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>') : '<span class="badge bg-gray">N/A</span>',
                             });
                             count++;
                         });

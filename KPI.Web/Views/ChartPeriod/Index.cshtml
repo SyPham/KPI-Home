@@ -16,14 +16,16 @@
     var statusfavorite = ViewBag.StatusFavorite as string;
     int standard = (int)ViewBag.Standard;
     var unit = ViewBag.Unit as string;
+    var periodText = (string)ViewBag.PeriodText;
 }
 @Html.Raw(BreadCrumb.Display())
 @section Scripts{
 
     <script type="text/javascript">
 
-        $("#modal-group-comment-data").on("shown.bs.modal", function () {
 
+
+        $("#modal-group-comment-data").on("shown.bs.modal", function () {
             activaTab('pills-home');
          });
         $('.btn-skype').unbind('click').on('click',function () {
@@ -67,9 +69,18 @@
 
         if (unit === "Numeric") {
             var datasets = datasets.map(datasets => Number(datasets));
-            console.log(datasets)
-        }
 
+
+        }
+        else {
+           
+            //if (datasets[0].isFloat) {
+            //    $('#minChart').attr("step", (Math.min(...datasets)/2));
+            //} else {
+            //     $('#stepChart').attr("step", Math.min(...datasets)/2));
+            //}
+            
+        }
         $(function () {
             var target2;
             for (var i = targets.length; i > 0; i--) {
@@ -90,41 +101,53 @@
                 $("#tblDataChart tr:first-child").append("<th>" + item + "</th>");
             });
             $("#tblDataChart tr:first-child").children("th:not(:first-child)").addClass("text-center");
-            //Thêm tiêu đề cho tr:nth-child(2) th
-            $("#tblDataChart tr:nth-child(2)").append("<th >"+unit+"</th>");
+
+            if (unit === "Numeric") {
+                //Thêm tiêu đề cho tr:nth-child(2) th
+                $("#tblDataChart tr:nth-child(2)").append("<th>Target</th>");
+            } else {
+                 //Thêm tiêu đề cho tr:nth-child(2) th
+                $("#tblDataChart tr:nth-child(2)").append("<th>Target</th>");
+            }
+
 
              //Thêm dữ liệu cho tr:nth-child(2) td
             $.each(labels, function (key, item) {
                 $("#tblDataChart tr:nth-child(2)").append("<td data-id='' class='unselectable'>0</td>");
             });
-           
-            $.each(dataremarks, function (key, item) {
-                var ssss = Number(item.Value) < Number[target2] ? true : false;
-                    console.log(ssss)
-                    if (item.Value < Number(standard)) {
-                        $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td");
-                    }
-                    else {
-                        $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td2");
 
+            $.each(dataremarks, function (key, item) {
+                if (unit === "Numeric")
+                {
+                    var ssss = parseFloat(item.Value) <  parseFloat(target2) ? true : false;
+                    console.log(ssss)
+                    if (ssss)
+                        $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td");
+                    else
+                        $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td2");
                 }
-               
-                    $("#tblDataChart tr:nth-child(2)").children("td").addClass("text-center");
+                else
+                {
+                    if (item.Value < Number(standard))
+                        $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td");
+                    else
+                        $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td2");
+                }
+
+                $("#tblDataChart tr:nth-child(2)").children("td").addClass("text-center");
 
                 $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").text(item.Value);
                 $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").attr('data-id', item.ID);
             });
 
-        var lastRemark = dataremarks[dataremarks.length - 1]==undefined?"":dataremarks[dataremarks.length - 1];
+    var lastRemark = dataremarks[dataremarks.length - 1]==undefined?"":dataremarks[dataremarks.length - 1];
                 $('#lastRemark').val(lastRemark.Remark);
                 $('.lastRemark').text(lastRemark.ID);
                 $('.lastRemarkLabel').text("Week " + lastRemark.Week + " : ");
                 $("#fromDateEndDate").show();
 
-            $("#tblDataChart tr:first-child").children("th:first-child").attr("width", '5%');
-            $("#tblDataChart tr:nth-child(2)").children("th:first-child").attr("width", '5%');
-
-
+                $("#tblDataChart tr:first-child").children("th:first-child").attr("width", '5%');
+                $("#tblDataChart tr:nth-child(2)").children("th:first-child").attr("width", '5%');
         }
     else if (period === "M") {
             //Thêm tiêu đề cho tr:first-child th
@@ -135,19 +158,37 @@
                 $("#tblDataChart tr:first-child").append("<th >" + item + "</th>");
             });
             $("#tblDataChart tr:first-child").children("th:not(:first-child)").addClass("text-center");
-            //Thêm tiêu đề cho tr:nth-child(2) th
-                $("#tblDataChart tr:nth-child(2)").append("<th >Percentage</th>");
-
+              if (unit === "Numeric") {
+                //Thêm tiêu đề cho tr:nth-child(2) th
+                $("#tblDataChart tr:nth-child(2)").append("<th>Target</th>");
+            } else {
+                 //Thêm tiêu đề cho tr:nth-child(2) th
+                $("#tblDataChart tr:nth-child(2)").append("<th>Target</th>");
+            }
 
              //Thêm dữ liệu cho tr:nth-child(2) td
             $.each(labels, function (key, item) {
                 $("#tblDataChart tr:nth-child(2)").append("<td>0</td>");
             });
-                console.log(dataremarks);
+                //console.log(dataremarks);
                 $.each(dataremarks, function (key, item) {
-                  if (item.Value < standard) {
-                      $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td");
-                    }
+                 if (unit === "Numeric")
+                {
+                    var ssss = parseFloat(item.Value) <  parseFloat(target2) ? true : false;
+                    console.log(ssss)
+                    if (ssss)
+                        $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td");
+                    else
+                        $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td2");
+                }
+                else
+                {
+                    if (item.Value < Number(standard))
+                        $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td");
+                    else
+                        $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td2");
+                }
+
                     $("#tblDataChart tr:nth-child(2), #tblDataChart tr:nth-child(1)").children("td,th").addClass("text-center");
 
                 $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").text(item.Value);
@@ -157,7 +198,7 @@
 
         var lastRemark = dataremarks[dataremarks.length - 1]==undefined?"":dataremarks[dataremarks.length - 1];
 
-             $('#lastRemark').val(lastRemark.Remark);
+            $('#lastRemark').val(lastRemark.Remark);
             $('.lastRemarkLabel').text("Month " + lastRemark.Month + " : ");
 
             $("#tblDataChart tr:first-child").children("th:first-child").attr("width", '5%');
@@ -172,9 +213,13 @@
                 $("#tblDataChart tr:first-child").append("<th >" + item + "</th>");
         });
             $("#tblDataChart tr:first-child").children("th:not(:first-child)").addClass("text-center");
-            //Thêm tiêu đề cho tr:nth-child(2) th
-            $("#tblDataChart tr:nth-child(2)").append("<th >Percentage</th>");
-
+             if (unit === "Numeric") {
+                //Thêm tiêu đề cho tr:nth-child(2) th
+                $("#tblDataChart tr:nth-child(2)").append("<th>Target</th>");
+            } else {
+                 //Thêm tiêu đề cho tr:nth-child(2) th
+                $("#tblDataChart tr:nth-child(2)").append("<th>Target</th>");
+            }
 
              //Thêm dữ liệu cho tr:nth-child(2) td
             $.each(labels, function (key, item) {
@@ -182,15 +227,28 @@
             });
 
                 $.each(dataremarks, function (key, item) {
-                   if (item.Value < standard) {
-                       $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td");
-                    }
+                    if (unit === "Numeric")
+                {
+                    var ssss = parseFloat(item.Value) <  parseFloat(target2) ? true : false;
+                    console.log(ssss)
+                    if (ssss)
+                        $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td");
+                    else
+                        $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td2");
+                }
+                else
+                {
+                    if (item.Value < Number(standard))
+                        $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td");
+                    else
+                        $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td2");
+                }
+
                 $("#tblDataChart tr:nth-child(2), #tblDataChart tr:nth-child(1)").children("td,th").addClass("text-center");
                 $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").text(item.Value);
                 $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").attr('data-id', item.ID);
 
             });
-
 
             $("#tblDataChart tr:first-child").children("th:first-child").attr("width", '5%');
             $("#tblDataChart tr:nth-child(2)").children("th:first-child").attr("width", '5%');
@@ -205,9 +263,13 @@
                 $("#tblDataChart tr:first-child").append("<th >" + item + "</th>");
             });
             $("#tblDataChart tr:first-child").children("th:not(:first-child)").addClass("text-center");
-            //Thêm tiêu đề cho tr:nth-child(2) th
-            $("#tblDataChart tr:nth-child(2)").append("<th >Percentage</th>");
-
+             if (unit === "Numeric") {
+                //Thêm tiêu đề cho tr:nth-child(2) th
+                $("#tblDataChart tr:nth-child(2)").append("<th>Target</th>");
+            } else {
+                 //Thêm tiêu đề cho tr:nth-child(2) th
+                $("#tblDataChart tr:nth-child(2)").append("<th>Target</th>");
+            }
 
              //Thêm dữ liệu cho tr:nth-child(2) td
             $.each(labels, function (key, item) {
@@ -217,9 +279,23 @@
                 $.each(dataremarks, function (key, item) {
                  $("#tblDataChart tr:nth-child(2), #tblDataChart tr:nth-child(1)").children("td,th").addClass("text-center");
 
-                 if (item.Value < standard) {
-                       $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td ");
-                    }
+                 if (unit === "Numeric")
+                {
+                    var ssss = parseFloat(item.Value) <  parseFloat(target2) ? true : false;
+                    console.log(ssss)
+                    if (ssss)
+                        $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td");
+                    else
+                        $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td2");
+                }
+                else
+                {
+                    if (item.Value < Number(standard))
+                        $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td");
+                    else
+                        $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td2");
+                }
+
                 $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").text(item.Value);
                 $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").attr('data-id', item.ID);
 
@@ -251,12 +327,19 @@
                          // The clicked label index is available in `context.dataIndex`.
                          //console.log('label ' + context.dataIndex + ' has been clicked!');
                     }
-                }
-                }
+                    }
+                },
+
+                pointBackgroundColor: "#fff",
+                pointBorderWidth: 3,
+                pointHoverBorderWidth: 3,
+                pointRadius: 2,
+                pointHitRadius: 10,
+
             };
 
             var listTargets = {
-                label: "Numeric",
+                label: "Target",
                 //spanGaps: false, //data=undefined thi k draw line
                 backgroundColor: "#3c8d8a",
                 borderColor: "#3c8d8a",
@@ -268,7 +351,7 @@
             };
 
                var listStandards = {
-                label: "Standard",
+                label: "Target",
                 //spanGaps: false, //data=undefined thi k draw line
                 backgroundColor: "#3c8d8a",
                 borderColor: "#3c8d8a",
@@ -278,9 +361,8 @@
                     anchor: 'center'
                 }
             };
-            var options = {
-                    plugins: {
-                        datalabels: {
+             var hiddenPluginDataLabels = {
+                 datalabels: {
                             backgroundColor: function (context) {
                                 return context.dataset.backgroundColor;
                             },
@@ -291,16 +373,42 @@
                                 size:12
                             },
                             formatter: function(value, context) {
-                                return  value;
+                                return value;
                             },
                             display: function (context) {
-                               
-                                return context.dataset.label !=="Standard" && context.dataset.label !=="Numeric";
-                            }
-                        }
-                    }
-                   ,
-                     title: {
+
+                                return false;
+                      },
+                      id:'p1'
+                }
+            }
+              var pluginDataLabels = {
+                 datalabels: {
+                            backgroundColor: function (context) {
+                                return context.dataset.backgroundColor;
+                            },
+                            borderRadius: 4,
+                            color: 'white',
+                            font: {
+                                weight: 'bold',
+                                size:12
+                            },
+                            formatter: function(value, context) {
+                                return value;
+                            },
+                            display: function (context) {
+
+                                return context.dataset.label !=="Target" && context.dataset.label !=="Target";
+                      },
+                      id:'p1'
+                }
+            }
+
+
+
+            var options = {
+                plugins: pluginDataLabels,
+                    title: {
                     display: true,
                         text: "KPI Chart - @label - @kpiname",
                         fontSize: 20,
@@ -311,26 +419,28 @@
                         radius: 0
                     },
                         line: {
-                            tension: 0.2
+                            tension: 0
                         }
                     },
                     scales: {
-                yAxes: [{
+                yAxes:  [{
+                display: true,
+                position: "left",
+                ticks: {
+                    beginAtZero: true,
+                    padding: 10,
+                    fontSize: 12,
+                    stepSize: 10,
+                    min: 0,
+
+                },
+                scaleLabel: {
                     display: true,
-                    position: "left",
-                    ticks: {
-                        beginAtZero: true,
-                        padding: 10,
-                        fontSize: 12,
-                        //max: 100
-                    },
-                     scaleLabel: {
-                        display: true,
-                         labelString: unit,
-                         fontSize: 12,
-                          fontStyle:'normal'
-                      }
-                }],
+                    labelString: unit,
+                    fontSize: 12,
+                    fontStyle: 'normal'
+                }
+            }],
                 xAxes: [{
                     gridLines: {
                         display: true,
@@ -338,8 +448,7 @@
                     },
                     ticks: {
                         fontSize: 12,
-                    }
-                    ,
+                    },
                      scaleLabel: {
                         display: true,
                          labelString: labelString,
@@ -362,7 +471,9 @@
                 }
             }
 
-                 var chart = new Chart('lineChart', {
+
+            var chart = new Chart('lineChart', {
+
                 type: 'line',
                 data: dataChart,
                 options: options
@@ -395,36 +506,181 @@
 
                     chart.data.datasets[1].borderColor = "#e7263b";
                     chart.data.datasets[1].backgroundColor = "#e7263b";
+                    chart.data.datasets[1].pointBorderColor="#e7263b";
                     chart.update();
                 } else if (m === 0) {
+                      chart.data.datasets[1].pointBorderColor= "#e7263b";
                     chart.data.datasets[1].borderColor = "#e7263b";
                     chart.data.datasets[1].backgroundColor = "#e7263b";
                     chart.update();
                 } else {
+                      chart.data.datasets[1].pointBorderColor= "green";
                     chart.data.datasets[1].borderColor = "green";
                     chart.data.datasets[1].backgroundColor = "green";
                     chart.update();
                 }
             } else {
                   if (m < target) {
-
+                        chart.data.datasets[1].pointBorderColor= "#e7263b";
                     chart.data.datasets[1].borderColor = "#e7263b";
                     chart.data.datasets[1].backgroundColor = "#e7263b";
                     chart.update();
-                } else if (m === 0) {
+                  } else if (m === 0) {
+                       chart.data.datasets[1].pointBorderColor= "#e7263b";
                     chart.data.datasets[1].borderColor = "#e7263b";
                     chart.data.datasets[1].backgroundColor = "#e7263b";
                     chart.update();
-                } else {
+                  } else {
+                       chart.data.datasets[1].pointBorderColor = "green";
                     chart.data.datasets[1].borderColor = "green";
                     chart.data.datasets[1].backgroundColor = "green";
                     chart.update();
                 }
             }
 
+            console.log(chart.options.scales)
+            $('#stepChart').val(chart.options.scales.yAxes[0].ticks.major.stepSize)
+            $('#minChart').val(chart.options.scales.yAxes[0].ticks.major.min)
 
+            $('.btnShowData').show();
+              $('.btnHiddenData').hide();
             chartperiodController.init();
+            $('.btnHiddenData').off('click').on('click', function () {
+                chart.options.plugins = hiddenPluginDataLabels;
+                chart.update();
+                $('.btnHiddenData').hide();
+                  $('.btnShowData').show();
+            })
+             $('.btnShowData').off('click').on('click', function () {
+                chart.options.plugins = pluginDataLabels;
+                 chart.update();
+                $('.btnShowData').hide();
+                  $('.btnHiddenData').show();
+             })
+             $('#minChart').off('keyup change').on('keyup change', function () {
+               var min = 0,stepSize=10;
 
+                stepSize = Number($('#stepChart').val());
+                min = Number($('#minChart').val());
+
+               options = {
+                plugins: pluginDataLabels,
+                    title: {
+                    display: true,
+                        text: "KPI Chart - @label - @kpiname",
+                        fontSize: 20,
+                        fontColor: 'black'
+                    },
+                elements: {
+                         point:{
+                        radius: 0
+                    },
+                        line: {
+                            tension: 0.2
+                        }
+                    },
+                    scales: {
+                yAxes:  [{
+                display: true,
+                position: "left",
+                ticks: {
+                    beginAtZero: true,
+                    padding: 10,
+                    fontSize: 12,
+                    stepSize: stepSize,
+                    min: min,
+
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: unit,
+                    fontSize: 12,
+                    fontStyle: 'normal'
+                }
+            }],
+                xAxes: [{
+                    gridLines: {
+                        display: true,
+                        tickMarkLength: 8
+                    },
+                    ticks: {
+                        fontSize: 12,
+                    },
+                     scaleLabel: {
+                        display: true,
+                         labelString: labelString,
+                         fontSize: 12,
+                          fontStyle:'normal'
+                      }
+                }]
+            }
+        }
+                chart.options = options;
+                console.log(chart.options.scales);
+                chart.update();
+            })
+            $('#stepChart').off('keyup change').on('keyup change', function () {
+               var min = 0,stepSize=10;
+
+                stepSize = Number($('#stepChart').val());
+                min = Number($('#minChart').val());
+
+               options = {
+                plugins: pluginDataLabels,
+                    title: {
+                    display: true,
+                        text: "KPI Chart - @label - @kpiname",
+                        fontSize: 20,
+                        fontColor: 'black'
+                    },
+                elements: {
+                         point:{
+                        radius: 0
+                    },
+                        line: {
+                            tension: 0.2
+                        }
+                    },
+                    scales: {
+                yAxes:  [{
+                display: true,
+                position: "left",
+                ticks: {
+                    beginAtZero: true,
+                    padding: 10,
+                    fontSize: 12,
+                    stepSize: stepSize,
+                    min: min,
+
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: unit,
+                    fontSize: 12,
+                    fontStyle: 'normal'
+                }
+            }],
+                xAxes: [{
+                    gridLines: {
+                        display: true,
+                        tickMarkLength: 8
+                    },
+                    ticks: {
+                        fontSize: 12,
+                    },
+                     scaleLabel: {
+                        display: true,
+                         labelString: labelString,
+                         fontSize: 12,
+                          fontStyle:'normal'
+                      }
+                }]
+            }
+        }
+                chart.options = options;
+                console.log(chart.options.scales);
+                chart.update();
+            })
 });
 var chartperiodlConfig = {
     pageSize: 6,
@@ -443,13 +699,17 @@ var chartperiodController = {
                     $(".commentid").text(commentid)
                     var commentid = $(this).data('commentid');
                     var dataid = Number($('.dataid').text());
+                    var textRemark = $('.RemarkChart').text();
+                    textRemark= textRemark.replace("Remark","Action Plan");
+                    $('.ActionPlanChart').text('');
+                     $('.ActionPlanChart').text(textRemark);
+
                     chartperiodController.LoadDataActionPlan(dataid, commentid);
                 });
 
                 $('.btnSaveActionPlan').unbind('click').on('click', function () {
                     chartperiodController.addActionPlan();
                     chartperiodController.addNotification();
-
                 })
                 $('#lastRemark').off('keypress').on('keypress', function (e) {
                     if (e.keyCode === 13) {
@@ -652,12 +912,20 @@ var chartperiodController = {
 
                 $("#tblDataChart tr:nth-child(2) td").off('click').on('click', function () {
                     var number = Number($(this).text());
-                    if (number > 0 && number < standard) {
+                    var index = Number($(this).index());
+                    var a = $('#tblDataChart tr:nth-child(1) th:nth-child(1)').text();
+                    if (number > 0 && number < standard || number > 0 && number < Math.max(...targets)) {
 
                         $('#modal-group-comment-data').modal('show');
 
                         var id = $(this).data('id');
                         $('.dataid').text(id);
+
+                        $('.RemarkChart').text('');
+
+                        $('.RemarkChart').text("Remark - " + a +" "+ index +" - KPI Chart - @kpiname - @periodText" );
+
+
 
                         chartperiodController.remark(id);
 
@@ -716,14 +984,15 @@ var chartperiodController = {
                                 if (item.length > 1)
                                     value += '@@' + item + ' ';
                             })
-                            $('.addTask .Tag').val(value);
+
+                            $('#Tag').val(arr);
                         }
                         else {
                             $('.addTask .Tag').val("");
                         }
 
                         $('.addTask .ID').val(res.ID);
-                        $('.listTag').val(res.Tag);
+
                         $('.addTask .DueDate').val(res.Deadline);
                     },
                     error: function (err) {
@@ -859,13 +1128,16 @@ var chartperiodController = {
 
                 });
                 var Description = phrases.join(';');
+                var Tag = $('#Tag').val().trim();
+                if (Tag !== null || Tag !== "" || Tag !== undefined)
+                    Tag = Tag.replace(/\@@/g, '').replace(/\ /g, ',');
                 var obj = {
                     ID: id,
                     UserID: $('#user').data('userid'),
                     DataID: Number($('.dataid').text()),
                     CommentID: Number($('.commentid').text()),
                     Title: $('.addTask .Title').val(),
-                    Tag: $('.listTag').text().trim(),
+                    Tag: Tag,
                     KPILevelCodeAndPeriod: KPILevelCodeAndPeriod,
                     Description: Description,
                     Deadline: $('.addTask .datepicker').datepicker({ dateFormat: 'mm-dd-yy' }).val(),
@@ -937,7 +1209,7 @@ var chartperiodController = {
                 });
                 $('.Description ul').append("<li></li>")
                 $('.DueDate').val("");
-                $('.listTag').val("");
+                $('#Tag').val("");
                 $('.Tag').val("");
                 $('.Title').css('border-color', 'lightgrey');
                 $('.DueDate').css('border-color', 'lightgrey');
@@ -978,12 +1250,23 @@ var chartperiodController = {
                     });
                     return;
                 }
-                var cmt = $('#comment').val();
+                var CommentMsg = $('#comment').val();
+                var Tag = [],obj;
+                if (CommentMsg !== "") {
+                    obj = CommentMsg.match(/@@.+\f/g);
+                    var arr = obj.toString().split(' ');
+                    for (let item of arr) {
+                        Tag.push(item.replace('@@', ' ').trim());
+                    }
+                    Tag = Tag.join();
+                }
 
+                console.log(Tag);
                 var mObj = {
                     DataID: Number($('.dataid').text()),
-                    CommentMsg: $('#comment').val(),
-                    UserID: Number($("#user").data('userid'))
+                    CommentMsg: CommentMsg,
+                    UserID: Number($("#user").data('userid')),
+                    Tag:Tag
                 };
                 $.ajax({
                     url: "/ChartPeriod/AddComment",
@@ -1057,15 +1340,34 @@ var chartperiodController = {
                             }
                         },
                         onselect: function (e, item) {
-                            var arr = '';
-                            arr += item.value;
-                            arrays.push(arr)
-                            console.log(arrays);
-                            $('.listTag').text(arrays);
+                            //var arr = '';
+                            //arr += item.value;
+                            //arrays.push(arr)
+                            ////console.log(arrays);
+                            //$('.listTag').text(arrays);
+
+
+                            // var obj = {a:""}
+
+                            //var tagComment = document.getElementById("Tag");
+                            //var tagComment2 = document.getElementById("listTag");
+                            //    new Binding({
+	                           //     object: obj,
+	                           //     property: "a"
+                            //    })
+                            //    .addBinding(tagComment2, "value", "keyup")
+                            //    .addBinding(tagComment, "value", "keyup")
+                            //    obj.a += arrays;
                         },
-                onlookup: function(e, item) {}
+                        onlookup: function (e, item) {
+
+
+                        }
 
                     })
+
+
+
 
                     $('#comment').suggest('@@', {
                         filter: {
@@ -1075,13 +1377,25 @@ var chartperiodController = {
                         data: users,
                         map: function (user) {
                             return {
-                                value: user.Username,
+                                value: user.Username+'\f',
                                 text: '<strong>Username: ' + user.Username + ' - </strong> <small>Full name :' + user.FullName + '</small>'
                             }
                         },
-                        //onselect: function (e, item) {
-                        //    console.log(item)
-                        //},
+                        onselect: function (e, item) {
+                            //   var arr = '';
+                            //arr += item.value;
+                            //arrays.push(arr)
+                            //console.log(arrays);
+                            //$('#tagComment2').val(arrays);
+
+
+
+                        },
+                        onlookup: function (e, item) {
+                            console.log(item);
+
+                        }
+
 
                     })
 
@@ -1274,6 +1588,9 @@ var chartperiodController = {
                 });
             },
             addNotification() {
+                var Tag = $('#Tag').val().trim();
+                if (Tag !== null || Tag !== "" || Tag !== undefined)
+                    Tag = Tag.replace(/\@@/g, '').replace(/\ /g, ',');
             var notification = {
                 ID: 0,
                 UserID: $('#user').data('userid'),
@@ -1281,7 +1598,7 @@ var chartperiodController = {
                 Period: "@period",
                 Seen: false,
                 Link: window.location.href,
-                Tag: $('.listTag').text().trim(),
+                Tag: Tag,
                 CreateTime:chartperiodController.dateNow()
                 };
 
@@ -1302,7 +1619,13 @@ var chartperiodController = {
             // After this construct a string with the above results as below
             var time = day + "/" + month + "/" + year + " " + hour + ':' + minute + ':' + second;
             return time;
-        }
+    },
+             isInt(n){
+                return Number(n) === n && n % 1 === 0;
+            },
+             isFloat(n){
+                return Number(n) === n && n % 1 !== 0;
+            }
 }
     </script>
 }
@@ -1351,9 +1674,6 @@ var chartperiodController = {
 
                 </div>
                 <div class="box-body">
-
-
-
                     <button type="button" data-toggle="modal" data-target="#modal-group" class="btn btn-danger margin btnLike pull-right" id="btnCompare"><i class="fa fa-adjust"></i> Compare</button>
                     @if (@statusfavorite == "false")
                     {
@@ -1365,21 +1685,23 @@ var chartperiodController = {
                     }
                     @if (@unit != "Numeric")
                     {
-                        <button type="button" class="btn margin pull-right animated swing fast" style="background-color:#3c8d8a;color:#fff"><i class="fa fa-star"></i> <span>Standard : </span><span class="standard text-bold" style="">@standard</span></button>
+                        <button type="button" class="btn margin pull-right animated swing fast" style="background-color:#3c8d8a;color:#fff"><i class="fa fa-star"></i> <span>Target : </span><span class="standard text-bold" style="">@standard</span></button>
                     }
                     else
                     {
-                        <button type="button" class="btn margin pull-right animated swing fast" style="background-color:#3c8d8a;color:#fff"><i class="fa fa-star"></i> <span>Numeric : </span><span class="standard text-bold" style="">@targets[0]</span></button>
+                        <button type="button" class="btn margin pull-right animated swing fast" style="background-color:#3c8d8a;color:#fff"><i class="fa fa-star"></i> <span>Target : </span><span class="standard text-bold" style="">@targets[0]</span></button>
 
                     }
                     @*<button class="btn margin pull-right btn-skype" style="background-color:#fff;border:1px solid #d2d6de;color:#000">*@
                     <button class="btn margin btn-primary pull-right btn-skype">
+
                         @*<a href="skype:phamtiensy8696_1">
-                Skype
-            </a>*@
+                                Skype
+                            </a>*@
                         <i class="fa fa-skype"></i>
                         Skype
                     </button>
+
                     <div class="form-inline" style="display:none" id="searchMonth">
                         <label class="my-1 mr-2" for="startMonth">Year</label>
                         <select class="custom-select form-control year my-1 mr-sm-2" id="monthOfYear">
@@ -1520,9 +1842,18 @@ var chartperiodController = {
                             }
                         </select>
                         <button type="button" class="btn bg-teal margin btnClearSearch"><i class="fa fa-remove"></i> Reset search</button>
-
                     </div>
 
+                    <div class="form-inline">
+                        <div style="font-weight:bold">Chart Configuration: </div> <br />
+                        <label class="my-1 mr-2" for="startMonth">Step</label>
+                        <input type="number" class="form-control" step="" id="stepChart" style="width:70px" />
+                        <label class="my-1 mr-2" for="endMonth">Min</label>
+                        <input type="number" class="form-control" step="" id="minChart" style="width:70px" />
+                        @*<button type="button" id="saveChart" class="btn bg-blue-active margin"><i class="fa fa-save"></i> Save</button>*@
+                        <button type="button" class="btn btn-sm bg-aqua-gradient margin btnHiddenData"> Hidden Data</button>
+                        <button type="button" class="btn btn-sm bg-black-active margin btnShowData"> Show Data</button>
+                    </div>
                     <div class="chart">
                         @*<canvas id="lineChart" style="height:250px"></canvas>*@
                         <canvas id="lineChart" style="height:500px"></canvas>

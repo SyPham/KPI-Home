@@ -25,35 +25,19 @@ namespace KPI.Web.Controllers
             var standard = value[0].ToInt();
             var unit = value[1].ToString();
             var comp = obj.Split(';')[0].ToString();
-            var compare = new DataChartDAO().Compare(comp);
+
+          
+            var chartVM2s = new DataChartDAO().Compare2(comp);
             //var compare2 = new DataChartDAO().Compare2(comp);
 
-            if (compare.list1 == null)
-            {
-                compare.list1 = new Model.ViewModel.ChartVM();
-            }
-            if (compare.list2 == null)
-            {
-                compare.list2 = new Model.ViewModel.ChartVM();
-            }
-            if (compare.list3 == null)
-            {
-                compare.list3 = new Model.ViewModel.ChartVM();
-            }
-            if (compare.list4 == null)
-            {
-                compare.list4 = new Model.ViewModel.ChartVM();
-            }
-            ViewBag.List1 = compare.list1;
-            ViewBag.List2 = compare.list2;
-            ViewBag.List3 = compare.list3;
-            ViewBag.List4 = compare.list4;
-            if (compare.Period == "W") ViewBag.PeriodText = "Weekly";
-            if (compare.Period == "M") ViewBag.PeriodText = "Monthly";
-            if (compare.Period == "Q") ViewBag.PeriodText = "Quarterly";
-            if (compare.Period == "Y") ViewBag.PeriodText = "Yearly";
+            ViewBag.ChartVM2s = chartVM2s;
+            if (chartVM2s[0].period == "W") { ViewBag.PeriodText = "Weekly"; ViewBag.Period = chartVM2s[0].period; };
+            if (chartVM2s[0].period == "M") { ViewBag.PeriodText = "Monthly"; ViewBag.Period = chartVM2s[0].period; }
+            if (chartVM2s[0].period == "Q") { ViewBag.PeriodText = "Quarterly"; ViewBag.Period = chartVM2s[0].period; }
+            if (chartVM2s[0].period == "Y") { ViewBag.PeriodText = "Yearly"; ViewBag.Period = chartVM2s[0].period; }
             ViewBag.Standard = standard;
             ViewBag.Unit = unit;
+
             return View();
         }
     }

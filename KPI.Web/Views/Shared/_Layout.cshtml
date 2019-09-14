@@ -152,91 +152,91 @@
     <script src="~/signalr/hubs"></script>
     <script>
 
-$(function () {
-// Declare a proxy to reference the hub.
-var notifications = $.connection.notificationHub;
+        $(function () {
+        // Declare a proxy to reference the hub.
+        var notifications = $.connection.notificationHub;
 
 
-// Create a function that the hub can call to broadcast messages.
-notifications.client.updateMessages = function () {
-    getAllNotifications();
+        // Create a function that the hub can call to broadcast messages.
+        notifications.client.updateMessages = function () {
+            getAllNotifications();
 
-};
-// Start the connection.
-$.connection.hub.start().done(function () {
-    console.log("connection started")
-    getAllNotifications();
-}).fail(function (e) {
-    console.log(e);
-});
+        };
+        // Start the connection.
+        $.connection.hub.start().done(function () {
+            console.log("connection started")
+            getAllNotifications();
+        }).fail(function (e) {
+            console.log(e);
+        });
 
-$('#liNotify ').off('click').on('click', function () {
-    var listID = $('#liNotify .listNotifies').data('id');
-    $.ajax({
-        url: '/Notification/UpdateRange',
-        data: { listID: listID },
-        type: 'GET',
-        dataType: 'json',
-        success: function (response) {
-            if (response) {
-                //alert("Update success");
-            }
-        }
-    })
-});
-});
-function getAllNotifications() {
+        $('#liNotify ').off('click').on('click', function () {
+            var listID = $('#liNotify .listNotifies').data('id');
+            $.ajax({
+                url: '/Notification/UpdateRange',
+                data: { listID: listID },
+                type: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    if (response) {
+                        //alert("Update success");
+                    }
+                }
+            })
+        });
+        });
+        function getAllNotifications() {
 
-$.ajax({
-    url: '/Home/GetNotifications',
-    contentType: 'application/html ; charset:utf-8',
-    type: 'GET',
-    dataType: "json",
-    success: function (response) {
-        console.log(response);
-        var data = response.data;
-        var total = response.total;
-        var arrays = response.arrayID;
-        console.log(response);
-        console.log('Load lai');
+        $.ajax({
+            url: '/Home/GetNotifications',
+            contentType: 'application/html ; charset:utf-8',
+            type: 'GET',
+            dataType: "json",
+            success: function (response) {
+                console.log(response);
+                var data = response.data;
+                var total = response.total;
+                var arrays = response.arrayID;
+                console.log(response);
+                console.log('Load lai');
 
-        var htmlNotification = '';
-        var period = "";
-        $.each(data, function (i, item) {
-            switch (item.Period) {
-                case "W": period = "Weekly"; break;
-                case "M": period = "Monthly"; break;
-                case "Q": period = "Quarterly"; break;
-                case "Y": period = "Yearly"; break;
-                default: period = "Not found"; break;
-            }
-            htmlNotification += `<li>
-          <a href="${item.Link}">
-             <i class="fa fa-user text-success"></i><b style="background-color:#0068ff;color:#fff;border-radius:5px;padding:0 5px 0 5px">${item.Username}</b> mentioned you in ${item.KPIName} KPI ${period}
+                var htmlNotification = '';
+                var period = "";
+                $.each(data, function (i, item) {
+                    switch (item.Period) {
+                        case "W": period = "Weekly"; break;
+                        case "M": period = "Monthly"; break;
+                        case "Q": period = "Quarterly"; break;
+                        case "Y": period = "Yearly"; break;
+                        default: period = "Not found"; break;
+                    }
+                    htmlNotification += `<li>
+                  <a href="${item.Link}">
+                     <i class="fa fa-user text-success"></i><b style="background-color:#0068ff;color:#fff;border-radius:5px;padding:0 5px 0 5px">${item.Username}</b> mentioned you in ${item.KPIName} KPI ${period}
 
-          </a>
-    </li>`
+                  </a>
+            </li>`
+                })
+
+                var html = `<a href="#" data-id="${arrays}" class="dropdown-toggle listNotifies" data-toggle="dropdown">
+                <i class="fa fa-bell-o"></i>
+                <span class="label label-warning ${total === 0 ? "hidden" : ""}">${total}</span>
+            </a>
+            <ul class="dropdown-menu">
+                <li class="header">You have ${total} notifications</li>
+                <li>
+                    <!-- inner menu: contains the actual data -->
+                    <ul class="menu">
+                       ${htmlNotification}
+                    </ul>
+                </li>
+                <li class="footer"><a id=ViewAll href="/Home/ListHistoryNotification">View all</a></li>
+            </ul>`
+                $(".notifications-menu").empty();
+                $(".notifications-menu").html(html);
+            }, error: function (e) { console.log(e) }
         })
-
-        var html = `<a href="#" data-id="${arrays}" class="dropdown-toggle listNotifies" data-toggle="dropdown">
-        <i class="fa fa-bell-o"></i>
-        <span class="label label-warning ${total === 0 ? "hidden" : ""}">${total}</span>
-    </a>
-    <ul class="dropdown-menu">
-        <li class="header">You have ${total} notifications</li>
-        <li>
-            <!-- inner menu: contains the actual data -->
-            <ul class="menu">
-               ${htmlNotification}
-            </ul>
-        </li>
-        <li class="footer"><a id=ViewAll href="/Home/ListHistoryNotification">View all</a></li>
-    </ul>`
-        $(".notifications-menu").empty();
-        $(".notifications-menu").html(html);
-    }, error: function (e) { console.log(e) }
-})
-}
+        }
 
     </script>
 

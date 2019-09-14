@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KPI.Model.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -11,6 +12,8 @@ namespace KPI.Model.helpers
 {
     public static class CodeUtility
     {
+        public static string ToStringDateTime(this DateTime? dt, string format)
+        => dt == null ? "n/a" : ((DateTime)dt).ToString(format);
         public static bool IsDouble(this object value)
         {
             var flag = false;
@@ -24,11 +27,11 @@ namespace KPI.Model.helpers
 
             return false;
         }
-        
+
         public static DateTime ToGetMondayOfWeek(this int year, int week)
         {
             if (week == 0)
-                 week = 1;
+                week = 1;
             // 4 January is always in week 1 (see http://en.wikipedia.org/wiki/ISO_week_date)
             DateTime jan4 = new DateTime(year, 1, 4);
 
@@ -40,7 +43,7 @@ namespace KPI.Model.helpers
 
             return day.AddDays(-dayOfWeek);
         }
-        public static DateTime ToGetSaturdayOfWeek( int year, int week)
+        public static DateTime ToGetSaturdayOfWeek(int year, int week)
         {
             if (week == 0)
                 week = 1;
@@ -56,9 +59,9 @@ namespace KPI.Model.helpers
             return day.AddDays(-dayOfWeek).AddDays(6);
         }
 
-        public static DateTime ToGetStartDayOfWeek( int year, int dayofweek)
+        public static DateTime ToGetStartDayOfWeek(int year, int dayofweek)
         {
-            var fromDate = new DateTime(year, 1,1);
+            var fromDate = new DateTime(year, 1, 1);
             var fw = fromDate.Millisecond + 518400000 + (dayofweek - 1);
             return new DateTime();
         }
@@ -71,10 +74,52 @@ namespace KPI.Model.helpers
         }
         public static DateTime ToGetEndDateOfMonth(int year, int month)
         {
-            var lastDayOfMonth = ToGetStartDateOfMonth(year,month).AddMonths(1).AddDays(-1);
+            var lastDayOfMonth = ToGetStartDateOfMonth(year, month).AddMonths(1).AddDays(-1);
             return lastDayOfMonth;
         }
+        public static QuarterVM ToGetStartAndEndDateOfQuarter(int year, int quarter)
+        {
+            if (quarter == 1)
+                return new QuarterVM
+                {
+                    start = ToGetStartDateOfMonth(year, 1),
+                    end = ToGetEndDateOfMonth(year, 2)
+                };
+            else if (quarter == 2)
+                return new QuarterVM
+                {
+                    start = ToGetStartDateOfMonth(year, 3),
+                    end = ToGetEndDateOfMonth(year, 5)
+                };
+            else if (quarter == 3)
+                return new QuarterVM
+                {
+                    start = ToGetStartDateOfMonth(year, 6),
+                    end = ToGetEndDateOfMonth(year, 9)
+                };
+            else if (quarter == 4)
+                return new QuarterVM
+                {
+                    start = ToGetStartDateOfMonth(year, 10),
+                    end = ToGetEndDateOfMonth(year, 12)
+                };
+            else return new QuarterVM
+            {
+                start = new DateTime(),
+                end = new DateTime()
+            };
+        }
 
+        public static YearVM ToGetStartAndEndDateOfYear(int year)
+        {
+            
+                return new YearVM
+                {
+                    start = ToGetStartDateOfMonth(year, 1),
+                    end = ToGetEndDateOfMonth(year, 12)
+                };
+          
+        }
         /// <summary>
         /// Kiểm tra giá trị value có phải là định dạng email không?
         /// Nếu là định dạng email, trả về true; Ngược lại, trả về false.
@@ -308,7 +353,42 @@ namespace KPI.Model.helpers
             return value.ToString();
 
         }
+        public static bool IsDate(this String date)
 
+        {
+
+            try
+
+            {
+
+                DateTime dt = DateTime.Parse(date);
+
+                return true;
+
+            }
+            catch
+
+            {
+
+                return false;
+
+            }
+
+        }
+        /// <summary>
+        /// Chuyển value về dạng chuỗi.
+        /// Trả về dạng chuỗi của value
+        /// </summary>
+        /// <param name="value">Giá trị cần chuyển đổi. </param>
+        /// <returns>Trả về dạng chuỗi của value.</returns>
+        public static string ToSafetyString(this object value,string format)
+        {
+            if (value == null)
+                return string.Empty;
+            DateTime date = DateTime.ParseExact(value.ToString(), format, CultureInfo.InvariantCulture);
+            return date.ToString();
+
+        }
         /// <summary>
         /// Chuyển value về dạng số nguyên(byte).
         /// Trả về dạng số nguyên(byte) của value

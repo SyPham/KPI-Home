@@ -132,7 +132,7 @@ namespace KPI.Web.Controllers
             return Json(false, JsonRequestBehavior.AllowGet);
         }
         [HttpPost]
-        public ActionResult ExcelExport(int userid)
+        public ActionResult ExcelExport1(int userid)
         {
             var model = new UploadDAO().DataExport(userid);
             var currentYear = DateTime.Now.Year;
@@ -148,7 +148,7 @@ namespace KPI.Web.Controllers
             DataTable Dt = new DataTable();
             Dt.Columns.Add("KPILevel Code", typeof(string));
             Dt.Columns.Add("KPI Name", typeof(string));
-            Dt.Columns.Add("Actual Value", typeof(int));
+            Dt.Columns.Add("Actual Value", typeof(string));
             Dt.Columns.Add("Target Value", typeof(object));
             Dt.Columns.Add("Period Value", typeof(string));
             Dt.Columns.Add("Year", typeof(int));
@@ -173,7 +173,7 @@ namespace KPI.Web.Controllers
                     }
                 }
                 // nếu tuần hiện tại trừ tuần MAX >= 1 thì export từ tuần kế tiếp tuần MAX cho đến tuần hiện tại
-                if (item.PeriodValueW > 0 && item.StateW == true)
+                else if (item.PeriodValueW > 0 && item.StateW == true)
                 {
                     if (currentWeek - item.PeriodValueW >= 1)
                     {
@@ -186,7 +186,20 @@ namespace KPI.Web.Controllers
                             Dt.Rows.Add(item.KPILevelCode + "W", item.KPIName, item.Value, item.TargetValueW, i, currentYear, item.Area, updateTimeW, startDayOfWeek, endDayOfWeek);
                         }
                     }
+                    else
+                    {
+                        for (int i = 1; i <= currentWeek; i++)
+                        {
+                            var startDayOfWeek = CodeUtility.ToGetMondayOfWeek(currentYear, i).ToString("MM/dd/yyyy");
+                            var endDayOfWeek = CodeUtility.ToGetSaturdayOfWeek(currentYear, i).ToString("MM/dd/yyyy");
+
+                            var updateTimeW = item.UploadTimeW.ConvertNumberDayOfWeekToString() + ", Week " + i;
+                            var value = new UploadDAO().GetValueData(item.KPILevelCode, "W", i);
+                            Dt.Rows.Add(item.KPILevelCode + "W", item.KPIName, value, item.TargetValueW, i, currentYear, item.Area, updateTimeW, startDayOfWeek, endDayOfWeek);
+                        }
+                    }
                 }
+               
 
                 ///Logic export tháng
                 //Nếu tháng MAX trong bảng DATA mà bằng 0 thì export từ tháng đầu cho đến tháng hiện tại
@@ -203,11 +216,22 @@ namespace KPI.Web.Controllers
                 {
                     if (currentMonth - item.PeriodValueM > 1)
                     {
+
                         for (int i = item.PeriodValueM + 1; i <= currentMonth; i++)
                         {
+                           
                             Dt.Rows.Add(item.KPILevelCode + "M", item.KPIName, item.Value, item.TargetValueW, i, currentYear, item.Area, item.UploadTimeM.ToSafetyString().Split(' ')[0].ToSafetyString());
                         }
                     }
+                    else
+                    {
+                        for (int i = 1; i <= currentMonth; i++)
+                        {
+                            var value = new UploadDAO().GetValueData(item.KPILevelCode, "M", i);
+                            Dt.Rows.Add(item.KPILevelCode + "M", item.KPIName, value, item.TargetValueW, i, currentYear, item.Area, item.UploadTimeM.ToSafetyString().Split(' ')[0].ToSafetyString());
+                        }
+                    }
+                   
                 }
                 ///Logic export quý
                 //Nếu quý MAX trong bảng DATA mà bằng 0 thì export từ tháng đầu cho đến quý hiện tại
@@ -287,6 +311,104 @@ namespace KPI.Web.Controllers
                 worksheet.Column(2).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
                 worksheet.Column(6).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
                 worksheet.Column(7).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                worksheet.DefaultColWidth = 20;
+                worksheet.Column(2).AutoFit();
+
+                Session["DownloadExcel_FileManager"] = excelPackage.GetAsByteArray();
+                return Json("", JsonRequestBehavior.AllowGet);
+            }
+
+        }
+        public ActionResult ExcelExport(int userid)
+        {
+            var model = new UploadDAO().DataExport(userid);
+            var currentYear = DateTime.Now.Year;
+            var currentWeek = DateTime.Now.GetIso8601WeekOfYear();
+            var currentMonth = DateTime.Now.Month;
+            var currentQuarter = DateTime.Now.GetQuarter();
+
+            var now = DateTime.Now;
+            var end = now.GetEndOfQuarter();
+            var tt = end.Subtract(now).Days;
+            //var targetValue = "";
+
+            DataTable Dt = new DataTable();
+            Dt.Columns.Add("KPILevel Code", typeof(string));
+            Dt.Columns.Add("KPI Name", typeof(string));
+            Dt.Columns.Add("Actual Value", typeof(string));
+            Dt.Columns.Add("Target Value", typeof(object));
+            Dt.Columns.Add("Period Value", typeof(string));
+            Dt.Columns.Add("Year", typeof(int));
+            Dt.Columns.Add("Area", typeof(string));
+            Dt.Columns.Add("Update Time", typeof(object));
+            Dt.Columns.Add("Start Date", typeof(string));
+            Dt.Columns.Add("End Date", typeof(string));
+            foreach (var item in model)
+            {
+                ///Logic export tuần
+                if (item.StateW == true)
+                {
+
+                    for (int i = 1; i <= currentWeek; i++)
+                    {
+                        var startDayOfWeek = CodeUtility.ToGetMondayOfWeek(currentYear, i).ToString("MM/dd/yyyy");
+                        var endDayOfWeek = CodeUtility.ToGetSaturdayOfWeek(currentYear, i).ToString("MM/dd/yyyy");
+
+                        var updateTimeW = item.UploadTimeW.ConvertNumberDayOfWeekToString() + ", Week " + i;
+                        var value = new UploadDAO().GetValueData(item.KPILevelCode, "W", i);
+                        Dt.Rows.Add(item.KPILevelCode + "W", item.KPIName, value, item.TargetValueW, i, currentYear, item.Area, updateTimeW, startDayOfWeek, endDayOfWeek);
+                    }
+                }
+
+                ///Logic export tháng
+
+                if (item.StateM == true)
+                {
+                    for (int i = 1; i <= currentMonth; i++)
+                    {
+                        var startDayOfMonth = CodeUtility.ToGetStartDateOfMonth(currentYear, i).ToString("MM/dd/yyyy");
+                        var endDayOfMonth = CodeUtility.ToGetEndDateOfMonth(currentYear, i).ToString("MM/dd/yyyy");
+
+                        var updateTimeM = item.UploadTimeM.ToStringDateTime("MM/dd/yyyy");
+                        var value = new UploadDAO().GetValueData(item.KPILevelCode, "M", i);
+                        Dt.Rows.Add(item.KPILevelCode + "M", item.KPIName, value, item.TargetValueW, i, currentYear, item.Area, updateTimeM, startDayOfMonth, endDayOfMonth);
+                    }
+
+                }
+                ///Logic export quý
+                if (item.StateQ == true)
+                {
+                    for (int i = 1; i < currentQuarter - 1; i++)
+                    {
+                       var seq= CodeUtility.ToGetStartAndEndDateOfQuarter(currentYear, i);
+                        var value = new UploadDAO().GetValueData(item.KPILevelCode, "Q", i);
+                        var updateTimeQ = item.UploadTimeQ.ToStringDateTime("MM/dd/yyyy");
+                        Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, value, item.TargetValueW, i, currentYear, item.Area, updateTimeQ,seq.start.ToString("MM/dd/yyyy"), seq.end.ToString("MM/dd/yyyy"));
+                    }
+                  
+                }
+               
+                ///Logic export năm
+                if (item.StateY == true)
+                {
+                    var value = new UploadDAO().GetValueData(item.KPILevelCode, "Y", currentYear);
+                    var updateTimeY = item.UploadTimeY.ToStringDateTime("MM/dd/yyyy");
+                    var sey = CodeUtility.ToGetStartAndEndDateOfYear(currentYear);
+                    Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, item.Value, item.TargetValueW, currentYear, currentYear, item.Area, updateTimeY,sey.start.ToString("MM/dd/yyyy"), sey.end.ToString("MM/dd/yyyy"));
+                }
+
+            }
+            var memoryStream = new MemoryStream();
+            using (var excelPackage = new ExcelPackage(memoryStream))
+            {
+                var worksheet = excelPackage.Workbook.Worksheets.Add("Sheet1");
+                worksheet.Cells["A1"].LoadFromDataTable(Dt, true, TableStyles.None);
+                worksheet.Cells["A1:AN1"].Style.Font.Bold = true;
+                worksheet.DefaultRowHeight = 18;
+
+                worksheet.Column(2).Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                worksheet.Column(6).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Column(7).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                 worksheet.DefaultColWidth = 20;
                 worksheet.Column(2).AutoFit();
 

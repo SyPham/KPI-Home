@@ -10,7 +10,7 @@ namespace KPI.Model.ViewModel
     {
         public string KPILevelCode { get; set; }
         public string KPIName { get; set; }
-        public int Value { get; set; }
+        public string Value { get; set; }
         public int PeriodValueW { get; set; }
         public int PeriodValueM { get; set; }
         public int PeriodValueQ { get; set; }
