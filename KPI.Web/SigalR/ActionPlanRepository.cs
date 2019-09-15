@@ -36,7 +36,7 @@ namespace KPI.Web
                               WHERE Comments.UserID = @UserID and Data.ID = @DataID";
                 using (var command = new SqlCommand(sql, connection))
                 {
-                  
+
                     command.Parameters.AddWithValue("@UserID", userid);
                     command.Parameters.AddWithValue("@DataID", dataid);
                     command.Parameters.AddWithValue("@CommentID", commentid);
@@ -52,15 +52,15 @@ namespace KPI.Web
 
                     while (reader.Read())
                     {
-                        messages.Add(item: new CommentVM { CommentID = reader["ID"].ToInt(), UserID = reader["UserID"].ToInt(), FullName = reader["FullName"].ToSafetyString(), CommentedDate = Convert.ToDateTime(reader["CommentedDate"]), CommentMsg = reader["CommentMsg"].ToSafetyString(),Read=reader["Status"].ToBool(),Task = reader["IsHasTask"].ToInt() });
+                        messages.Add(item: new CommentVM { CommentID = reader["ID"].ToInt(), UserID = reader["UserID"].ToInt(), FullName = reader["FullName"].ToSafetyString(), CommentedDate = Convert.ToDateTime(reader["CommentedDate"]), CommentMsg = reader["CommentMsg"].ToSafetyString(),Read = reader["Status"].ToBool(),Task = reader["IsHasTask"].ToInt()>0? true : false });
                     }
                 }
-              
+
             }
-            
+
             return messages;
         }
-       
+
         private void dependency_OnChange(object sender, SqlNotificationEventArgs e)
         {
             if (e.Type == SqlNotificationType.Change)

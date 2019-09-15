@@ -69,19 +69,35 @@
 
         if (unit === "Numeric") {
             var datasets = datasets.map(datasets => Number(datasets));
-
-
         }
         else {
-           
+
             //if (datasets[0].isFloat) {
             //    $('#minChart').attr("step", (Math.min(...datasets)/2));
             //} else {
             //     $('#stepChart').attr("step", Math.min(...datasets)/2));
             //}
-            
+
         }
         $(function () {
+
+              // Declare a proxy to reference the hub.
+                var comments = $.connection.notificationHub;
+
+
+                // Create a function that the hub can call to broadcast messages.
+                comments.client.updateComments = function () {
+                      chartperiodController.loadDataComment();
+
+                };
+                // Start the connection.
+                $.connection.hub.start().done(function () {
+                    console.log("connection started chart period")
+                    chartperiodController.loadDataComment();
+                }).fail(function (e) {
+                    console.log(e);
+                });
+
             var target2;
             for (var i = targets.length; i > 0; i--) {
                 if (targets[i] > 0) {
@@ -117,6 +133,7 @@
             });
 
             $.each(dataremarks, function (key, item) {
+
                 if (unit === "Numeric")
                 {
                     var ssss = parseFloat(item.Value) <  parseFloat(target2) ? true : false;
@@ -709,7 +726,7 @@ var chartperiodController = {
 
                 $('.btnSaveActionPlan').unbind('click').on('click', function () {
                     chartperiodController.addActionPlan();
-                    chartperiodController.addNotification();
+                    chartperiodController.addNotification($('.ActionPlanChart').text());
                 })
                 $('#lastRemark').off('keypress').on('keypress', function (e) {
                     if (e.keyCode === 13) {
@@ -944,6 +961,7 @@ var chartperiodController = {
 
                 $('.btnComment').off('click').on('click', function () {
                     chartperiodController.addData();
+                    chartperiodController.addNotificationComment($('.RemarkChart').text());
                 });
 
             },
@@ -1535,17 +1553,18 @@ var chartperiodController = {
             },
             loadDataComment() {
                 $.ajax({
-                    url: '/ChartPeriod/LoadDataComment',
+                    //url: '/ChartPeriod/LoadDataComment',
+                    url: '/ChartPeriod/GetAllComments',
                     type: "GET",
                     data: {
-                        dataid: Number($(".dataid").text()),
-                        userid: Number($("#user").data('userid')),
+                        dataid: Number($(".dataid").text())
+                       // userid: Number($("#user").data('userid')),
                     },
                     dataType: "json",
                     success: function (res) {
                         var data = res.data;
                         console.log("Lay ra tat ca comment");
-                        console.log(data);
+                        console.log(res);
                         var total = res.total;
 
                         $('.total-comments').text(total);
@@ -1567,7 +1586,7 @@ var chartperiodController = {
                             if (item.Read) {
                                 html += '<span class="label bg-green"> new</span>';
                             }
-                            if (item.IsHasTask) {
+                            if (item.Task) {
                                 html += '<p><a href="#modal-group-comment-data2" data-toggle="modal" data-commentid="' + item.CommentID + '" data-dismiss="modal" class="btn btn-xs btn-danger text-bold btnTask"><i class="fa fa-tags"></i> Task</a> </p>';
                             }
                             else {
@@ -1587,25 +1606,55 @@ var chartperiodController = {
                     }
                 });
             },
-            addNotification() {
+            addNotification(Title) {
                 var Tag = $('#Tag').val().trim();
                 if (Tag !== null || Tag !== "" || Tag !== undefined)
                     Tag = Tag.replace(/\@@/g, '').replace(/\ /g, ',');
-            var notification = {
-                ID: 0,
-                UserID: $('#user').data('userid'),
-                KPIName: "@kpiname",
-                Period: "@period",
-                Seen: false,
-                Link: window.location.href,
-                Tag: Tag,
-                CreateTime:chartperiodController.dateNow()
-                };
+                var notification = {
+                    ID: 0,
+                    UserID: $('#user').data('userid'),
+                    KPIName: "@kpiname",
+                    Period: "@period",
+                    Seen: false,
+                    Link: window.location.href,
+                    Tag: Tag,
+                    Title: Title,
+                    CreateTime:chartperiodController.dateNow()
+                    };
 
-            $.post('AddNotification', {notification:notification})
-                .done(function (response) {
-                   //to do something
-                });
+                $.post('AddNotification', {notification:notification})
+                    .done(function (response) {
+                       //to do something
+                    });
+            },
+            addNotificationComment(Title) {
+              var CommentMsg = $('#comment').val();
+                var Tag = [],obj;
+                if (CommentMsg !== "") {
+                    obj = CommentMsg.match(/@@.+\f/g);
+                    var arr = obj.toString().split(' ');
+                    for (let item of arr) {
+                        Tag.push(item.replace('@@', ' ').trim());
+                    }
+                    Tag = Tag.join();
+                }
+
+                var notification = {
+                    ID: 0,
+                    UserID: $('#user').data('userid'),
+                    KPIName: "@kpiname",
+                    Period: "@period",
+                    Seen: false,
+                    Link: window.location.href,
+                    Tag: Tag,
+                    Title: Title,
+                    CreateTime:chartperiodController.dateNow()
+                    };
+
+                $.post('AddNotification', {notification:notification})
+                    .done(function (response) {
+                       //to do something
+                    });
             },
             dateNow() {
             var date = new Date();
@@ -1619,7 +1668,7 @@ var chartperiodController = {
             // After this construct a string with the above results as below
             var time = day + "/" + month + "/" + year + " " + hour + ':' + minute + ':' + second;
             return time;
-    },
+            },
              isInt(n){
                 return Number(n) === n && n % 1 === 0;
             },

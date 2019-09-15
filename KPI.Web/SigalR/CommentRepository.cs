@@ -16,7 +16,7 @@ namespace KPI.Web
     {
         readonly string _connString = ConfigurationManager.ConnectionStrings["KPIDbContext"].ConnectionString;
 
-        public IEnumerable<CommentVM> GetAllComments(int userid, int dataid,int commentid)
+        public IEnumerable<CommentVM> GetAllComments(int userid, int dataid)
         {
             var messages = new List<CommentVM>();
             using (var connection = new SqlConnection(_connString))
@@ -28,18 +28,18 @@ namespace KPI.Web
                                       ,UserID
                                       ,DataID
 	                                  ,FullName
-                                      ,(SELECT Status FROM SeenComments WHERE CommentID = @CommentID AND UserID = @UserID ) AS Status
-                                      ,(SELECT ID FROM ActionPlans WHERE DataID = @DataID AND CommentID = @CommentID ) AS IsHasTask
-                              FROM Comments 
+                                      ,(SELECT ID FROM SeenComments WHERE CommentID = Comments.ID AND UserID = @UserID ) AS Status
+                                      ,(SELECT ID FROM ActionPlans WHERE DataID = @DataID AND CommentID = Comments.ID ) AS IsHasTask
+                              FROM Comments
                               INNER JOIN dbo.Users on dbo.Users.ID = Comments.UserID
                               INNER JOIN dbo.Data on dbo.Comments.DataID = Data.ID
-                              WHERE Data.ID = @DataID";
+                              WHERE Data.ID = @DataID
+                              ORDER BY CommentedDate DESC";
                 using (var command = new SqlCommand(sql, connection))
                 {
-                  
                     command.Parameters.AddWithValue("@UserID", userid);
                     command.Parameters.AddWithValue("@DataID", dataid);
-                    command.Parameters.AddWithValue("@CommentID", commentid);
+
                     command.Notification = null;
 
                     var dependency = new SqlDependency(command);
@@ -52,15 +52,17 @@ namespace KPI.Web
 
                     while (reader.Read())
                     {
-                        messages.Add(item: new CommentVM { CommentID = reader["ID"].ToInt(), UserID = reader["UserID"].ToInt(), FullName = reader["FullName"].ToSafetyString(), CommentedDate = Convert.ToDateTime(reader["CommentedDate"]), CommentMsg = reader["CommentMsg"].ToSafetyString(),Read=reader["Status"].ToBool(),Task = reader["IsHasTask"].ToInt() });
+                        var task = reader["IsHasTask"].ToInt();
+
+                        messages.Add(item: new CommentVM { CommentID = reader["ID"].ToInt(), UserID = reader["UserID"].ToInt(), FullName = reader["FullName"].ToSafetyString(), CommentedDate = Convert.ToDateTime(reader["CommentedDate"]), CommentMsg = reader["CommentMsg"].ToSafetyString(), Read = reader["Status"].ToInt()==0?true:false, Task = task > 0 ? true : false });
                     }
                 }
-              
+
             }
-            
+
             return messages;
         }
-       
+
         private void dependency_OnChange(object sender, SqlNotificationEventArgs e)
         {
             if (e.Type == SqlNotificationType.Change)

@@ -16,29 +16,19 @@ namespace KPI.Web
     {
         readonly string _connString = ConfigurationManager.ConnectionStrings["KPIDbContext"].ConnectionString;
 
-        public IEnumerable<NotificationViewModel> GetAllNotifications(string Tag)
+        public IEnumerable<NotificationViewModel> GetAllNotifications(int UserID)
         {
             var messages = new List<NotificationViewModel>();
             using (var connection = new SqlConnection(_connString))
             {
                 connection.Open();
-                string sql = @"SELECT
-                           dbo.Notifications.ID
-						  ,dbo.Users.Username
-                          ,UserID
-                          ,KPIName
-                          ,Period
-                          ,Seen
-                          ,Link
-                          ,CreateTime
-                          ,Tag
-                FROM dbo.Notifications  
-                INNER JOIN dbo.Users on dbo.Notifications.UserID = dbo.Users.ID
-                WHERE Tag like @Tag";
+                string sql = @"SELECT B.UserID,B.ID,B.Seen,A.Title,A.Link,A.KPIName,A.Period,A.Tag ,C.Username,C.FullName,b.CreateTime
+                                FROM Notifications A,NotificationDetails B , Users C
+                                WHERE A.ID = B.NotificationID AND B.UserID = C.ID AND  B.UserID= @UserID";
                 using (var command = new SqlCommand(sql, connection))
                 {
-                    var value = "%" + Tag + "%";
-                    command.Parameters.AddWithValue("@Tag", value);
+
+                    command.Parameters.AddWithValue("@UserID", UserID);
                     command.Notification = null;
 
                     var dependency = new SqlDependency(command);
@@ -51,15 +41,15 @@ namespace KPI.Web
 
                     while (reader.Read())
                     {
-                        messages.Add(item: new NotificationViewModel { ID = reader["ID"].ToInt() , UserID=reader["UserID"].ToInt(),Username=reader["Username"].ToSafetyString(), KPIName = reader["KPIName"].ToSafetyString(), Period =  reader["Period"].ToSafetyString(), Seen = reader["Seen"].ToBool(), Link = reader["Link"].ToSafetyString(), CreateTime = Convert.ToDateTime(reader["CreateTime"]), Tag = reader["Tag"].ToSafetyString() });
+                        messages.Add(item: new NotificationViewModel { ID = reader["ID"].ToInt() , UserID=reader["UserID"].ToInt(),Username=reader["Username"].ToSafetyString(), KPIName = reader["KPIName"].ToSafetyString(), Period =  reader["Period"].ToSafetyString(), Seen = reader["Seen"].ToBool(), Link = reader["Link"].ToSafetyString(), CreateTime = Convert.ToDateTime(reader["CreateTime"]), Tag = reader["Tag"].ToSafetyString(),Title=reader["Title"].ToSafetyString() });
                     }
                 }
-              
+
             }
-            
+
             return messages;
         }
-       
+
         private void dependency_OnChange(object sender, SqlNotificationEventArgs e)
         {
             if (e.Type == SqlNotificationType.Change)

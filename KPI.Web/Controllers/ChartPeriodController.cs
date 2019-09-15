@@ -59,9 +59,20 @@ namespace KPI.Web.Controllers
             if (model.period == "Y") { ViewBag.PeriodText = "Yearly";  };
             return View();
         }
-        public JsonResult GetAllComments(int dataid,int userid,int commentid)
+        public JsonResult GetAllComments(int dataid)
         {
-            return Json(new CommentRepository().GetAllComments(userid,dataid,commentid), JsonRequestBehavior.AllowGet);
+            var userprofile = Session["UserProfile"] as UserProfileVM;
+            var userid = 0;
+            if (userprofile != null)
+            {
+                userid = userprofile.User.ID;
+            }
+            var data = new CommentRepository().GetAllComments(userid, dataid);
+            var total = data.Count();
+            return Json(new {
+                data =data,
+                total =total
+            }, JsonRequestBehavior.AllowGet);
         }
         public JsonResult AddComment(AddCommentViewModel entity)
         {

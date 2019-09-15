@@ -46,13 +46,13 @@ namespace KPI.Web.Controllers
             ViewBag.NotifierEntity = new NotificationDAO().GetNotifierEntity();
             return PartialView(collection);
         }
-      
+
         public JsonResult GetNotifications()
         {
-            var userprofile = Session["UserProfile"] as UserProfileVM; 
+            var userprofile = Session["UserProfile"] as UserProfileVM;
             if(userprofile==null)
                 return Json("", JsonRequestBehavior.AllowGet);
-            var listNotifications = new NotificationsRepository().GetAllNotifications(userprofile.User.Username);
+            var listNotifications = new NotificationsRepository().GetAllNotifications(userprofile.User.ID);
             var total = 0;
             var listID = new List<int>();
             foreach (var item in listNotifications)
@@ -62,7 +62,7 @@ namespace KPI.Web.Controllers
                     total++;
                     listID.Add(item.ID);
                 }
-                   
+
             }
             return Json( new {arrayID = listID.ToArray(), total = total, data = listNotifications }, JsonRequestBehavior.AllowGet);
         }

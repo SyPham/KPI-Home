@@ -24,7 +24,7 @@ namespace KPI.Model.DAO
             if (listID.Length > 0)
             {
                 var arr = listID.Split(',').Select(Int32.Parse).ToList();
-                var some = _dbContext.Notifications.Where(x => arr.Contains(x.ID)).ToList();
+                var some = _dbContext.NotificationDetails.Where(x => arr.Contains(x.ID)).ToList();
                 some.ForEach(a => a.Seen = true);
                 try
                 {
@@ -39,12 +39,33 @@ namespace KPI.Model.DAO
             }
 
             return false;
-  
+
+        }
+        public bool Update(int ID)
+        {
+            var some = _dbContext.NotificationDetails.FirstOrDefault(x => x.ID == ID);
+            try
+            {
+                some.Seen = true;
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+
+            }
+
+
         }
         public bool Add(Notification entity)
         {
-            _dbContext.Notifications.Add(entity);
-            var list = entity.Tag.Split(',');
+            try
+            {
+                _dbContext.Notifications.Add(entity);
+
+                _dbContext.SaveChanges();
+                var list = entity.Tag.Split(',');
             var itemtag = new Tag();
             var itemNotificationDetail = new NotificationDetail();
             //var listTag = new List<Tag>();
@@ -56,7 +77,7 @@ namespace KPI.Model.DAO
                 var username = item.ToSafetyString();
                 itemtag.UserID = (int?)user.FirstOrDefault(x => x.Username == username).ID ?? 0;
                 itemtag.CommentID = commentID;
-                itemNotificationDetail.UserID= (int?)user.FirstOrDefault(x => x.Username == username).ID ?? 0;
+                itemNotificationDetail.UserID = (int?)user.FirstOrDefault(x => x.Username == username).ID ?? 0;
                 itemNotificationDetail.NotificationID = entity.ID;
                 itemNotificationDetail.Seen = false;
 
@@ -66,9 +87,7 @@ namespace KPI.Model.DAO
                 _dbContext.SaveChanges();
             }
 
-            try
-            {
-                _dbContext.SaveChanges();
+
                 return true;
             }
             catch
@@ -183,10 +202,11 @@ namespace KPI.Model.DAO
                             Seen = a.Seen,
                             CreateTime = a.CreateTime,
                             Tag = a.Tag,
+                            Title = a.Title,
                             Username = b.Username
                         };
             return model.ToList();
         }
-        
+
     }
 }

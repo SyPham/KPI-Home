@@ -17,6 +17,6 @@ namespace KPI.Model.ViewModel
         public string FullName { get; set; }
         public bool? Read { get; set; }
         public bool? IsHasTask { get; set; }
-        public int Task { get; set; }
+        public bool Task { get; set; }
     }
 }

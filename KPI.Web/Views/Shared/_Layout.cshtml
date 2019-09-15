@@ -169,7 +169,20 @@
         }).fail(function (e) {
             console.log(e);
         });
-
+             $('#itemNotify ').off('click').on('click', function () {
+            var ID = $(this).data('id');
+            $.ajax({
+                url: '/Notification/Update',
+                data: { ID: ID },
+                type: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    if (response) {
+                        //alert("Update success");
+                    }
+                }
+            })
+        });
         $('#liNotify ').off('click').on('click', function () {
             var listID = $('#liNotify .listNotifies').data('id');
             $.ajax({
@@ -211,7 +224,7 @@
                         default: period = "Not found"; break;
                     }
                     htmlNotification += `<li>
-                  <a href="${item.Link}">
+                  <a href="${item.Link}" data-id="${item.ID}" id="itemNotify">
                      <i class="fa fa-user text-success"></i><b style="background-color:#0068ff;color:#fff;border-radius:5px;padding:0 5px 0 5px">${item.Username}</b> mentioned you in ${item.KPIName} KPI ${period}
 
                   </a>

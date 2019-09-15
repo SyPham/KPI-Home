@@ -20,5 +20,9 @@ namespace KPI.Web.Controllers
         {
             return Json(new NotificationDAO().UpdateRange(listID), JsonRequestBehavior.AllowGet);
         }
+        public JsonResult Update(int ID)
+        {
+            return Json(new NotificationDAO().Update(ID), JsonRequestBehavior.AllowGet);
+        }
     }
 }

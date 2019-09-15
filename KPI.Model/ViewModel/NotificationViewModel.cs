@@ -17,6 +17,6 @@ namespace KPI.Model.ViewModel
         public DateTime CreateTime { get; set; }
         public bool Seen { get; set; }
         public string Username { get; set; }
-        
+        public string Title { get; set; }
     }
 }
