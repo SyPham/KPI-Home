@@ -56,44 +56,31 @@ namespace KPI.Model.DAO
 
             }
 
-
         }
         public bool Add(Notification entity)
         {
             try
             {
+                entity.CreateTime = DateTime.Now;
                 _dbContext.Notifications.Add(entity);
 
                 _dbContext.SaveChanges();
-                var list = entity.Tag.Split(',');
-            var itemtag = new Tag();
-            var itemNotificationDetail = new NotificationDetail();
-            //var listTag = new List<Tag>();
-            var commentID = entity.ID;
-            var user = _dbContext.Users;
+                var detail = new NotificationDetail();
+                detail.UserID = entity.UserID;
+                detail.Seen = false;
+                detail.NotificationID = entity.ID;
+                _dbContext.NotificationDetails.Add(detail);
 
-            foreach (var item in list)
-            {
-                var username = item.ToSafetyString();
-                itemtag.UserID = (int?)user.FirstOrDefault(x => x.Username == username).ID ?? 0;
-                itemtag.CommentID = commentID;
-                itemNotificationDetail.UserID = (int?)user.FirstOrDefault(x => x.Username == username).ID ?? 0;
-                itemNotificationDetail.NotificationID = entity.ID;
-                itemNotificationDetail.Seen = false;
-
-                //listTag.Add(itemtag);
-                _dbContext.Tags.Add(itemtag);
-                _dbContext.NotificationDetails.Add(itemNotificationDetail);
                 _dbContext.SaveChanges();
-            }
-
-
                 return true;
             }
             catch
             {
+
                 return false;
             }
+
+
 
         }
         public async Task<IEnumerable<Notification>> NotifyCollection() => await _dbContext.Notifications.ToListAsync();
@@ -141,6 +128,50 @@ namespace KPI.Model.DAO
                 data = list.ToList()
             };
 
+        }
+
+        public List<NotificationViewModel> ListNotifications(int userid)
+        {
+            var model = from a in _dbContext.NotificationDetails
+                        join b in _dbContext.Notifications on a.NotificationID equals b.ID
+                        join c in _dbContext.Users on a.UserID equals c.ID
+                        select new NotificationViewModel
+                        {
+                            ID = a.ID,
+                            Title = b.Title,
+                            KPIName = b.KPIName,
+                            Period = b.Period,
+                            CreateTime = a.CreateTime,
+                            UserID = a.UserID,
+                            Username = c.Username,
+                            Link = b.Link,
+                            Seen = a.Seen,
+                            Tag = b.Tag
+                        };
+            var model1 = model.Where(x => x.UserID == userid).ToList();
+            return model1;
+        }
+        public List<NotificationViewModel> ListNotifications2(int userid)
+        {
+            var detail = _dbContext.NotificationDetails;
+            var model = 
+                        from b in _dbContext.Notifications 
+                        join a in _dbContext.Users on b.UserID equals a.ID
+                        select new NotificationViewModel
+                        {
+                            ID = a.ID,
+                            Title = b.Title,
+                            KPIName = b.KPIName,
+                            Period = b.Period,
+                            CreateTime = b.CreateTime,
+                            UserID = b.UserID,
+                            Username = a.Username,
+                            Link = b.Link,
+                            Seen = detail.FirstOrDefault(x=>x.UserID==userid && x.NotificationID==b.ID).Seen,
+                            Tag = b.Tag
+                        };
+            var model1 = model.Where(x => x.UserID == userid).ToList();
+            return model1;
         }
         public object GetNotification(int userid)
         {

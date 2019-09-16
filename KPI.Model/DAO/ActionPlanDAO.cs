@@ -26,16 +26,34 @@ namespace KPI.Model.DAO
                 _dbContext.ActionPlans.Add(entity);
                 _dbContext.SaveChanges();
 
-                var list = entity.Tag.Split(',');
-                foreach (var item in list)
+                if (entity.Tag.IsNullOrEmpty())
                 {
-                    var username = item.ToSafetyString();
-                    itemActionPlanDetail.Seen = false;
-                    itemActionPlanDetail.USerID = (int?)user.FirstOrDefault(x => x.Username == username).ID ?? 0;
-                    itemActionPlanDetail.ActionPlanID = entity.ID;
-                    _dbContext.ActionPlanDetails.Add(itemActionPlanDetail);
-                    _dbContext.SaveChanges();
+                    var tag = new Tag();
+                    if (entity.Tag.IndexOf(",") == -1)
+                    {
+                        tag.ActionPlanID = entity.ID;
+                        tag.UserID = (int?)user.FirstOrDefault(x => x.Username == entity.Tag).ID ?? 0;
+                        _dbContext.Tags.Add(tag);
+                        _dbContext.SaveChanges();
+                    }
+                    else
+                    {
+                        var list = entity.Tag.Split(',');
+                        foreach (var item in list)
+                        {
+                            tag.UserID = (int?)user.FirstOrDefault(x => x.Username == item).ID ?? 0;
+                            tag.ActionPlanID = entity.ID;
+                            var username = item.ToSafetyString();
+                            itemActionPlanDetail.Seen = false;
+                            itemActionPlanDetail.USerID = (int?)user.FirstOrDefault(x => x.Username == username).ID ?? 0;
+                            itemActionPlanDetail.ActionPlanID = entity.ID;
+                            _dbContext.Tags.Add(tag);
+                            _dbContext.ActionPlanDetails.Add(itemActionPlanDetail);
+                            _dbContext.SaveChanges();
+                        }
+                    }
                 }
+                
                 return true;
             }
             catch (Exception ex)

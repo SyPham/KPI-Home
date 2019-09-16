@@ -434,21 +434,37 @@ namespace KPI.Model.DAO
                 _dbContext.SeenComments.Add(seenComment);
                 _dbContext.SaveChanges();
                 //Add vao Tag
-                var list = entity.Tag.Split(',');
-                var itemtag = new Tag();
-                //var listTag = new List<Tag>();
-                var commentID = comment.ID;
-                var user = _dbContext.Users;
-                foreach (var item in list)
+               
+                if (entity.Tag.IsNullOrEmpty())
                 {
-                    var username = item.ToSafetyString();
-                    itemtag.UserID = (int?)user.FirstOrDefault(x => x.Username == username).ID ?? 0;
-                    itemtag.CommentID = commentID;
-                    //listTag.Add(itemtag);
-                    _dbContext.Tags.Add(itemtag);
-                    _dbContext.SaveChanges();
-                  
+                    var itemtag = new Tag();
+                    var user = _dbContext.Users;
+                    if (entity.Tag.IndexOf(',') == -1)
+                    {
+                        itemtag = new Tag();
+                        itemtag.UserID = (int?)user.FirstOrDefault(x => x.Username == entity.Tag).ID ?? 0;
+                        itemtag.CommentID = comment.ID;
+                        _dbContext.Tags.Add(itemtag);
+                        _dbContext.SaveChanges();
+                    }
+                    else
+                    {
+                        var list = entity.Tag.Split(',');
+                        var commentID = comment.ID;
+                        foreach (var item in list)
+                        {
+                            var username = item.ToSafetyString();
+                            itemtag.UserID = (int?)user.FirstOrDefault(x => x.Username == username).ID ?? 0;
+                            itemtag.CommentID = commentID;
+                            //listTag.Add(itemtag);
+                            _dbContext.Tags.Add(itemtag);
+                            _dbContext.SaveChanges();
+
+                        }
+                    }
                 }
+                
+               
                 return true;
             }
             catch (Exception)
@@ -516,7 +532,8 @@ namespace KPI.Model.DAO
                    FullName = user.FirstOrDefault(a => a.ID == x.UserID).FullName,
                    //Period = x.Period,
                    Read = seenCMT.FirstOrDefault(a => a.CommentID == x.ID && a.UserID == userid) == null ? true : false,
-                   IsHasTask = actionPlan.FirstOrDefault(a => a.DataID == dataid && a.CommentID == x.ID) == null ? false : true
+                   IsHasTask = actionPlan.FirstOrDefault(a => a.DataID == dataid && a.CommentID == x.ID) == null ? false : true,
+                   Task = actionPlan.FirstOrDefault(a => a.DataID == dataid && a.CommentID == x.ID) == null ? false : true
                })
                .OrderByDescending(x => x.CommentedDate)
                .ToList();

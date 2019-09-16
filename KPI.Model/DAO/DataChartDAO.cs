@@ -34,8 +34,10 @@ namespace KPI.Model.DAO
             {
                 //label chartjs
                 var item = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == kpilevelcode);
-                var kpi = _dbContext.KPIs.Find(item.KPIID);
-                var kpiname = kpi.Name;
+                var kpi = _dbContext.KPIs.FirstOrDefault(x=>x.ID==item.KPIID);
+                var kpiname = string.Empty;
+                if (kpi != null)
+                    kpiname = kpi.Name;
                 var label = _dbContext.Levels.FirstOrDefault(x => x.ID == item.LevelID).Name.ToSafetyString();
                 //datasets chartjs
                 var model = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode);

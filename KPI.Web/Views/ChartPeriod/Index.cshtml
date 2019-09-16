@@ -81,23 +81,6 @@
         }
         $(function () {
 
-              // Declare a proxy to reference the hub.
-                var comments = $.connection.notificationHub;
-
-
-                // Create a function that the hub can call to broadcast messages.
-                comments.client.updateComments = function () {
-                      chartperiodController.loadDataComment();
-
-                };
-                // Start the connection.
-                $.connection.hub.start().done(function () {
-                    console.log("connection started chart period")
-                    chartperiodController.loadDataComment();
-                }).fail(function (e) {
-                    console.log(e);
-                });
-
             var target2;
             for (var i = targets.length; i > 0; i--) {
                 if (targets[i] > 0) {
@@ -1269,14 +1252,23 @@ var chartperiodController = {
                     return;
                 }
                 var CommentMsg = $('#comment').val();
+               
                 var Tag = [],obj;
                 if (CommentMsg !== "") {
                     obj = CommentMsg.match(/@@.+\f/g);
-                    var arr = obj.toString().split(' ');
-                    for (let item of arr) {
-                        Tag.push(item.replace('@@', ' ').trim());
+                    if (obj === undefined || obj ===null) {
+                        obj = "";
                     }
-                    Tag = Tag.join();
+                    if (obj.indexOf("@@") === -1) {
+                        Tag = CommentMsg;
+                    } else {
+                          var arr = obj.toString().split(' ');
+                        for (let item of arr) {
+                            Tag.push(item.replace('@@', ' ').trim());
+                        }
+                        Tag = Tag.join();
+                    }
+                  
                 }
 
                 console.log(Tag);
@@ -1553,12 +1545,12 @@ var chartperiodController = {
             },
             loadDataComment() {
                 $.ajax({
-                    //url: '/ChartPeriod/LoadDataComment',
-                    url: '/ChartPeriod/GetAllComments',
+                    url: '/ChartPeriod/LoadDataComment',
+                    //url: '/ChartPeriod/GetAllComments',
                     type: "GET",
                     data: {
-                        dataid: Number($(".dataid").text())
-                       // userid: Number($("#user").data('userid')),
+                        dataid: Number($(".dataid").text()),
+                        userid: Number($("#user").data('userid'))
                     },
                     dataType: "json",
                     success: function (res) {
@@ -1619,7 +1611,7 @@ var chartperiodController = {
                     Link: window.location.href,
                     Tag: Tag,
                     Title: Title,
-                    CreateTime:chartperiodController.dateNow()
+                    CreateTime: new Date()
                     };
 
                 $.post('AddNotification', {notification:notification})
@@ -1631,12 +1623,20 @@ var chartperiodController = {
               var CommentMsg = $('#comment').val();
                 var Tag = [],obj;
                 if (CommentMsg !== "") {
-                    obj = CommentMsg.match(/@@.+\f/g);
-                    var arr = obj.toString().split(' ');
+                    if (obj === undefined || obj === null)
+                        obj = "";
+                    if (obj.indexOf("@@") === -1)
+                        Tag = CommentMsg;
+
+                    else {
+                        obj = CommentMsg.match(/@@.+\f/g);
+                         var arr = obj.toString().split(' ');
                     for (let item of arr) {
                         Tag.push(item.replace('@@', ' ').trim());
                     }
                     Tag = Tag.join();
+                    }
+                   
                 }
 
                 var notification = {

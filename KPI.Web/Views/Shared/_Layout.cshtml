@@ -202,16 +202,17 @@
 
         $.ajax({
             url: '/Home/GetNotifications',
+            data: {userID:$('#user').data('userid')},
             contentType: 'application/html ; charset:utf-8',
             type: 'GET',
             dataType: "json",
             success: function (response) {
-                console.log(response);
+              
                 var data = response.data;
                 var total = response.total;
                 var arrays = response.arrayID;
                 console.log(response);
-                console.log('Load lai');
+                console.log('Load lai notification');
 
                 var htmlNotification = '';
                 var period = "";

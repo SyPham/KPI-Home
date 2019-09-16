@@ -10,7 +10,7 @@ namespace KPI.Model.EF
 {
     [Serializable]
     [DataContract(IsReference = true)]
-    public class Notification :EntityBase
+    public class Notification : EntityBase
     {
         [DataMember]
         public int ID { get; set; }
