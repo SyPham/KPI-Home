@@ -24,13 +24,11 @@ namespace KPI.Web
             SqlDependency.Start(con);
         }
 
-        protected void Session_Start(object sender, EventArgs e)
-        {
-            NotificationComponent NC = new NotificationComponent();
-            var currentTime = DateTime.Now;
-            HttpContext.Current.Session["LastUpdated"] = currentTime;
-            //NC.RegisterNotification(currentTime);
-        }
+        //protected void Session_Start(object sender, EventArgs e)
+        //{
+
+        //    NotificationHub.SendNotifications();
+        //}
         protected void Application_End()
         {
             //here we will stop Sql Dependency

@@ -9,6 +9,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>@ViewBag.Title - KPI System</title>
+    <link rel="shortcut icon" type="image/x-icon" href="~/favicon.ico">
     @RenderPage("_CSS.cshtml")
     @RenderSection("Styles", required: false)
 </head>
@@ -146,6 +147,32 @@
         </div>
         <!-- /.modal-dialog -->
     </div>
+
+    @* Model notification *@
+    <div class="modal fade" id="modal-group-notify" style="display: none">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title">Notification Detail</h4>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <div class="box-body" id="NotificationContent">
+
+
+                        </div>
+                        <!-- /.box-body -->
+                    </div>
+                </div>
+
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
     @RenderPage("_Script.cshtml")
     @RenderSection("Scripts", required: false)
     <script src="~/Scripts/jquery.signalR-2.4.1.min.js"></script>
@@ -153,103 +180,98 @@
     <script>
 
         $(function () {
-        // Declare a proxy to reference the hub.
-        var notifications = $.connection.notificationHub;
+            // Declare a proxy to reference the hub.
+            var notifications = $.connection.notificationHub;
+
+            // Create a function that the hub can call to broadcast messages.
+            notifications.client.updateMessages = function () {
+                getAllNotifications();
+            };
+            // Start the connection.
+            $.connection.hub.start().done(function () {
+                console.log("connection started")
+                getAllNotifications();
+            }).fail(function (e) {
+                console.log(e);
+            });
 
 
-        // Create a function that the hub can call to broadcast messages.
-        notifications.client.updateMessages = function () {
-            getAllNotifications();
-
-        };
-        // Start the connection.
-        $.connection.hub.start().done(function () {
-            console.log("connection started")
-            getAllNotifications();
-        }).fail(function (e) {
-            console.log(e);
-        });
-             $('#itemNotify ').off('click').on('click', function () {
-            var ID = $(this).data('id');
-            $.ajax({
-                url: '/Notification/Update',
-                data: { ID: ID },
-                type: 'GET',
-                dataType: 'json',
-                success: function (response) {
-                    if (response) {
-                        //alert("Update success");
-                    }
-                }
-            })
-        });
-        $('#liNotify ').off('click').on('click', function () {
-            var listID = $('#liNotify .listNotifies').data('id');
-            $.ajax({
-                url: '/Notification/UpdateRange',
-                data: { listID: listID },
-                type: 'GET',
-                dataType: 'json',
-                success: function (response) {
-                    if (response) {
-                        //alert("Update success");
-                    }
-                }
-            })
-        });
         });
         function getAllNotifications() {
 
-        $.ajax({
-            url: '/Home/GetNotifications',
-            data: {userID:$('#user').data('userid')},
-            contentType: 'application/html ; charset:utf-8',
-            type: 'GET',
-            dataType: "json",
-            success: function (response) {
-              
-                var data = response.data;
-                var total = response.total;
-                var arrays = response.arrayID;
-                console.log(response);
-                console.log('Load lai notification');
+            $.ajax({
+                url: '/Home/GetNotifications',
+                data: { userID: $('#user').data('userid') },
+                contentType: 'application/html ; charset:utf-8',
+                type: 'GET',
+                dataType: "json",
+                success: function (response) {
 
-                var htmlNotification = '';
-                var period = "";
-                $.each(data, function (i, item) {
-                    switch (item.Period) {
-                        case "W": period = "Weekly"; break;
-                        case "M": period = "Monthly"; break;
-                        case "Q": period = "Quarterly"; break;
-                        case "Y": period = "Yearly"; break;
-                        default: period = "Not found"; break;
-                    }
-                    htmlNotification += `<li>
-                  <a href="${item.Link}" data-id="${item.ID}" id="itemNotify">
-                     <i class="fa fa-user text-success"></i><b style="background-color:#0068ff;color:#fff;border-radius:5px;padding:0 5px 0 5px">${item.Username}</b> mentioned you in ${item.KPIName} KPI ${period}
+                    var data = response.data;
+                    var total = response.total;
+                    var arrays = response.arrayID;
+                    console.log(response);
+                    console.log('Load lai notification' + dateNow());
 
-                  </a>
-            </li>`
-                })
+                    var htmlNotification = '';
+                    var period = "";
+                    $.each(data, function (i, item) {
+                        switch (item.Period) {
+                            case "W": period = "Weekly"; break;
+                            case "M": period = "Monthly"; break;
+                            case "Q": period = "Quarterly"; break;
+                            case "Y": period = "Yearly"; break;
+                            default: period = "Not found"; break;
+                        }
+                        htmlNotification += `<li data-toggle="modal" data-target="#modal-group-notify" >
+                                                      <a data-id="${item.ID}" class="itemNotify">
+                                                         <i class="fa fa-user text-success"></i><b style="background-color:#0068ff;color:#fff;border-radius:5px;padding:0 5px 0 5px">${item.FullNameBy}</b> mentioned ${item.FullName} in ${item.KPIName} KPI ${period}
+                                                            "${item.Content}"
+                                                      </a>
+                                                </li>`
+                    })
 
-                var html = `<a href="#" data-id="${arrays}" class="dropdown-toggle listNotifies" data-toggle="dropdown">
-                <i class="fa fa-bell-o"></i>
-                <span class="label label-warning ${total === 0 ? "hidden" : ""}">${total}</span>
-            </a>
-            <ul class="dropdown-menu">
-                <li class="header">You have ${total} notifications</li>
-                <li>
-                    <!-- inner menu: contains the actual data -->
-                    <ul class="menu">
-                       ${htmlNotification}
-                    </ul>
-                </li>
-                <li class="footer"><a id=ViewAll href="/Home/ListHistoryNotification">View all</a></li>
-            </ul>`
-                $(".notifications-menu").empty();
-                $(".notifications-menu").html(html);
-            }, error: function (e) { console.log(e) }
-        })
+                    var html = `<a href="#" data-id="${arrays}" class="dropdown-toggle listNotifies" data-toggle="dropdown">
+                        <i class="fa fa-bell-o"></i>
+                        <span class="label label-warning ${total === 0 ? "hidden" : ""}">${total}</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li class="header">You have ${total} notifications</li>
+                        <li>
+                            <!-- inner menu: contains the actual data -->
+                            <ul class="menu" id="NotificationMenu">
+                               ${htmlNotification}
+                            </ul>
+                        </li>
+                        <li class="footer"><a id=ViewAll href="/Home/ListHistoryNotification">View all</a></li>
+                    </ul>`
+                    $(".notifications-menu").empty();
+                    $(".notifications-menu").html(html);
+
+                    $('.itemNotify ').off('click').on('click', function () {
+                        var ID = $(this).data('id');
+                        $.ajax({
+                            url: '/Notification/Update',
+                            data: { ID: ID },
+                            type: 'GET',
+                            dataType: 'json',
+                            success: function (response) {
+                                console.log(response);
+                                if (response.status) {
+                                    console.log("Da xem thong bao" + dateNow());
+                                    var data = response.data;
+                                    if (data !== "") {
+                                        $("#NotificationContent").empty();
+
+                                    }
+                                } else {
+                                    console.log("Chua lay duoc du lieu Notification" + dateNow());
+                                }
+                            }
+                        })
+                    });
+                }, error: function (e) { console.log(e) }
+            })
         }
 
     </script>

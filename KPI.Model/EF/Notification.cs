@@ -31,5 +31,7 @@ namespace KPI.Model.EF
         [Column("TagID")]
         public int TagID { get; set; }
         public string Title { get; set; }
+        [Column("Content")]
+        public string Content { get; set; }
     }
 }

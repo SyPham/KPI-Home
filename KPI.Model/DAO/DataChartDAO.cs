@@ -479,15 +479,20 @@ namespace KPI.Model.DAO
                 //labels của chartjs mặc định có 53 phần tử = 0
                 List<string> listLabels = new List<string>();
 
-                var datas = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Week).Select(x => new { x.Value, x.Week }).ToList();
+                //labels của chartjs mặc định có 53 phần tử = 0
+                List<string> targets = new List<string>();
+
+                var datas = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Week).Select(x => new { x.Value, x.Week,x.Target }).ToList();
                 foreach (var valueWeek in datas)
                 {
                     listDatasets.Add(valueWeek.Value);
                     listLabels.Add(valueWeek.Week.ToString());
+                    targets.Add(valueWeek.Target.ToString());
                 }
 
                 model.datasets = listDatasets.ToArray();
                 model.labels = listLabels.ToArray();
+                model.targets = targets.ToArray();
                 model.period = period;
 
             }
@@ -498,9 +503,10 @@ namespace KPI.Model.DAO
 
                 //labels của chartjs mặc định có 53 phần tử = 0
                 List<string> listLabels = new List<string>();
+                //labels của chartjs mặc định có 53 phần tử = 0
+                List<string> targets = new List<string>();
 
-
-                var datas = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Month).Select(x => new { x.Month, x.Value }).ToList();
+                var datas = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Month).Select(x => new { x.Month, x.Value,x.Target }).ToList();
                 foreach (var monthly in datas)
                 {
                     listDatasets.Add(monthly.Value);
@@ -536,6 +542,7 @@ namespace KPI.Model.DAO
                 model.datasets = listDatasets.ToArray();
                 model.labels = listLabels.ToArray();
                 model.period = period;
+                model.targets = targets.ToArray();
             }
             if (period == "Q")
             {
@@ -544,7 +551,10 @@ namespace KPI.Model.DAO
 
                 //labels của chartjs mặc định có 53 phần tử = 0
                 List<string> listLabels = new List<string>();
-                var datas = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Quarter).Select(x => new { x.Quarter, x.Value }).ToList();
+
+                //labels của chartjs mặc định có 53 phần tử = 0
+                List<string> targets = new List<string>();
+                var datas = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Quarter).Select(x => new { x.Quarter, x.Value ,x.Target}).ToList();
                 foreach (var quarterly in datas)
                 {
                     listDatasets.Add(quarterly.Value);
@@ -564,6 +574,7 @@ namespace KPI.Model.DAO
                 model.labels = listLabels.ToArray();
                 model.period = period;
                 model.Unit = unitName;
+                model.targets = targets.ToArray();
                 model.Standard = _dbContext.KPILevels.FirstOrDefault(x => x.KPILevelCode == kpilevelcode && x.QuarterlyChecked == true).QuarterlyStandard;
             }
             if (period == "Y")
@@ -571,9 +582,12 @@ namespace KPI.Model.DAO
                 var datasetsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Year).Select(x => x.Value).ToArray();
                 var labelsKPILevel1 = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Year).Select(x => x.Year).ToArray();
                 var labels1 = Array.ConvertAll(labelsKPILevel1, x => x.ToSafetyString());
+                var targets = _dbContext.Datas.Where(x => x.KPILevelCode == kpilevelcode && x.Period == period).OrderBy(x => x.Year).Select(x => x.Target).ToArray();
+
                 model.datasets = datasetsKPILevel1;
                 model.labels = labels1;
                 model.period = period;
+                model.targets = Array.ConvertAll(targets, x => x.ToSafetyString());
             }
             return model;
         }

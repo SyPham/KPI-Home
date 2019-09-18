@@ -5,7 +5,9 @@ using KPI.Model.ViewModel;
 using MvcBreadCrumbs;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
+using System.Net.Mail;
 using System.Web;
 using System.Web.Mvc;
 
@@ -56,7 +58,7 @@ namespace KPI.Web.Controllers
             if (model.period == "W") { ViewBag.PeriodText = "Weekly"; };
             if (model.period == "M") { ViewBag.PeriodText = "Monthly"; };
             if (model.period == "Q") { ViewBag.PeriodText = "Quarterly"; };
-            if (model.period == "Y") { ViewBag.PeriodText = "Yearly";  };
+            if (model.period == "Y") { ViewBag.PeriodText = "Yearly"; };
             return View();
         }
         public JsonResult GetAllComments(int dataid)
@@ -69,14 +71,56 @@ namespace KPI.Web.Controllers
             }
             var data = new CommentRepository().GetAllComments(userid, dataid);
             var total = data.Count();
-            return Json(new {
-                data =data,
-                total =total
+            return Json(new
+            {
+                data = data,
+                total = total
             }, JsonRequestBehavior.AllowGet);
         }
         public JsonResult AddComment(AddCommentViewModel entity)
         {
-            return Json(new KPILevelDAO().AddComment(entity), JsonRequestBehavior.AllowGet);
+            var data = new KPILevelDAO().AddComment(entity);
+            if (data.Status)
+            {
+                if (data.ListEmails.Count > 0)
+                {
+
+                    foreach (var item in data.ListEmails)
+                    {
+                        string content = item[0] + "mentioned you in KPI System Apps. Content: " + item[4] + ". " + item[3] + " Link: " + item[2];
+                        var html = string.Empty;
+                        var sessionUser = Session["UserProfile"] as UserProfileVM;
+                        string from = ConfigurationManager.AppSettings["FromEmailAddress"].ToSafetyString();
+                        string password = ConfigurationManager.AppSettings["FromEmailPassword"].ToSafetyString();
+                        string to = item[1].ToSafetyString();
+
+                        string subject = ConfigurationManager.AppSettings["FromEmailDisplayName"].ToSafetyString();
+                        MailMessage mail = new MailMessage();
+                        mail.To.Add(to.ToString());
+                        mail.From = new MailAddress(from, "KPI.App");
+                        mail.Subject = subject;
+                        mail.Body = content;
+                        mail.IsBodyHtml = false;
+                        mail.BodyEncoding = System.Text.Encoding.UTF8;
+                        mail.Priority = MailPriority.High;
+
+                        try
+                        {
+                            using (var smtp = new SmtpClient())
+                            {
+                                smtp.Send(mail);
+                            }
+                            return Json(new { status = true, isSendmail = true }, JsonRequestBehavior.AllowGet);
+                        }
+                        catch (Exception)
+                        {
+                            return Json(new { status = true, isSendmail = false }, JsonRequestBehavior.AllowGet);
+
+                        }
+                    }
+                }
+            }
+            return Json(new { status = false, isSendmail = false }, JsonRequestBehavior.AllowGet);
         }
         public JsonResult LoadDataComment(int dataid, int userid)
         {
@@ -130,7 +174,50 @@ namespace KPI.Web.Controllers
             item.CommentID = obj.CommentID;
             item.SubmitDate = obj.SubmitDate.ToDateTime();
             item.Deadline = obj.Deadline.ToDateTime();
-            return Json(new ActionPlanDAO().Add(item), JsonRequestBehavior.AllowGet);
+
+            var data = new ActionPlanDAO().Add(item);
+            if (data.Status)
+            {
+                if (data.ListEmails.Count > 0)
+                {
+
+                    foreach (var item2 in data.ListEmails)
+                    {
+                        string content = item2[0] + "mentioned you in KPI System Apps. Content: " + item2[4] + ". " + item2[3] + " Link: " + item2[2];
+                        var html = string.Empty;
+                        var sessionUser = Session["UserProfile"] as UserProfileVM;
+                        string from = ConfigurationManager.AppSettings["FromEmailAddress"].ToSafetyString();
+                        string password = ConfigurationManager.AppSettings["FromEmailPassword"].ToSafetyString();
+                        string to = item2[1].ToSafetyString();
+
+                        string subject = ConfigurationManager.AppSettings["FromEmailDisplayName"].ToSafetyString();
+                        MailMessage mail = new MailMessage();
+                        mail.To.Add(to.ToString());
+                        mail.From = new MailAddress(from, "KPI.App");
+                        mail.Subject = subject;
+                        mail.Body = content;
+                        mail.IsBodyHtml = false;
+                        mail.BodyEncoding = System.Text.Encoding.UTF8;
+                        mail.Priority = MailPriority.High;
+
+                        try
+                        {
+                            using (var smtp = new SmtpClient())
+                            {
+                                smtp.Send(mail);
+                            }
+                            return Json(new { status = true, isSendmail = true }, JsonRequestBehavior.AllowGet);
+                        }
+                        catch (Exception)
+                        {
+                            return Json(new { status = true, isSendmail = false }, JsonRequestBehavior.AllowGet);
+
+                        }
+                    }
+                }
+            }
+            return Json(new { status = false, isSendmail = false }, JsonRequestBehavior.AllowGet);
+
         }
         public JsonResult Delete(int id)
         {
@@ -155,7 +242,9 @@ namespace KPI.Web.Controllers
 
         public JsonResult AddNotification(Notification notification)
         {
-            return Json(new NotificationDAO().Add(notification), JsonRequestBehavior.AllowGet);
+            var status = new NotificationDAO().Add(notification);
+            NotificationHub.SendNotifications();
+            return Json(status, JsonRequestBehavior.AllowGet);
         }
 
         //public JsonResult Notification(int userid)

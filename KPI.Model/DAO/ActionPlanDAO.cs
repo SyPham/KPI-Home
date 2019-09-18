@@ -17,50 +17,86 @@ namespace KPI.Model.DAO
         {
             this._dbContext = new KPIDbContext();
         }
-        public bool Add(ActionPlan entity)
+        public AddCommentVM Add(ActionPlan entity)
         {
             var user = _dbContext.Users;
             var itemActionPlanDetail = new ActionPlanDetail();
-            try
-            {
-                _dbContext.ActionPlans.Add(entity);
-                _dbContext.SaveChanges();
+            var listEmail = new List<string[]>();
+            //try
+            //{
+            _dbContext.ActionPlans.Add(entity);
+            _dbContext.SaveChanges();
 
-                if (entity.Tag.IsNullOrEmpty())
+            if (!entity.Tag.IsNullOrEmpty())
+            {
+                string[] arrayString = new string[5];
+                var tag = new Tag();
+
+                if (entity.Tag.IndexOf(",") == -1)
                 {
-                    var tag = new Tag();
-                    if (entity.Tag.IndexOf(",") == -1)
+                    var userItem = user.FirstOrDefault(x => x.Username == entity.Tag);
+
+                    if (userItem != null)
                     {
                         tag.ActionPlanID = entity.ID;
-                        tag.UserID = (int?)user.FirstOrDefault(x => x.Username == entity.Tag).ID ?? 0;
+                        tag.UserID = (int?)userItem.ID ?? 0;
                         _dbContext.Tags.Add(tag);
                         _dbContext.SaveChanges();
+
+                        arrayString[0] = user.FirstOrDefault(x => x.ID == entity.UserID).FullName;
+                        arrayString[1] = userItem.Email;
+                        arrayString[2] = entity.Link;
+                        arrayString[3] = entity.Title;
+                        arrayString[4] = entity.Description;
+                        listEmail.Add(arrayString);
                     }
-                    else
+                }
+                else
+                {
+                    var list = entity.Tag.Split(',');
+                    foreach (var item in list)
                     {
-                        var list = entity.Tag.Split(',');
-                        foreach (var item in list)
+                        var username = item.ToSafetyString();
+                        var userItem = user.FirstOrDefault(x => x.Username == username);
+                        if (userItem != null)
                         {
                             tag.UserID = (int?)user.FirstOrDefault(x => x.Username == item).ID ?? 0;
                             tag.ActionPlanID = entity.ID;
-                            var username = item.ToSafetyString();
+                           
                             itemActionPlanDetail.Seen = false;
                             itemActionPlanDetail.USerID = (int?)user.FirstOrDefault(x => x.Username == username).ID ?? 0;
                             itemActionPlanDetail.ActionPlanID = entity.ID;
                             _dbContext.Tags.Add(tag);
                             _dbContext.ActionPlanDetails.Add(itemActionPlanDetail);
                             _dbContext.SaveChanges();
+
+                            arrayString[0] = user.FirstOrDefault(x => x.ID == entity.UserID).FullName;
+                            arrayString[1] = userItem.Email;
+                            arrayString[2] = entity.Link;
+                            arrayString[3] = entity.Title;
+                            arrayString[4] = entity.Description;
+                            listEmail.Add(arrayString);
+
                         }
                     }
                 }
-                
-                return true;
             }
-            catch (Exception ex)
+
+            return new AddCommentVM
             {
-                var message = ex.Message;
-                return false;
-            }
+                Status = true,
+                ListEmails = listEmail
+            };
+            //}
+            //catch (Exception ex)
+            //{
+            //    var message = ex.Message;
+            //    return new AddCommentVM
+            //    {
+            //        Status = true,
+            //        ListEmails = listEmail
+            //    };
+            //}
 
         }
         public bool Update(ActionPlan entity)
@@ -147,7 +183,7 @@ namespace KPI.Model.DAO
         {
             var model = _dbContext.ActionPlans.FirstOrDefault(x => x.ID == id);
             model.ApprovedBy = aproveBy;
-           model.ApprovedStatus = !model.ApprovedStatus;
+            model.ApprovedStatus = !model.ApprovedStatus;
             try
             {
                 _dbContext.SaveChanges();
@@ -157,7 +193,7 @@ namespace KPI.Model.DAO
             {
                 return false;
             }
-           
+
 
         }
         public bool Done(int id)
@@ -176,7 +212,7 @@ namespace KPI.Model.DAO
 
 
         }
-        public object GetAll(int DataID, int CommentID,int userid)
+        public object GetAll(int DataID, int CommentID, int userid)
         {
             var userModel = _dbContext.Users.FirstOrDefault(x => x.ID == userid);
             var permission = _dbContext.Permissions;

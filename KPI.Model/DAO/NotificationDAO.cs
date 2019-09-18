@@ -41,18 +41,21 @@ namespace KPI.Model.DAO
             return false;
 
         }
-        public bool Update(int ID)
+        public object Update(int ID)
         {
             var some = _dbContext.NotificationDetails.FirstOrDefault(x => x.ID == ID);
             try
             {
                 some.Seen = true;
                 _dbContext.SaveChanges();
-                return true;
+                var detail = _dbContext.Notifications.FirstOrDefault(x => x.ID == some.NotificationID);
+                return new  { status = true,data = detail};
+
+                
             }
             catch (Exception)
             {
-                return false;
+                return new { status = false, data = "" }; ;
 
             }
 
@@ -65,13 +68,59 @@ namespace KPI.Model.DAO
                 _dbContext.Notifications.Add(entity);
 
                 _dbContext.SaveChanges();
-                var detail = new NotificationDetail();
-                detail.UserID = entity.UserID;
-                detail.Seen = false;
-                detail.NotificationID = entity.ID;
-                _dbContext.NotificationDetails.Add(detail);
+                var user = _dbContext.Users;
 
-                _dbContext.SaveChanges();
+
+                if (!entity.Tag.IsNullOrEmpty())
+                {
+                    var listDetails = new List<NotificationDetail>();
+                    if (entity.Tag.IndexOf(",") == -1)
+                    {
+                        var detail1 = new NotificationDetail();
+                        var username = entity.Tag.Replace("@", "").Trim();
+                        if(user.FirstOrDefault(x => x.Username == username) != null)
+                        {
+                            var id = user.FirstOrDefault(x => x.Username == username).ID;
+                            detail1.UserID = id;
+                            detail1.Seen = false;
+                            detail1.NotificationID = entity.ID;
+                            listDetails.Add(detail1);
+                        }
+                        var detail = new NotificationDetail();
+                        detail.UserID = entity.UserID;
+                        detail.Seen = true;
+                        detail.NotificationID = entity.ID;
+
+                        listDetails.Add(detail);
+                        _dbContext.NotificationDetails.AddRange(listDetails);
+                        _dbContext.SaveChanges();
+                    }
+                    else{
+                        var list = entity.Tag.Split(',');
+                       
+                      
+                        foreach (var item in list)
+                        {
+                            var username = item.Replace("@", "").Trim();
+                            var id = user.FirstOrDefault(x => x.Username == username).ID;
+
+                            var detail1 = new NotificationDetail();
+                            detail1.UserID = id;
+                            detail1.Seen = false;
+                            detail1.NotificationID = entity.ID;
+                            listDetails.Add(detail1);
+
+                        }
+                        var detail = new NotificationDetail();
+                        detail.UserID = entity.UserID;
+                        detail.Seen = true;
+                        detail.NotificationID = entity.ID;
+
+                        listDetails.Add(detail);
+                        _dbContext.NotificationDetails.AddRange(listDetails);
+                        _dbContext.SaveChanges();
+                    }
+                }
                 return true;
             }
             catch
@@ -132,23 +181,30 @@ namespace KPI.Model.DAO
 
         public List<NotificationViewModel> ListNotifications(int userid)
         {
-            var model = from a in _dbContext.NotificationDetails
-                        join b in _dbContext.Notifications on a.NotificationID equals b.ID
-                        join c in _dbContext.Users on a.UserID equals c.ID
+            var user = _dbContext.Users;
+            var model = from a in _dbContext.Notifications
+                        join b in _dbContext.NotificationDetails on a.ID equals b.NotificationID
+                        where b.UserID == userid
+                        join c in _dbContext.Users on b.UserID equals c.ID
+                        join d in _dbContext.Users on a.UserID equals d.ID
                         select new NotificationViewModel
                         {
-                            ID = a.ID,
-                            Title = b.Title,
-                            KPIName = b.KPIName,
-                            Period = b.Period,
-                            CreateTime = a.CreateTime,
+                            ID = b.ID,
+                            Title = a.Title,
+                            KPIName = a.KPIName,
+                            Period = a.Period,
+                            CreateTime = b.CreateTime,
                             UserID = a.UserID,
                             Username = c.Username,
-                            Link = b.Link,
-                            Seen = a.Seen,
-                            Tag = b.Tag
+                            Link = a.Link,
+                            Seen = b.Seen,
+                            Tag = a.Tag,
+                            UsernameBy = d.Username,
+                            FullNameBy = d.FullName,
+                            FullName = c.FullName,
+                            Content = a.Title
                         };
-            var model1 = model.Where(x => x.UserID == userid).ToList();
+            var model1 = model.ToList();
             return model1;
         }
         public List<NotificationViewModel> ListNotifications2(int userid)

@@ -22,7 +22,9 @@ namespace KPI.Web.Controllers
         }
         public JsonResult Update(int ID)
         {
-            return Json(new NotificationDAO().Update(ID), JsonRequestBehavior.AllowGet);
+            var obj = new NotificationDAO().Update(ID);
+            NotificationHub.SendNotifications();
+            return Json(obj, JsonRequestBehavior.AllowGet);
         }
     }
 }

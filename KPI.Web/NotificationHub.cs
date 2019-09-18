@@ -18,7 +18,8 @@ namespace KPI.Web
         {
             IHubContext context = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
             context.Clients.All.updateMessages();
-            //context.Clients.All.updateComments();
+            
         }
+
     }
 }

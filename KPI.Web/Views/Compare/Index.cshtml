@@ -1,15 +1,26 @@
 ﻿@using MvcBreadCrumbs;
+@using KPI.Model.helpers;
 @model KPI.Model.ViewModel.DataCompareVM
 @{
 
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var chartVM2s = (List<KPI.Model.ViewModel.ChartVM2>)ViewBag.ChartVM2s;
-    var period = chartVM2s[0].period;
-    var kpiname = chartVM2s[0].kpiname;
-    var standard = (int)ViewBag.Standard;
-    var unit = (string)ViewBag.Unit;
-    var periodText = (string)ViewBag.PeriodText;
+    var period = string.Empty;
+    var kpiname = string.Empty;
+    var standard = new double();
+    var periodText = string.Empty;
+    var unit = string.Empty;
+    if (chartVM2s != null)
+    {
+
+        period = (string)chartVM2s[0].period.ToSafetyString();
+        kpiname = (string)chartVM2s[0].kpiname.ToSafetyString();
+        standard = (double)ViewBag.Standard;
+        unit = (string)ViewBag.Unit;
+        periodText = (string)ViewBag.PeriodText;
+    }
+
 
 }
 
@@ -18,52 +29,115 @@
     <script>
 
         var chartVM2s = @Html.Raw(Json.Encode(chartVM2s));
+        var unit = @Html.Raw(Json.Encode(unit));
+        var stand = @standard;
         $(function () {
-          
 
+           
          var labelString;
             var densityCanvas = document.getElementById("lineChart");
             Chart.defaults.global.defaultFontFamily = "Lato";
             Chart.defaults.global.defaultFontSize = 12;
 
-            var standards = [];
+                var COLOREDS = [
+                            '#bd3e85',
+                            '#182657',
+                            '#43528a',
+                            '#d59b2d',
+                            '#8d541d',
+                            '#eec3d0',
+                            '#ffe1ba'
+                        ];
 
-            for (var i = 0; i < chartVM2s[0].lenght; i++) {
-                standards.push(@standard);
-            }
-            var standard = {
-                label:  "Standard",
-                backgroundColor: Samples.color(2),
-                borderColor: Samples.color(2),
-                data: standards,
-                datalabels: {
-                    align: 'center',
-                    anchor: 'center'
+              var listdatasets=[],labels,standards;
+            if (unit !== "Percentage") {
+                 labels = chartVM2s[0].labels;
+                 var targets = {
+                            label: "Target",
+                            backgroundColor: COLOREDS[0],
+                            borderColor: COLOREDS[0],
+                            data:  chartVM2s[0].targets,
+                            datalabels: {
+                                align: 'center',
+                                anchor: 'center'
+                            }
+                        }
+                listdatasets.push(targets);
+
+                for (var item = 0; item < chartVM2s.length; item++) {
+                    itemList = {
+                            label: chartVM2s[item].label,
+                            spanGaps: false, //data=undefined thi k draw line
+                            backgroundColor: COLOREDS[(item+1)],
+                            borderColor: COLOREDS[(item+1)],
+                            data: chartVM2s[item].datasets,
+                            datalabels: {
+                                align: 'center',
+                                anchor: 'center'
+                            }
+                    };
+                      listdatasets.push(itemList);
                 }
             }
-            if (chartVM2s.Unit === "Numeric") {
+            else {
+                 labels = chartVM2s[0].labels;
+                var standardLists = [];
 
+                    for (let i in chartVM2s[0].datasets) {
+                        standardLists.push(@standard);
+                    }
+                       var  standard = {
+                            label:"Target",
+                            backgroundColor: COLOREDS[0],
+                            borderColor: COLOREDS[0],
+                            data: standardLists,
+                            datalabels: {
+                                align: 'center',
+                                anchor: 'center'
+                            }
+                     }
+              
+                listdatasets.push(standard);
+                for (var item = 0; item < chartVM2s.length; item++) {
+                    itemList = {
+                            label: chartVM2s[item].label,
+                            spanGaps: false, //data=undefined thi k draw line
+                            backgroundColor: COLOREDS[(item+1)],
+                            borderColor: COLOREDS[(item+1)],
+                            data: chartVM2s[item].datasets,
+                            datalabels: {
+                                align: 'center',
+                                anchor: 'center'
+                            }
+                    };
+                      listdatasets.push(itemList);
+                }
+                //for (let item of chartVM2s) {
+
+                //        var i = item
+                //        itemList = {
+                //            label: item.label,
+                //            spanGaps: false, //data=undefined thi k draw line
+                //            backgroundColor: COLOREDS[i],
+                //            borderColor: COLOREDS[i],
+                //            data: item.datasets,
+                //            datalabels: {
+                //                align: 'center',
+                //                anchor: 'center'
+                //            }
+                //        };
+
+                //    listdatasets.push(itemList);
+                //}
             }
-            var list1;
-            for (let item of chartVM2s) {
-                let a = item;
-                list1 = {
-                        label: item.label,
-                        spanGaps: false, //data=undefined thi k draw line
-                        backgroundColor: Samples.color(3),
-                        borderColor: Samples.color(3),
-                        data: item.datasets,
-                        datalabels: {
-                            align: 'center',
-                            anchor: 'center'
-                        }
-                };
-            }
+
+
+
 
 
             var compareData = {
-                        labels: listData1.labels,
-                        datasets: [standard, list1, list2, list3, list4]
+                        labels: labels,
+                        datasets: listdatasets
                     };
             var chartOptions = {
                  plugins: {
@@ -76,10 +150,12 @@
                             font: {
                                 weight: 'bold'
                             },
-                         formatter: Math.round,
+                         formatter: function(value, context) {
+                                return value;
+                            },
                          display: function (context) {
-                                console.log(context.dataset.label)
-                                return context.dataset.label !=="Standard"; // display labels with an odd index
+                                
+                             return context.dataset.label !== "Target"; // display labels with an odd index
                             }
                         }
                 },
@@ -107,7 +183,7 @@
                         beginAtZero: true,
                         padding: 10,
                         fontSize: 14,
-                        max: 100
+                        //max: 100
                     },
                         scaleLabel: {
                              display: true,
@@ -129,7 +205,7 @@
                     ,
                      scaleLabel: {
                         display: true,
-                         labelString: labelString,
+                         labelString: "@periodText",
                          fontSize: 16,
                           fontStyle:'inherit'
                       }
@@ -162,7 +238,17 @@
                     </div>
                 </div>
                 <div class="box-body">
-                    <button type="button" class="btn margin pull-right" style="background-color:#09a99f;color:#fff"><i class="fa fa-star"></i> <span>Standard : </span><span class="standard text-bold" style="">@standard</span></button>
+                    @if (@unit != "Numeric")
+                    {
+                        <button type="button" class="btn margin pull-right" style="background-color:#09a99f;color:#fff"><i class="fa fa-star"></i> <span>Target : </span><span class="standard text-bold" style="">@standard</span></button>
+
+                    }
+
+                    else
+                    {
+                        <button type="button" class="btn margin pull-right" style="background-color:#09a99f;color:#fff"><i class="fa fa-star"></i> <span>Target : </span><span class="standard text-bold" style="">@chartVM2s[0].targets[0]</span></button>
+
+                    }
 
                     <div class="chart">
                         <canvas id="lineChart" style="height:250px"></canvas>

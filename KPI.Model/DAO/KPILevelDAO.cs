@@ -414,8 +414,9 @@ namespace KPI.Model.DAO
             }
         }
 
-        public bool AddComment(AddCommentViewModel entity)
+        public AddCommentVM AddComment(AddCommentViewModel entity)
         {
+            var listEmail = new List<string[]>();
             try
             {
                 //add vao comment
@@ -423,6 +424,8 @@ namespace KPI.Model.DAO
                 comment.CommentMsg = entity.CommentMsg;
                 comment.DataID = entity.DataID;
                 comment.UserID = entity.UserID;
+                comment.Link = entity.Link;
+                comment.Title = entity.Title;
                 _dbContext.Comments.Add(comment);
                 _dbContext.SaveChanges();
 
@@ -434,18 +437,32 @@ namespace KPI.Model.DAO
                 _dbContext.SeenComments.Add(seenComment);
                 _dbContext.SaveChanges();
                 //Add vao Tag
-               
-                if (entity.Tag.IsNullOrEmpty())
+
+                if (!entity.Tag.IsNullOrEmpty())
                 {
+                    string[] arrayString = new string[5];
                     var itemtag = new Tag();
                     var user = _dbContext.Users;
                     if (entity.Tag.IndexOf(',') == -1)
                     {
-                        itemtag = new Tag();
-                        itemtag.UserID = (int?)user.FirstOrDefault(x => x.Username == entity.Tag).ID ?? 0;
-                        itemtag.CommentID = comment.ID;
-                        _dbContext.Tags.Add(itemtag);
-                        _dbContext.SaveChanges();
+                        var Username = entity.Tag.Trim();
+                        var userItem = user.FirstOrDefault(x => x.Username == Username);
+                        if (userItem != null)
+                        {
+                            itemtag = new Tag();
+                            itemtag.UserID = (int?)userItem.ID ?? 0;
+                            itemtag.CommentID = comment.ID;
+
+                            arrayString[0] = user.FirstOrDefault(x => x.ID == entity.UserID).FullName;
+                            arrayString[1] = userItem.Email;
+                            arrayString[2] = comment.Link;
+                            arrayString[3] = comment.Title;
+                            arrayString[4] = comment.CommentMsg;
+                            listEmail.Add(arrayString);
+                            _dbContext.Tags.Add(itemtag);
+                            _dbContext.SaveChanges();
+                        }
+
                     }
                     else
                     {
@@ -453,23 +470,38 @@ namespace KPI.Model.DAO
                         var commentID = comment.ID;
                         foreach (var item in list)
                         {
-                            var username = item.ToSafetyString();
-                            itemtag.UserID = (int?)user.FirstOrDefault(x => x.Username == username).ID ?? 0;
-                            itemtag.CommentID = commentID;
-                            //listTag.Add(itemtag);
-                            _dbContext.Tags.Add(itemtag);
-                            _dbContext.SaveChanges();
+                            var username = item.Trim();
+                            var userItem = user.FirstOrDefault(x => x.Username == username);
+                            if (userItem != null)
+                            {
+                                itemtag.UserID = (int?)userItem.ID ?? 0;
+                                itemtag.CommentID = commentID;
+                                arrayString[0] = user.FirstOrDefault(x => x.ID == entity.UserID).FullName;
+                                arrayString[1] = userItem.Email;
+                                arrayString[2] = comment.Link;
+                                arrayString[3] = comment.Title;
+                                arrayString[4] = comment.CommentMsg;
+                                listEmail.Add(arrayString);
+
+                                _dbContext.Tags.Add(itemtag);
+                                _dbContext.SaveChanges();
+                            }
+
 
                         }
                     }
                 }
-                
-               
-                return true;
+
+
+                return new AddCommentVM
+                {
+                    Status = true,
+                    ListEmails = listEmail
+                };
             }
             catch (Exception)
             {
-                return false;
+                return new AddCommentVM { Status = false };
             }
 
         }

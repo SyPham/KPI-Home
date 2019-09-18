@@ -52,7 +52,7 @@ namespace KPI.Web.Controllers
             var userprofile = Session["UserProfile"] as UserProfileVM;
             if(userID == null)
                 return Json("", JsonRequestBehavior.AllowGet);
-            var listNotifications = new NotificationsRepository().GetAllNotifications(userID.Value);
+            var listNotifications = new NotificationDAO().ListNotifications(userID.Value);
             var total = 0;
             var listID = new List<int>();
             foreach (var item in listNotifications)

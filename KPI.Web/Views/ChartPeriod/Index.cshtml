@@ -69,6 +69,8 @@
 
         if (unit === "Numeric") {
             var datasets = datasets.map(datasets => Number(datasets));
+            let max = Math.max(...datasets);
+            $('#stepChart').attr("step",max/2)
         }
         else {
 
@@ -498,8 +500,7 @@
                     target = 0;
                 }
             }
-            console.log("Dataset" + m);
-            console.log("Target" + target);
+
 
             if (unit !== "Numeric") {
                 if (m < standard) {
@@ -542,8 +543,8 @@
             $('#stepChart').val(chart.options.scales.yAxes[0].ticks.major.stepSize)
             $('#minChart').val(chart.options.scales.yAxes[0].ticks.major.min)
 
-            $('.btnShowData').show();
-              $('.btnHiddenData').hide();
+            $('.btnShowData').hide();
+              $('.btnHiddenData').show();
             chartperiodController.init();
             $('.btnHiddenData').off('click').on('click', function () {
                 chart.options.plugins = hiddenPluginDataLabels;
@@ -557,10 +558,32 @@
                 $('.btnShowData').hide();
                   $('.btnHiddenData').show();
              })
-             $('#minChart').off('keyup change').on('keyup change', function () {
-               var min = 0,stepSize=10;
 
-                stepSize = Number($('#stepChart').val());
+
+            //////////////////////////////////////////////////////////Step inuput, minInput
+            if (unit === "Numeric") {
+                $('#minChart').attr("step", 0.1);
+                $('#stepChart').val(Math.round(Math.max(...datasets)));
+                  $('#stepChart').attr("step", 0.1);
+            }
+            else {
+                $('#minChart').attr("step", 0);
+                $('#stepChart').val(10);
+                  $('#stepChart').attr("step", 1);
+            }
+
+             $('#minChart').off('keyup change').on('keyup change', function () {
+               var min = 0,stepSize;
+                 if (unit === "Numeric") {
+
+                        stepSize = Math.max(...datasets) / 2;
+                       stepSize = Number($('#stepChart').val());
+                 } else {
+                      stepSize = 10;
+                      stepSize = Number($('#stepChart').val());
+                 }
+
+
                 min = Number($('#minChart').val());
 
                options = {
@@ -616,13 +639,18 @@
             }
         }
                 chart.options = options;
-                console.log(chart.options.scales);
                 chart.update();
             })
             $('#stepChart').off('keyup change').on('keyup change', function () {
-               var min = 0,stepSize=10;
+               var min =  $(this).attr("min"),stepSize;
+                 if (unit === "Numeric") {
 
-                stepSize = Number($('#stepChart').val());
+                       stepSize = Number($('#stepChart').val());
+                 } else {
+
+                      stepSize = Number($('#stepChart').val());
+                 }
+
                 min = Number($('#minChart').val());
 
                options = {
@@ -709,7 +737,7 @@ var chartperiodController = {
 
                 $('.btnSaveActionPlan').unbind('click').on('click', function () {
                     chartperiodController.addActionPlan();
-                    chartperiodController.addNotification($('.ActionPlanChart').text());
+                    chartperiodController.addNotification();
                 })
                 $('#lastRemark').off('keypress').on('keypress', function (e) {
                     if (e.keyCode === 13) {
@@ -944,7 +972,7 @@ var chartperiodController = {
 
                 $('.btnComment').off('click').on('click', function () {
                     chartperiodController.addData();
-                    chartperiodController.addNotificationComment($('.RemarkChart').text());
+                    chartperiodController.addNotificationComment();
                 });
 
             },
@@ -1143,17 +1171,28 @@ var chartperiodController = {
                     Description: Description,
                     Deadline: $('.addTask .datepicker').datepicker({ dateFormat: 'mm-dd-yy' }).val(),
                     SubmitDate: convertDate(new Date),
+                    Link: window.location.href
                 };
                 if (id === "") {
 
                     $.post('Add', { obj: obj }, function (res) {
                         console.log(res);
-                        if (res) {
+                        if (res.status === true && res.isSendmail === true) {
                             var commentid = Number($('.commentid').text());
                             var dataid = Number($('.dataid').text());
                             chartperiodController.LoadDataActionPlan(dataid, commentid);
                             chartperiodController.resetForm();
                             activaTab('pills-home');
+                        }
+                        else if (res.status === true && res.isSendmail === false) {
+                             var commentid = Number($('.commentid').text());
+                            var dataid = Number($('.dataid').text());
+                            chartperiodController.LoadDataActionPlan(dataid, commentid);
+                            chartperiodController.resetForm();
+                            activaTab('pills-home');
+                            console.log("Khong gui duoc mail")
+                        } else {
+                             console.log("Loi roi")
                         }
                     });
 
@@ -1252,14 +1291,14 @@ var chartperiodController = {
                     return;
                 }
                 var CommentMsg = $('#comment').val();
-               
+
                 var Tag = [],obj;
                 if (CommentMsg !== "") {
                     obj = CommentMsg.match(/@@.+\f/g);
-                    if (obj === undefined || obj ===null) {
+                    if (obj === undefined || obj === null) {
                         obj = "";
                     }
-                    if (obj.indexOf("@@") === -1) {
+                    if (obj.toString().indexOf("@@") === -1) {
                         Tag = CommentMsg;
                     } else {
                           var arr = obj.toString().split(' ');
@@ -1268,15 +1307,16 @@ var chartperiodController = {
                         }
                         Tag = Tag.join();
                     }
-                  
+
                 }
 
-                console.log(Tag);
                 var mObj = {
                     DataID: Number($('.dataid').text()),
                     CommentMsg: CommentMsg,
                     UserID: Number($("#user").data('userid')),
-                    Tag:Tag
+                    Tag: Tag,
+                    Link: window.location.href,
+                    Title: $('.RemarkChart').text()
                 };
                 $.ajax({
                     url: "/ChartPeriod/AddComment",
@@ -1284,9 +1324,18 @@ var chartperiodController = {
                     type: "POST",
                     contentType: "application/json;charset=utf-8",
                     dataType: "json",
-                    success: function (result) {
-                        $('#comment').val("");
-                        chartperiodController.loadDataComment();
+                    success: function (res) {
+                        if (res.status === true && res.isSendmail === true) {
+                            $('#comment').val("");
+                            chartperiodController.loadDataComment();
+                        }
+                        else if (res.status === true && res.isSendmail === false) {
+                             $('#comment').val("");
+                            chartperiodController.loadDataComment();
+                            console.log("Khong gui duoc mail")
+                        } else {
+                             console.log("Loi roi")
+                        }
                     },
                     error: function (errormessage) {
                         //console.log(errormessage.responseText);
@@ -1598,7 +1647,28 @@ var chartperiodController = {
                     }
                 });
             },
-            addNotification(Title) {
+    addNotification() {
+                 var phrases = new Array();
+                //Dung de tham khao
+                //$('.Description').each(function(){
+                //    var phrase = '';
+                //    $(this).find('li').each(function(){
+                //        var current = $(this);
+                //        if(current.children().length > 0) {return true;}
+                //        phrase += $(this).text();
+                //    });
+                //    phrases.push(phrase);
+                //});
+                $('.Description').each(function () {
+                    $(this).find('li').each(function () {
+                        var current = $(this);
+                        if (current.children().length > 0) { return true; }
+                        phrases.push($(this).text().trim());
+                    });
+
+                });
+                var Description = phrases.join(';');
+
                 var Tag = $('#Tag').val().trim();
                 if (Tag !== null || Tag !== "" || Tag !== undefined)
                     Tag = Tag.replace(/\@@/g, '').replace(/\ /g, ',');
@@ -1610,7 +1680,8 @@ var chartperiodController = {
                     Seen: false,
                     Link: window.location.href,
                     Tag: Tag,
-                    Title: Title,
+                     Content: Description,
+                    Title: $('.ActionPlanChart').text(),
                     CreateTime: new Date()
                     };
 
@@ -1619,25 +1690,27 @@ var chartperiodController = {
                        //to do something
                     });
             },
-            addNotificationComment(Title) {
+            addNotificationComment() {
               var CommentMsg = $('#comment').val();
+
                 var Tag = [],obj;
                 if (CommentMsg !== "") {
-                    if (obj === undefined || obj === null)
+                    obj = CommentMsg.match(/@@.+\f/g);
+                    if (obj === undefined || obj === null) {
                         obj = "";
-                    if (obj.indexOf("@@") === -1)
+                    }
+                    if (obj.toString().indexOf("@@") === -1) {
                         Tag = CommentMsg;
+                    } else {
+                          var arr = obj.toString().split(' ');
+                        for (let item of arr) {
+                            Tag.push(item.replace('@@', ' ').trim());
+                        }
+                        Tag = Tag.join();
+                    }
 
-                    else {
-                        obj = CommentMsg.match(/@@.+\f/g);
-                         var arr = obj.toString().split(' ');
-                    for (let item of arr) {
-                        Tag.push(item.replace('@@', ' ').trim());
-                    }
-                    Tag = Tag.join();
-                    }
-                   
                 }
+
 
                 var notification = {
                     ID: 0,
@@ -1647,7 +1720,8 @@ var chartperiodController = {
                     Seen: false,
                     Link: window.location.href,
                     Tag: Tag,
-                    Title: Title,
+                    Title: $('.RemarkChart').text(),
+                    Content: CommentMsg,
                     CreateTime:chartperiodController.dateNow()
                     };
 
@@ -1669,10 +1743,10 @@ var chartperiodController = {
             var time = day + "/" + month + "/" + year + " " + hour + ':' + minute + ':' + second;
             return time;
             },
-             isInt(n){
+            isInt(n){
                 return Number(n) === n && n % 1 === 0;
             },
-             isFloat(n){
+            isFloat(n){
                 return Number(n) === n && n % 1 !== 0;
             }
 }
@@ -1896,9 +1970,9 @@ var chartperiodController = {
                     <div class="form-inline">
                         <div style="font-weight:bold">Chart Configuration: </div> <br />
                         <label class="my-1 mr-2" for="startMonth">Step</label>
-                        <input type="number" class="form-control" step="" id="stepChart" style="width:70px" />
+                        <input type="number" class="form-control" min="0" step="0" id="stepChart" style="width:70px" />
                         <label class="my-1 mr-2" for="endMonth">Min</label>
-                        <input type="number" class="form-control" step="" id="minChart" style="width:70px" />
+                        <input type="number" class="form-control" min="0" step="0" id="minChart" style="width:70px" />
                         @*<button type="button" id="saveChart" class="btn bg-blue-active margin"><i class="fa fa-save"></i> Save</button>*@
                         <button type="button" class="btn btn-sm bg-aqua-gradient margin btnHiddenData"> Hidden Data</button>
                         <button type="button" class="btn btn-sm bg-black-active margin btnShowData"> Show Data</button>

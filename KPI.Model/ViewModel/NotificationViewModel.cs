@@ -18,5 +18,9 @@ namespace KPI.Model.ViewModel
         public bool Seen { get; set; }
         public string Username { get; set; }
         public string Title { get; set; }
+        public string UsernameBy { get; set; }
+        public string FullNameBy { get; set; }
+        public string FullName { get; set; }
+        public string Content { get; set; }
     }
 }

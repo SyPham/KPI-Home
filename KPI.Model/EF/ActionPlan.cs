@@ -24,6 +24,7 @@ namespace KPI.Model.EF
         public int TagID { get; set; }
         public int ApprovedBy { get; set; }
 
+        public string Link { get; set; }
         private DateTime? createTime = null;
         public DateTime CreateTime
         {

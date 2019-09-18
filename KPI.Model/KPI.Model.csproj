@@ -178,6 +178,18 @@
     <Compile Include="Migrations\201909141811177_addTitleNotification.Designer.cs">
       <DependentUpon>201909141811177_addTitleNotification.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201909170041339_addTblComment.cs" />
+    <Compile Include="Migrations\201909170041339_addTblComment.Designer.cs">
+      <DependentUpon>201909170041339_addTblComment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909170252168_AddLinkTblActionPlan.cs" />
+    <Compile Include="Migrations\201909170252168_AddLinkTblActionPlan.Designer.cs">
+      <DependentUpon>201909170252168_AddLinkTblActionPlan.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909180925537_EditNoitification.cs" />
+    <Compile Include="Migrations\201909180925537_EditNoitification.Designer.cs">
+      <DependentUpon>201909180925537_EditNoitification.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="ObjectQueryExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -190,6 +202,7 @@
     <Compile Include="ViewModel\ActionPlanGetAllViewModel.cs" />
     <Compile Include="ViewModel\ActionPlanViewModel2.cs" />
     <Compile Include="ViewModel\AddCommentViewModel.cs" />
+    <Compile Include="ViewModel\AddCommentVM.cs" />
     <Compile Include="ViewModel\DataExportVM.cs" />
     <Compile Include="ViewModel\LevelVM.cs" />
     <Compile Include="ViewModel\NotificationViewModel.cs" />
@@ -257,6 +270,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201909141811177_addTitleNotification.resx">
       <DependentUpon>201909141811177_addTitleNotification.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909170041339_addTblComment.resx">
+      <DependentUpon>201909170041339_addTblComment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909170252168_AddLinkTblActionPlan.resx">
+      <DependentUpon>201909170252168_AddLinkTblActionPlan.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909180925537_EditNoitification.resx">
+      <DependentUpon>201909180925537_EditNoitification.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

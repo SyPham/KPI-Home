@@ -14,6 +14,8 @@ namespace KPI.Model.EF
         public int UserID { get; set; }
         
         public int DataID { get; set; }
+        public string Link { get; set; }
+        public string Title { get; set; }
         private DateTime? commentedDate = null;
         public DateTime CommentedDate
         {
@@ -26,7 +28,6 @@ namespace KPI.Model.EF
 
             set { this.commentedDate = value; }
         }
-        
       
     }
 }

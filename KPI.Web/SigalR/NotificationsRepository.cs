@@ -23,27 +23,12 @@ namespace KPI.Web
             using (var connection = new SqlConnection(_connString))
             {
                 connection.Open();
-                string sql2 = @"SELECT  dbo.NotificationDetails.UserID,
-		                        dbo.NotificationDetails.ID,
-		                        dbo.NotificationDetails.Seen,
-		                        dbo.Notifications.Title,
-		                        dbo.Notifications.Link,
-		                        dbo.Notifications.KPIName,
-		                        dbo.Notifications.Period,
-		                        dbo.Notifications.Tag ,
-		                        Users.Username,
-		                        Users.FullName,
-		                        NotificationDetails.CreateTime
-                        FROM dbo.Notifications,dbo.NotificationDetails , dbo.Users
-                        WHERE dbo.Notifications.ID = dbo.NotificationDetails.NotificationID AND 
-                              dbo.NotificationDetails.UserID = dbo.Users.ID AND  
-                              dbo.NotificationDetails.UserID= @UserID";
                 var sql = @"SELECT [ID]
-                              ,[UserID]
-                              ,[NotificationID]
-                              ,[Seen]
-                              ,[CreateTime]
-                          FROM [KPI].[dbo].[NotificationDetails]";
+                                  ,[UserID]
+                                  ,[NotificationID]
+                                  ,[Seen]
+                                  ,[CreateTime]
+                              FROM [KPI].[dbo].[NotificationDetails]";
                 using (var command = new SqlCommand(sql, connection))
                 {
 
@@ -56,21 +41,20 @@ namespace KPI.Web
                     if (connection.State == ConnectionState.Closed)
                         connection.Open();
 
-                    //var reader = command.ExecuteReader();
+                    var reader = command.ExecuteReader();
 
-                    //while (reader.Read())
-                    //{
-
-                    //    //messages.Add(item: new NotificationViewModel { ID = reader["ID"].ToInt() , UserID=reader["UserID"].ToInt(),Username=reader["Username"].ToSafetyString(), KPIName = reader["KPIName"].ToSafetyString(), Period =  reader["Period"].ToSafetyString(), Seen = reader["Seen"].ToBool(), Link = reader["Link"].ToSafetyString(), CreateTime = Convert.ToDateTime(reader["CreateTime"]), Tag = reader["Tag"].ToSafetyString(),Title=reader["Title"].ToSafetyString() });
-                    //}
-                  messages =  new NotificationDAO().ListNotifications(UserID);
+                    while (reader.Read())
+                    {
+                        //messages.Add(item: new NotificationViewModel { ID = reader["ID"].ToInt() , UserID=reader["UserID"].ToInt(),Username=reader["Username"].ToSafetyString(), KPIName = reader["KPIName"].ToSafetyString(), Period =  reader["Period"].ToSafetyString(), Seen = reader["Seen"].ToBool(), Link = reader["Link"].ToSafetyString(), CreateTime = Convert.ToDateTime(reader["CreateTime"]), Tag = reader["Tag"].ToSafetyString(),Title=reader["Title"].ToSafetyString() });
+                    }
+                    messages =  new NotificationDAO().ListNotifications(UserID);
                 }
 
             }
 
             return messages;
         }
-
+       
         private void dependency_OnChange(object sender, SqlNotificationEventArgs e)
         {
             if (e.Type == SqlNotificationType.Change)
