@@ -199,7 +199,7 @@ namespace KPI.Web.Controllers
                         }
                     }
                 }
-               
+
 
                 ///Logic export tháng
                 //Nếu tháng MAX trong bảng DATA mà bằng 0 thì export từ tháng đầu cho đến tháng hiện tại
@@ -219,7 +219,7 @@ namespace KPI.Web.Controllers
 
                         for (int i = item.PeriodValueM + 1; i <= currentMonth; i++)
                         {
-                           
+
                             Dt.Rows.Add(item.KPILevelCode + "M", item.KPIName, item.Value, item.TargetValueW, i, currentYear, item.Area, item.UploadTimeM.ToSafetyString().Split(' ')[0].ToSafetyString());
                         }
                     }
@@ -231,13 +231,13 @@ namespace KPI.Web.Controllers
                             Dt.Rows.Add(item.KPILevelCode + "M", item.KPIName, value, item.TargetValueW, i, currentYear, item.Area, item.UploadTimeM.ToSafetyString().Split(' ')[0].ToSafetyString());
                         }
                     }
-                   
+
                 }
                 ///Logic export quý
                 //Nếu quý MAX trong bảng DATA mà bằng 0 thì export từ tháng đầu cho đến quý hiện tại
                 if (item.PeriodValueQ == 0 && item.StateQ == true)
                 {
-                    for (int i = 1; i < currentQuarter - 1; i++)
+                    for (int i = 1; i < currentQuarter; i++)
                     {
                         Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, item.Value, item.TargetValueW, i, currentYear, item.Area, item.UploadTimeQ.ToSafetyString().Split(' ')[0].ToSafetyString());
                     }
@@ -251,51 +251,55 @@ namespace KPI.Web.Controllers
 
                     //, Nếu quý hiện tại trừ quý MAX trong bảng DATA lớn hơn 1 thì 
                     //export từ quý 1 cho đến quý hiện tại
-                    if (currentQuarter - item.PeriodValueQ > 1)
+                    if (currentQuarter - item.PeriodValueQ >= 1)
                     {
-                        for (int i = item.PeriodValueQ; i < currentQuarter; i++)
+
+                        for (int i = item.PeriodValueQ; i <= currentQuarter; i++)
                         {
                             Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, item.Value, item.TargetValueW, i, currentYear, item.Area, item.UploadTimeQ.ToSafetyString().Split(' ')[0].ToSafetyString());
                         }
+
                     }
-                    //, Nếu quý hiện tại trừ quý MAX trong bảng DATA bằng 1 thì 
-                    //kiểm tra nếu tháng cuối cùng của quý hiện tại trừ đi ngày hiện tại >= 30 thì export excel
-                    if (currentQuarter - item.PeriodValueQ == 1)
+                    else
                     {
-                        if (tt <= 30)
+                        for (int i = 1; i <= currentQuarter; i++)
                         {
-                            Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, item.Value, item.TargetValueW, currentQuarter, currentYear, item.Area, item.UploadTimeQ.ToSafetyString().Split(' ')[0].ToSafetyString());
+                            var value = new UploadDAO().GetValueData(item.KPILevelCode, "Q", i);
+                            Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, value, item.TargetValueW, i, currentYear, item.Area, item.UploadTimeQ.ToSafetyString().Split(' ')[0].ToSafetyString());
                         }
                     }
+
                 }
 
                 ///Logic export năm
                 //Nếu năm MAX trong bảng DATA == 0 thì export năm hiện tại
                 if (item.PeriodValueY == 0 && item.StateY == true)
                 {
-                    if (currentMonth == 12)
+                    for (int i = currentYear - 10; i <= currentYear; i++)
                     {
-                        Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, item.Value, item.TargetValueW, currentYear, currentYear, item.Area, item.UploadTimeY.ToSafetyString().Split(' ')[0].ToSafetyString());
+                        Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, item.Value, item.TargetValueW, i, currentYear, item.Area, item.UploadTimeY.ToSafetyString().Split(' ')[0].ToSafetyString());
                     }
+
                 }
                 if (item.PeriodValueY > 0 && item.StateY == true)
                 {
                     // nếu năm hiện tại - năm max trong bảng DATA > 1 thì export năm kế tiếp đến năm hiện tại
-                    if (currentYear - item.PeriodValueY > 1)
+                    if (currentYear - item.PeriodValueY >= 1)
                     {
                         for (int i = item.PeriodValueY + 1; i <= currentYear; i++)
                         {
                             Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, item.Value, item.TargetValueW, i, currentYear, item.Area, item.UploadTimeY.ToSafetyString().Split(' ')[0].ToSafetyString());
                         }
                     }
-                    //Nếu năm hiện tại - năm max trong bảng DATA == 1 thì kiểm tra tháng, nếu là tháng 12 thì export năm hiện tại
-                    if (currentYear - item.PeriodValueY == 1)
+                    else
                     {
-                        if (currentMonth == 12)
+                        for (int i = currentYear - 10; i <= currentYear; i++)
                         {
-                            Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, item.Value, item.TargetValueW, currentYear, currentYear, item.Area, item.UploadTimeY.ToSafetyString().Split(' ')[0]);
+                            var value = new UploadDAO().GetValueData(item.KPILevelCode, "Y", i);
+                            Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, value, item.TargetValueW, i, currentYear, item.Area, item.UploadTimeY.ToSafetyString().Split(' ')[0].ToSafetyString());
                         }
                     }
+
                 }
 
 
@@ -346,55 +350,61 @@ namespace KPI.Web.Controllers
             foreach (var item in model)
             {
                 ///Logic export tuần
-                if (item.StateW == true)
-                {
+                //if (item.StateW == true)
+                //{
+                
+                //    for (int i = 1; i <= currentWeek; i++)
+                //    {
+                //        var startDayOfWeek = CodeUtility.ToGetMondayOfWeek(currentYear, i).ToString("MM/dd/yyyy");
+                //        var endDayOfWeek = CodeUtility.ToGetSaturdayOfWeek(currentYear, i).ToString("MM/dd/yyyy");
+                //        var updateTimeW = item.UploadTimeW.ConvertNumberDayOfWeekToString() + ", Week " + i;
 
-                    for (int i = 1; i <= currentWeek; i++)
-                    {
-                        var startDayOfWeek = CodeUtility.ToGetMondayOfWeek(currentYear, i).ToString("MM/dd/yyyy");
-                        var endDayOfWeek = CodeUtility.ToGetSaturdayOfWeek(currentYear, i).ToString("MM/dd/yyyy");
+                //        var value = new UploadDAO().GetValueData(item.KPILevelCode, "W", i);
+                //        Dt.Rows.Add(item.KPILevelCode + "W", item.KPIName, value, item.TargetValueW, i, currentYear, item.Area, updateTimeW, startDayOfWeek, endDayOfWeek);
+                //    }
+                //}
 
-                        var updateTimeW = item.UploadTimeW.ConvertNumberDayOfWeekToString() + ", Week " + i;
-                        var value = new UploadDAO().GetValueData(item.KPILevelCode, "W", i);
-                        Dt.Rows.Add(item.KPILevelCode + "W", item.KPIName, value, item.TargetValueW, i, currentYear, item.Area, updateTimeW, startDayOfWeek, endDayOfWeek);
-                    }
-                }
+                /////Logic export tháng
 
-                ///Logic export tháng
+                //if (item.StateM == true)
+                //{
+                 
+                //    var updateTimeM = item.UploadTimeM.ToStringDateTime("MM/dd/yyyy");
+                //    for (int i = 1; i <= currentMonth; i++)
+                //    {
+                //        var startDayOfMonth = CodeUtility.ToGetStartDateOfMonth(currentYear, i).ToString("MM/dd/yyyy");
+                //        var endDayOfMonth = CodeUtility.ToGetEndDateOfMonth(currentYear, i).ToString("MM/dd/yyyy");
+                //        var value = new UploadDAO().GetValueData(item.KPILevelCode, "M", i);
+                //        Dt.Rows.Add(item.KPILevelCode + "M", item.KPIName, value, item.TargetValueW, i, currentYear, item.Area, updateTimeM, startDayOfMonth, endDayOfMonth);
+                //    }
 
-                if (item.StateM == true)
-                {
-                    for (int i = 1; i <= currentMonth; i++)
-                    {
-                        var startDayOfMonth = CodeUtility.ToGetStartDateOfMonth(currentYear, i).ToString("MM/dd/yyyy");
-                        var endDayOfMonth = CodeUtility.ToGetEndDateOfMonth(currentYear, i).ToString("MM/dd/yyyy");
-
-                        var updateTimeM = item.UploadTimeM.ToStringDateTime("MM/dd/yyyy");
-                        var value = new UploadDAO().GetValueData(item.KPILevelCode, "M", i);
-                        Dt.Rows.Add(item.KPILevelCode + "M", item.KPIName, value, item.TargetValueW, i, currentYear, item.Area, updateTimeM, startDayOfMonth, endDayOfMonth);
-                    }
-
-                }
-                ///Logic export quý
-                if (item.StateQ == true)
-                {
-                    for (int i = 1; i < currentQuarter - 1; i++)
-                    {
-                       var seq= CodeUtility.ToGetStartAndEndDateOfQuarter(currentYear, i);
-                        var value = new UploadDAO().GetValueData(item.KPILevelCode, "Q", i);
-                        var updateTimeQ = item.UploadTimeQ.ToStringDateTime("MM/dd/yyyy");
-                        Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, value, item.TargetValueW, i, currentYear, item.Area, updateTimeQ,seq.start.ToString("MM/dd/yyyy"), seq.end.ToString("MM/dd/yyyy"));
-                    }
+                //}
+                /////Logic export quý
+                //if (item.StateQ == true)
+                //{
                   
-                }
-               
+                //    var updateTimeQ = item.UploadTimeQ.ToStringDateTime("MM/dd/yyyy");
+                //    for (int i = 1; i <= currentQuarter; i++)
+                //    {
+                //        var seq = CodeUtility.ToGetStartAndEndDateOfQuarter(currentYear, i);
+                //        var value = new UploadDAO().GetValueData(item.KPILevelCode, "Q", i);
+                //        Dt.Rows.Add(item.KPILevelCode + "Q", item.KPIName, value, item.TargetValueW, i, currentYear, item.Area, updateTimeQ, seq.start.ToString("MM/dd/yyyy"), seq.end.ToString("MM/dd/yyyy"));
+                //    }
+
+                //}
+
                 ///Logic export năm
                 if (item.StateY == true)
                 {
-                    var value = new UploadDAO().GetValueData(item.KPILevelCode, "Y", currentYear);
+                    
                     var updateTimeY = item.UploadTimeY.ToStringDateTime("MM/dd/yyyy");
                     var sey = CodeUtility.ToGetStartAndEndDateOfYear(currentYear);
-                    Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, item.Value, item.TargetValueW, currentYear, currentYear, item.Area, updateTimeY,sey.start.ToString("MM/dd/yyyy"), sey.end.ToString("MM/dd/yyyy"));
+                    for (int i = currentYear - 9; i <= currentYear; i++)
+                    {
+                        var value = new UploadDAO().GetValueData(item.KPILevelCode, "Y", currentYear);
+                        Dt.Rows.Add(item.KPILevelCode + "Y", item.KPIName, value, item.TargetValueW, i, currentYear, item.Area, updateTimeY, sey.start.ToString("MM/dd/yyyy"), sey.end.ToString("MM/dd/yyyy"));
+
+                    }
                 }
 
             }

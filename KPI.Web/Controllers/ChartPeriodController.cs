@@ -199,17 +199,19 @@ namespace KPI.Web.Controllers
                         mail.IsBodyHtml = false;
                         mail.BodyEncoding = System.Text.Encoding.UTF8;
                         mail.Priority = MailPriority.High;
-
+                       
                         try
                         {
                             using (var smtp = new SmtpClient())
                             {
+                                smtp.UseDefaultCredentials = true;
                                 smtp.Send(mail);
                             }
                             return Json(new { status = true, isSendmail = true }, JsonRequestBehavior.AllowGet);
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
+                            Console.WriteLine(ex);
                             return Json(new { status = true, isSendmail = false }, JsonRequestBehavior.AllowGet);
 
                         }

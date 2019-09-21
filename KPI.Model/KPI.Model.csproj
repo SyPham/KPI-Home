@@ -201,6 +201,7 @@
     <Compile Include="ViewModel\ActionPlanViewModel.cs" />
     <Compile Include="ViewModel\ActionPlanGetAllViewModel.cs" />
     <Compile Include="ViewModel\ActionPlanViewModel2.cs" />
+    <Compile Include="ViewModel\ActionPlanVM.cs" />
     <Compile Include="ViewModel\AddCommentViewModel.cs" />
     <Compile Include="ViewModel\AddCommentVM.cs" />
     <Compile Include="ViewModel\DataExportVM.cs" />

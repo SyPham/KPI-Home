@@ -12,7 +12,6 @@ namespace KPI.Model.DAO
     public class ActionPlanDAO
     {
         KPIDbContext _dbContext = null;
-
         public ActionPlanDAO()
         {
             this._dbContext = new KPIDbContext();
@@ -62,7 +61,7 @@ namespace KPI.Model.DAO
                         {
                             tag.UserID = (int?)user.FirstOrDefault(x => x.Username == item).ID ?? 0;
                             tag.ActionPlanID = entity.ID;
-                           
+
                             itemActionPlanDetail.Seen = false;
                             itemActionPlanDetail.USerID = (int?)user.FirstOrDefault(x => x.Username == username).ID ?? 0;
                             itemActionPlanDetail.ActionPlanID = entity.ID;
@@ -141,7 +140,6 @@ namespace KPI.Model.DAO
         {
             return _dbContext.ActionPlans.Count();
         }
-
         public List<ActionPlan> GetActionPlanCode()
         {
             return _dbContext.ActionPlans.ToList();
@@ -243,6 +241,38 @@ namespace KPI.Model.DAO
         public object ListActionPlan()
         {
             return _dbContext.ActionPlans.ToList();
+        }
+        public List<ActionPlanVM> CheckDeadline()
+        {
+            var currentDate = DateTime.Now;
+            var timeSpan = new TimeSpan(24, 00, 00);
+            var date = currentDate - timeSpan;
+            var listAc = new List<ActionPlanVM>();
+            var itemAc = new ActionPlanVM();
+            var list = from a in _dbContext.ActionPlans
+                       join b in _dbContext.Tags on a.ID equals b.ActionPlanID into ab
+                       from c in ab.DefaultIfEmpty()
+                       join d in _dbContext.Users on c.UserID equals d.ID
+                       select new ActionPlanVM
+                       {
+                           ActionplanID = a.ID,
+                           UserID = c.UserID,
+                           Email = d.Email,
+                           Deadline = a.Deadline
+                       };
+            var model = list.ToList();
+            foreach (var item in model)
+            {
+                if (DateTime.Compare(date, item.Deadline) == 0)
+                {
+                    itemAc.ActionplanID = item.ActionplanID;
+                    itemAc.UserID = item.ActionplanID;
+                    itemAc.Deadline = item.Deadline;
+                    itemAc.Email = item.Email;
+                    listAc.Add(itemAc);
+                }
+            }
+            return listAc;
         }
     }
 }

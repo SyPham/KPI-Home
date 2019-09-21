@@ -448,6 +448,7 @@
             },
             updateKPILevel: function (KPIID, KPILevelCode, UserCheck, Checked, WeeklyChecked, MonthlyChecked, QuarterlyChecked, YearlyChecked, Weekly, Monthly, Quarterly, Yearly, TimeCheck, LevelID, WeeklyPublic, MonthlyPublic, QuarterlyPublic, YearlyPublic, WeeklyStandard, MonthlyStandard, QuarterlyStandard, YearlyStandard) {
                 var mObj = {
+                    
                     KPIID: KPIID,
                     KPILevelCode: KPILevelCode,
                     UserCheck: UserCheck,
@@ -577,7 +578,10 @@
                     contentType: "application/json;charset=UTF-8",
                     dataType: "json",
                     success: function (result) {
+                        console.log("show detail KPI")
                         console.log(result);
+                            $('.KPILevelID').val(id);
+                            $('#modal-group-weekly .weekly').val(result.Weekly);
                             $('#modal-group-weekly .weekly').val(result.Weekly);
                             $('#modal-group-weekly input[name=weekpublic]').val(result.WeeklyPublic);
                             $('#modal-group-weekly .standard').val(result.WeeklyStandard);

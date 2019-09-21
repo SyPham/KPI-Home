@@ -50,13 +50,11 @@ namespace KPI.Model.DAO
                 _dbContext.SaveChanges();
                 var detail = _dbContext.Notifications.FirstOrDefault(x => x.ID == some.NotificationID);
                 return new  { status = true,data = detail};
-
                 
             }
             catch (Exception)
             {
                 return new { status = false, data = "" }; ;
-
             }
 
         }

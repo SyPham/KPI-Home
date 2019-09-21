@@ -152,11 +152,11 @@
     <div class="modal fade" id="modal-group-notify" style="display: none">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header bg-green">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
-                    <h4 class="modal-title">Notification Detail</h4>
+                    <h4 class="modal-title"><i class="fa fa-bell-o"></i> Notification Detail</h4>
                 </div>
                 <div class="modal-body">
                     <div>
@@ -223,45 +223,91 @@
                             case "Y": period = "Yearly"; break;
                             default: period = "Not found"; break;
                         }
-                        htmlNotification += `<li data-toggle="modal" data-target="#modal-group-notify" >
-                                                      <a data-id="${item.ID}" class="itemNotify">
-                                                         <i class="fa fa-user text-success"></i><b style="background-color:#0068ff;color:#fff;border-radius:5px;padding:0 5px 0 5px">${item.FullNameBy}</b> mentioned ${item.FullName} in ${item.KPIName} KPI ${period}
-                                                            "${item.Content}"
-                                                      </a>
-                                                </li>`
+                        if (item.Seen) {
+                            htmlNotification += `<li data-toggle="modal" data-target="#modal-group-notify"style="cursor:pointer;" >
+                                                              <a data-id="${item.ID}" class="itemNotify">
+                                                                 <i class="fa fa-user text-success"></i><b style="background-color:#0068ff;color:#fff;border-radius:5px;padding:0 5px 0 5px">${item.FullNameBy}</b> mentioned ${item.FullName} in ${item.KPIName} KPI ${period}
+                                                                    "${item.Content}"
+                                                              </a>
+                                                        </li>`
+                        }
+                        else {
+                            htmlNotification += `<li data-toggle="modal" data-target="#modal-group-notify" style="background: #88c3ff;cursor:pointer;">
+                                                              <a data-id="${item.ID}" class="itemNotify">
+                                                                 <i class="fa fa-user text-success"></i><b style="background-color:#0068ff;color:#fff;border-radius:5px;padding:0 5px 0 5px">${item.FullNameBy}</b> mentioned ${item.FullName} in ${item.KPIName} KPI ${period}
+                                                                    "${item.Content}"
+                                                              </a>
+                                                        </li>`
+                        }
                     })
 
                     var html = `<a href="#" data-id="${arrays}" class="dropdown-toggle listNotifies" data-toggle="dropdown">
-                        <i class="fa fa-bell-o"></i>
-                        <span class="label label-warning ${total === 0 ? "hidden" : ""}">${total}</span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li class="header">You have ${total} notifications</li>
-                        <li>
-                            <!-- inner menu: contains the actual data -->
-                            <ul class="menu" id="NotificationMenu">
-                               ${htmlNotification}
-                            </ul>
-                        </li>
-                        <li class="footer"><a id=ViewAll href="/Home/ListHistoryNotification">View all</a></li>
-                    </ul>`
+                                <i class="fa fa-bell-o"></i>
+                                <span class="label label-warning ${total === 0 ? "hidden" : ""}">${total}</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li class="header">You have ${total > 1 ? `${total} new notifications` : `${total} new notification`} </li>
+                                <li>
+                                    <!-- inner menu: contains the actual data -->
+                                    <ul class="menu" id="NotificationMenu">
+                                       ${htmlNotification}
+                                    </ul>
+                                </li>
+                                <li class="footer"><a id=ViewAll href="/Home/ListHistoryNotification">View all</a></li>
+                            </ul>`
                     $(".notifications-menu").empty();
                     $(".notifications-menu").html(html);
 
                     $('.itemNotify ').off('click').on('click', function () {
                         var ID = $(this).data('id');
+
+
+
                         $.ajax({
                             url: '/Notification/Update',
                             data: { ID: ID },
                             type: 'GET',
                             dataType: 'json',
                             success: function (response) {
-                                console.log(response);
+                                console.log("Data update");
+
+                                var data = response.data;
+                                console.log(data.Content);
                                 if (response.status) {
                                     console.log("Da xem thong bao" + dateNow());
                                     var data = response.data;
                                     if (data !== "") {
                                         $("#NotificationContent").empty();
+                                        var html='',li='';
+                                        if (data.Content !== null) {
+                                            if (data.Content.indexOf(";") > 1) {
+                                                
+                                                for (let i of data.Content.split(';')){
+                                                    li += `<li><i class="fa fa-check text-green"></i> ${i}</li>`;
+                                                }
+                                                html = `<p><b>- Title: </b><a href="${data.Link}" style="color:#2744d4"> ${data.Title}</a>
+                                                        <p/>
+                                                        <p><b>- Content: </b></p>
+                                                        <ul class="chart-legend clearfix">
+                                                        ${li}
+                                                      </ul>`;
+                                            } else {
+                                                html = `<p><b>- Title: </b><a href="${data.Link}" style="color:#2744d4"> ${data.Title}</a>
+                                                        <p/>
+                                                        <p><b>- Content: </b></p>
+                                                        <ul class="chart-legend clearfix">
+                                                            <li><i class="fa fa-check text-green"></i> ${data.Content}</li>
+                                                          </ul>`;
+                                            }
+
+                                            $("#NotificationContent").append(html);
+                                        } else {
+                                            html = `<ul class="chart-legend clearfix">
+                                                            <li><i class="fa fa-check text-red"></i> N/A</li>
+                                                         
+                                                          </ul>`;
+                                            $("#NotificationContent").append(html);
+                                        }
 
                                     }
                                 } else {

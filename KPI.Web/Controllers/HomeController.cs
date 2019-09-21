@@ -8,6 +8,8 @@ using System.Web.Mvc;
 using KPI.Model.helpers;
 using KPI.Model.ViewModel;
 using System.Threading.Tasks;
+using System.Configuration;
+using System.Net.Mail;
 
 namespace KPI.Web.Controllers
 {
@@ -17,7 +19,7 @@ namespace KPI.Web.Controllers
         [BreadCrumb(Clear = true)]
         public ActionResult Index()
         {
-
+            
             BreadCrumb.Add("/", "Home");
             BreadCrumb.SetLabel("Dashboard");
             ViewBag.TotalUser = new UserAdminDAO().Total().ToInt();
@@ -25,6 +27,44 @@ namespace KPI.Web.Controllers
             ViewBag.TotalLevel = new LevelDAO().Total().ToInt();
             ViewBag.TotalKPILevel = new KPILevelDAO().Total().ToInt();
             ViewBag.TotalCategory = new AdminCategoryDAO().Total().ToInt();
+
+
+           var model= new ActionPlanDAO().CheckDeadline();
+            foreach (var item in model)
+            {
+                string content = "Please note that the action plan we going to deadline on "+item.Deadline;
+                var html = string.Empty;
+             
+                string from = ConfigurationManager.AppSettings["FromEmailAddress"].ToSafetyString();
+                string password = ConfigurationManager.AppSettings["FromEmailPassword"].ToSafetyString();
+                string to = item.Email.ToSafetyString();
+
+                string subject = ConfigurationManager.AppSettings["FromEmailDisplayName"].ToSafetyString();
+                MailMessage mail = new MailMessage();
+                mail.To.Add(to.ToString());
+                mail.From = new MailAddress(from, "KPI.App");
+                mail.Subject = subject;
+                mail.Body = content;
+                mail.IsBodyHtml = false;
+                mail.BodyEncoding = System.Text.Encoding.UTF8;
+                mail.Priority = MailPriority.High;
+
+                try
+                {
+                    using (var smtp = new SmtpClient())
+                    {
+                        smtp.UseDefaultCredentials = true;
+                        smtp.Send(mail);
+                    }
+                    return Json(new { status = true, isSendmail = true }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                    return Json(new { status = true, isSendmail = false }, JsonRequestBehavior.AllowGet);
+
+                }
+            }
             return View();
         }
         public ActionResult UserDashBoard()
@@ -74,5 +114,7 @@ namespace KPI.Web.Controllers
             IEnumerable<NotificationViewModel> model = new NotificationDAO().GetHistoryNotification(userprofile.User.ID);
             return View(model);
         }
+
+
     }
 }
