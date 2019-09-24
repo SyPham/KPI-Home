@@ -737,7 +737,7 @@ var chartperiodController = {
 
                 $('.btnSaveActionPlan').unbind('click').on('click', function () {
                     chartperiodController.addActionPlan();
-                    chartperiodController.addNotification();
+                    //chartperiodController.addNotification();
                 })
                 $('#lastRemark').off('keypress').on('keypress', function (e) {
                     if (e.keyCode === 13) {
@@ -972,7 +972,7 @@ var chartperiodController = {
 
                 $('.btnComment').off('click').on('click', function () {
                     chartperiodController.addData();
-                    chartperiodController.addNotificationComment();
+                    //chartperiodController.addNotificationComment();
                 });
 
             },
@@ -1171,7 +1171,8 @@ var chartperiodController = {
                     Description: Description,
                     Deadline: $('.addTask .datepicker').datepicker({ dateFormat: 'mm-dd-yy' }).val(),
                     SubmitDate: convertDate(new Date),
-                    Link: window.location.href
+                    Link: window.location.href,
+                    Subject: $('.ActionPlanChart').text()
                 };
                 if (id === "") {
 

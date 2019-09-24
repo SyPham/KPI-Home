@@ -417,6 +417,10 @@ namespace KPI.Model.DAO
         public AddCommentVM AddComment(AddCommentViewModel entity)
         {
             var listEmail = new List<string[]>();
+            var listTags = new List<Tag>();
+            var listFullNameTag = new List<string>();
+            var itemTag = _dbContext.Tags;
+            var user = _dbContext.Users;
             try
             {
                 //add vao comment
@@ -429,35 +433,30 @@ namespace KPI.Model.DAO
                 _dbContext.Comments.Add(comment);
                 _dbContext.SaveChanges();
 
-                //Add vao seencomment
-                var seenComment = new SeenComment();
-                seenComment.CommentID = comment.ID;
-                seenComment.UserID = entity.UserID;
-                seenComment.Status = true;
-                _dbContext.SeenComments.Add(seenComment);
-                _dbContext.SaveChanges();
-                //Add vao Tag
+
 
                 if (!entity.Tag.IsNullOrEmpty())
                 {
-                    string[] arrayString = new string[5];
-                    var itemtag = new Tag();
-                    var user = _dbContext.Users;
+                   
+                
+
                     if (entity.Tag.IndexOf(',') == -1)
                     {
                         var Username = entity.Tag.Trim();
                         var userItem = user.FirstOrDefault(x => x.Username == Username);
                         if (userItem != null)
                         {
+                            var itemtag = new Tag();
                             itemtag = new Tag();
                             itemtag.UserID = (int?)userItem.ID ?? 0;
                             itemtag.CommentID = comment.ID;
-
+                            string[] arrayString = new string[5];
                             arrayString[0] = user.FirstOrDefault(x => x.ID == entity.UserID).FullName;
                             arrayString[1] = userItem.Email;
                             arrayString[2] = comment.Link;
                             arrayString[3] = comment.Title;
                             arrayString[4] = comment.CommentMsg;
+                            listFullNameTag.Add(userItem.FullName);
                             listEmail.Add(arrayString);
                             _dbContext.Tags.Add(itemtag);
                             _dbContext.SaveChanges();
@@ -468,31 +467,52 @@ namespace KPI.Model.DAO
                     {
                         var list = entity.Tag.Split(',');
                         var commentID = comment.ID;
-                        foreach (var item in list)
+                        var listUserID = itemTag.Where(x => x.ActionPlanID == comment.ID).Select(x => x.UserID).ToList();
+
+                        var listUsers = _dbContext.Users.Where(x => list.Contains(x.Username)).ToList();
+
+                        foreach (var item in listUsers)
                         {
-                            var username = item.Trim();
-                            var userItem = user.FirstOrDefault(x => x.Username == username);
-                            if (userItem != null)
-                            {
-                                itemtag.UserID = (int?)userItem.ID ?? 0;
-                                itemtag.CommentID = commentID;
-                                arrayString[0] = user.FirstOrDefault(x => x.ID == entity.UserID).FullName;
-                                arrayString[1] = userItem.Email;
-                                arrayString[2] = comment.Link;
-                                arrayString[3] = comment.Title;
-                                arrayString[4] = comment.CommentMsg;
-                                listEmail.Add(arrayString);
+                            string[] arrayString = new string[5];
+                            var tag = new Tag();
+                            tag.CommentID = comment.ID;
+                            tag.UserID = item.ID;
+                            listTags.Add(tag);
 
-                                _dbContext.Tags.Add(itemtag);
-                                _dbContext.SaveChanges();
-                            }
-
-
+                            arrayString[0] = user.FirstOrDefault(x => x.ID == entity.UserID).FullName;
+                            arrayString[1] = item.Email;
+                            arrayString[2] = comment.Link;
+                            arrayString[3] = comment.Title;
+                            arrayString[4] = comment.CommentMsg;
+                            listFullNameTag.Add(item.FullName);
+                            listEmail.Add(arrayString);
                         }
+                        _dbContext.Tags.AddRange(listTags);
+                        _dbContext.SaveChanges();
                     }
                 }
 
 
+                //Add vao Notification
+                var notify = new Notification();
+                notify.CommentID = comment.ID;
+                notify.Content = comment.CommentMsg;
+                notify.UserID = comment.UserID;
+                notify.Title = comment.Title;
+                notify.Link = comment.Link;
+                notify.Tag = string.Join(",", listFullNameTag);
+                notify.Title = comment.Title;
+                new NotificationDAO().Add(notify);
+
+
+                //Add vao seencomment
+                var seenComment = new SeenComment();
+                seenComment.CommentID = comment.ID;
+                seenComment.UserID = entity.UserID;
+                seenComment.Status = true;
+                _dbContext.SeenComments.Add(seenComment);
+                _dbContext.SaveChanges();
+              
                 return new AddCommentVM
                 {
                     Status = true,

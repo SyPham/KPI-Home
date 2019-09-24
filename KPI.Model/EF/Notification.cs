@@ -33,5 +33,7 @@ namespace KPI.Model.EF
         public string Title { get; set; }
         [Column("Content")]
         public string Content { get; set; }
+        public int CommentID { get; set; }
+        public int ActionplanID { get; set; }
     }
 }

@@ -46,6 +46,8 @@ namespace KPI.Model
         public DbSet<ActionPlanDetail> ActionPlanDetails { get; set; }
         public DbSet<NotificationDetail> NotificationDetails { get; set; }
         public DbSet<Tag> Tags { get; set; }
+        //public DbSet<Language> Languages { get; set; }
+        public DbSet<ErrorMessage> ErrorMessages { get; set; }
         protected override void OnModelCreating(DbModelBuilder builder)
         {
             //builder.Entity<IdentityUserRole>().HasKey(i => new { i.UserId, i.RoleId });

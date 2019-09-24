@@ -26,50 +26,54 @@
                     <tbody>
                         @{
                             var i = 1;
-                            var period = string.Empty;
+
                             foreach (var item in Model)
                             {
-                                switch (item.Period)
+                                if (item.Content.IndexOf(";") > 0)
                                 {
-                                    case "W": period = "Weekly"; break;
-                                    case "M": period = "Monthly"; break;
-                                    case "Q": period = "Quarterly"; break;
-                                    case "Y": period = "Yearly"; break;
+                                    <tr>
+                                        <td>@(i++)</td>
+                                        <td>
+                                            <p><b>Tag: </b> @item.FullNameBy mentioned @item.FullName</p>
+                                            <p><b>Title: </b>@item.Title</p>
+                                            <p>
+                                                <b>Content: </b>
+                                                <ul class="chart-legend clearfix">
+                                                    @foreach (var a in @item.Content.Split(';'))
+                                                    {
+                                                        <li><i class="fa fa-check-circle-o text-green"></i> @a</li>
+                                                    }
+                                                </ul>
+                                            </p>
+                                            <p><b>Due Date: </b>@item.DueDate</p>
+                                            <p><b>Created Time: </b>@item.CreateTime.ToString("MM/dd/yyy HH:mm:ss")</p>
 
+
+                                        </td>
+                                    </tr>
                                 }
-                                var tag = item.Tag.Split(',');
+                                else
+                                {
+                                    <tr>
+                                        <td>@(i++)</td>
+                                        <td>
+                                            <p><b>Tag: </b> @item.FullNameBy mentioned @item.FullName</p>
+                                            <p><b>Title: </b>@item.Title</p>
+                                            <p>
+                                                <b>Content: </b>
+                                                <ul class="chart-legend clearfix">
+                                                  
+                                                    <li><i class="fa fa-check-circle-o text-green"></i> @item.Content</li>
+                                                    
+                                                </ul>
+                                            </p>
+                                            <p><b>Created Time: </b>@item.CreateTime.ToString("MM/dd/yyy HH:mm:ss")</p>
 
-                                <tr>
-                                    <td>@(i++)</td>
-                                    <td>
-                                        <p style="font-size:13px;font-style:italic">
-                                            Create Time: @item.CreateTime.ToString("MM/dd/yyy HH:mm:ss")
-                                        </p>
 
-                                        <b style="background-color:#0068ff;color:#fff;border-radius:5px;padding:0 5px 0 5px">
-                                            @item.Username
-                                        </b>
-                                        mentioned you
-                                        @foreach (var a in tag)
-                                        {
-                                            if (userProfile != null)
-                                            {
+                                        </td>
+                                    </tr>
+                                }
 
-                                                if (a != userProfile.User.Username)
-                                                {
-
-                                                    <b style="background-color:#0068ff;color:#fff;border-radius:5px;padding:0 5px 0 5px">
-                                                        @a
-                                                    </b>
-                                                    <span>&nbsp;</span>
-                                                }
-
-                                            }
-
-                                        }
-                                        in <a href="@item.Link">@item.Title.</a>
-                                    </td>
-                                </tr>
                             }
                         }
 

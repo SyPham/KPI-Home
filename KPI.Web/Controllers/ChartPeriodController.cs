@@ -93,7 +93,7 @@ namespace KPI.Web.Controllers
                         string from = ConfigurationManager.AppSettings["FromEmailAddress"].ToSafetyString();
                         string password = ConfigurationManager.AppSettings["FromEmailPassword"].ToSafetyString();
                         string to = item[1].ToSafetyString();
-
+                        string clientHost = ConfigurationManager.AppSettings["ClientHost"].ToSafetyString();
                         string subject = ConfigurationManager.AppSettings["FromEmailDisplayName"].ToSafetyString();
                         MailMessage mail = new MailMessage();
                         mail.To.Add(to.ToString());
@@ -108,12 +108,18 @@ namespace KPI.Web.Controllers
                         {
                             using (var smtp = new SmtpClient())
                             {
+
+                                smtp.Host = clientHost;
+                                smtp.UseDefaultCredentials = true;
                                 smtp.Send(mail);
                             }
                             return Json(new { status = true, isSendmail = true }, JsonRequestBehavior.AllowGet);
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
+                            var a = new ErrorMessage();
+                            a.Name = ex.Message;
+                           new ErrorMessageDAO().Add(a);
                             return Json(new { status = true, isSendmail = false }, JsonRequestBehavior.AllowGet);
 
                         }
@@ -172,10 +178,11 @@ namespace KPI.Web.Controllers
             item.UserID = obj.UserID;
             item.DataID = obj.DataID;
             item.CommentID = obj.CommentID;
+            item.Link = obj.Link;
             item.SubmitDate = obj.SubmitDate.ToDateTime();
             item.Deadline = obj.Deadline.ToDateTime();
 
-            var data = new ActionPlanDAO().Add(item);
+            var data = new ActionPlanDAO().Add(item, obj.Subject);
             if (data.Status)
             {
                 if (data.ListEmails.Count > 0)
@@ -189,7 +196,7 @@ namespace KPI.Web.Controllers
                         string from = ConfigurationManager.AppSettings["FromEmailAddress"].ToSafetyString();
                         string password = ConfigurationManager.AppSettings["FromEmailPassword"].ToSafetyString();
                         string to = item2[1].ToSafetyString();
-
+                        string clientHost = ConfigurationManager.AppSettings["ClientHost"].ToSafetyString();
                         string subject = ConfigurationManager.AppSettings["FromEmailDisplayName"].ToSafetyString();
                         MailMessage mail = new MailMessage();
                         mail.To.Add(to.ToString());
@@ -199,19 +206,22 @@ namespace KPI.Web.Controllers
                         mail.IsBodyHtml = false;
                         mail.BodyEncoding = System.Text.Encoding.UTF8;
                         mail.Priority = MailPriority.High;
-                       
+
                         try
                         {
                             using (var smtp = new SmtpClient())
                             {
                                 smtp.UseDefaultCredentials = true;
+                                smtp.Host = clientHost;
                                 smtp.Send(mail);
                             }
                             return Json(new { status = true, isSendmail = true }, JsonRequestBehavior.AllowGet);
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine(ex);
+                            var a = new ErrorMessage();
+                            a.Name = ex.Message;
+                            new ErrorMessageDAO().Add(a);
                             return Json(new { status = true, isSendmail = false }, JsonRequestBehavior.AllowGet);
 
                         }

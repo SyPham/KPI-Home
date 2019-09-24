@@ -44,13 +44,38 @@ namespace KPI.Model.DAO
         public object Update(int ID)
         {
             var some = _dbContext.NotificationDetails.FirstOrDefault(x => x.ID == ID);
+            var user = _dbContext.Users;
             try
             {
                 some.Seen = true;
                 _dbContext.SaveChanges();
+                //var detail = _dbContext.Notifications.FirstOrDefault(x => x.ID == some.NotificationID);
+              
                 var detail = _dbContext.Notifications.FirstOrDefault(x => x.ID == some.NotificationID);
-                return new  { status = true,data = detail};
-                
+                var tag = _dbContext.Tags.Where(x => x.CommentID == detail.CommentID).Select(x => x.UserID).ToList();
+                var listArr = string.Empty;
+                if (tag.Count > 0)
+                {
+                    listArr = string.Join(",", user.Where(x => tag.Contains(x.ID)).Select(x => x.FullName).ToArray()); ;
+                }
+                var vm = new NotificationViewModel();
+                vm.ID = detail.ID;
+                vm.Title = detail.Title;
+                vm.CreateTime = detail.CreateTime;
+                vm.UserID = detail.UserID;
+                vm.Link = detail.Link;
+                vm.Tag = listArr;
+                vm.FullNameBy = user.Find(detail.UserID).FullName;
+                vm.FullName = listArr;
+                vm.Content = detail.Content;
+                vm.Title = detail.Title;
+                if (detail.ActionplanID > 0)
+                {
+                    vm.DueDate = _dbContext.ActionPlans.FirstOrDefault(x => x.ID == detail.ActionplanID).Deadline.ToString("MM/dd/yyyy");
+                }
+
+                return new { status = true, data = vm };
+
             }
             catch (Exception)
             {
@@ -66,59 +91,42 @@ namespace KPI.Model.DAO
                 _dbContext.Notifications.Add(entity);
 
                 _dbContext.SaveChanges();
+
+                
+
+                var listUserID = new List<int>();
+                var listDetails = new List<NotificationDetail>();
                 var user = _dbContext.Users;
-
-
-                if (!entity.Tag.IsNullOrEmpty())
+                var tag = _dbContext.Tags;
+                //Neu thong bao cua comment thi vao bang tag lay tat ca user dc tag ra
+                if (entity.CommentID > 0)
                 {
-                    var listDetails = new List<NotificationDetail>();
-                    if (entity.Tag.IndexOf(",") == -1)
-                    {
-                        var detail1 = new NotificationDetail();
-                        var username = entity.Tag.Replace("@", "").Trim();
-                        if(user.FirstOrDefault(x => x.Username == username) != null)
-                        {
-                            var id = user.FirstOrDefault(x => x.Username == username).ID;
-                            detail1.UserID = id;
-                            detail1.Seen = false;
-                            detail1.NotificationID = entity.ID;
-                            listDetails.Add(detail1);
-                        }
-                        var detail = new NotificationDetail();
-                        detail.UserID = entity.UserID;
-                        detail.Seen = true;
-                        detail.NotificationID = entity.ID;
-
-                        listDetails.Add(detail);
-                        _dbContext.NotificationDetails.AddRange(listDetails);
-                        _dbContext.SaveChanges();
-                    }
-                    else{
-                        var list = entity.Tag.Split(',');
-                       
-                      
-                        foreach (var item in list)
-                        {
-                            var username = item.Replace("@", "").Trim();
-                            var id = user.FirstOrDefault(x => x.Username == username).ID;
-
-                            var detail1 = new NotificationDetail();
-                            detail1.UserID = id;
-                            detail1.Seen = false;
-                            detail1.NotificationID = entity.ID;
-                            listDetails.Add(detail1);
-
-                        }
-                        var detail = new NotificationDetail();
-                        detail.UserID = entity.UserID;
-                        detail.Seen = true;
-                        detail.NotificationID = entity.ID;
-
-                        listDetails.Add(detail);
-                        _dbContext.NotificationDetails.AddRange(listDetails);
-                        _dbContext.SaveChanges();
-                    }
+                    listUserID.AddRange(tag.Where(x => x.CommentID == entity.CommentID).Select(x => x.UserID).ToArray());
                 }
+
+                if (entity.ActionplanID > 0)
+                {
+                    listUserID.AddRange(tag.Where(x => x.ActionPlanID == entity.ActionplanID).Select(x => x.UserID).ToArray());
+                }
+                var detail2 = new NotificationDetail();
+                detail2.UserID = entity.UserID;
+                detail2.Seen = false;
+                detail2.NotificationID = entity.ID;
+                listDetails.Add(detail2);
+
+                foreach (var item in listUserID)
+                {
+                    
+                    var detail = new NotificationDetail();
+                    detail.UserID = item;
+                    detail.Seen = false;
+                    detail.NotificationID = entity.ID;
+                    listDetails.Add(detail);
+                }
+                  
+
+                _dbContext.NotificationDetails.AddRange(listDetails);
+                _dbContext.SaveChanges();
                 return true;
             }
             catch
@@ -180,6 +188,7 @@ namespace KPI.Model.DAO
         public List<NotificationViewModel> ListNotifications(int userid)
         {
             var user = _dbContext.Users;
+            var tag = _dbContext.Tags;
             var model = from a in _dbContext.Notifications
                         join b in _dbContext.NotificationDetails on a.ID equals b.NotificationID
                         where b.UserID == userid
@@ -200,16 +209,17 @@ namespace KPI.Model.DAO
                             UsernameBy = d.Username,
                             FullNameBy = d.FullName,
                             FullName = c.FullName,
-                            Content = a.Title
+
+                            Content = a.Content
                         };
-            var model1 = model.ToList();
+            var model1 = model.OrderByDescending(x=>x.CreateTime).ToList();
             return model1;
         }
         public List<NotificationViewModel> ListNotifications2(int userid)
         {
             var detail = _dbContext.NotificationDetails;
-            var model = 
-                        from b in _dbContext.Notifications 
+            var model =
+                        from b in _dbContext.Notifications
                         join a in _dbContext.Users on b.UserID equals a.ID
                         select new NotificationViewModel
                         {
@@ -221,7 +231,7 @@ namespace KPI.Model.DAO
                             UserID = b.UserID,
                             Username = a.Username,
                             Link = b.Link,
-                            Seen = detail.FirstOrDefault(x=>x.UserID==userid && x.NotificationID==b.ID).Seen,
+                            Seen = detail.FirstOrDefault(x => x.UserID == userid && x.NotificationID == b.ID).Seen,
                             Tag = b.Tag
                         };
             var model1 = model.Where(x => x.UserID == userid).ToList();
@@ -272,25 +282,53 @@ namespace KPI.Model.DAO
         }
         public List<NotificationViewModel> GetHistoryNotification(int userid)
         {
-            var user = _dbContext.Users.FirstOrDefault(x => x.ID == userid);
-            if (user == null) return new List<NotificationViewModel>();
+            //var user = _dbContext.Users.FirstOrDefault(x => x.ID == userid);
+            //if (user == null) return new List<NotificationViewModel>();
+            //var model = from a in _dbContext.Notifications
+            //            join b in _dbContext.Users on a.UserID equals b.ID
+            //            where a.Tag.Contains(user.Username)
+            //            select new NotificationViewModel
+            //            {
+            //                ID = a.ID,
+            //                UserID = a.UserID,
+            //                KPIName = a.KPIName,
+            //                Link = a.Link,
+            //                Period = a.Period,
+            //                Seen = a.Seen,
+            //                CreateTime = a.CreateTime,
+            //                Tag = a.Tag,
+            //                Title = a.Title,
+            //                Username = b.Username
+            //            };
+            //return model.ToList();
+
+            var user = _dbContext.Users;
+            var tag = _dbContext.Tags;
             var model = from a in _dbContext.Notifications
-                        join b in _dbContext.Users on a.UserID equals b.ID
-                        where a.Tag.Contains(user.Username)
+                        join b in _dbContext.NotificationDetails on a.ID equals b.NotificationID
+                        where b.UserID == userid
+                        join c in _dbContext.Users on b.UserID equals c.ID
+                        join d in _dbContext.Users on a.UserID equals d.ID
                         select new NotificationViewModel
                         {
-                            ID = a.ID,
-                            UserID = a.UserID,
-                            KPIName = a.KPIName,
-                            Link = a.Link,
-                            Period = a.Period,
-                            Seen = a.Seen,
-                            CreateTime = a.CreateTime,
-                            Tag = a.Tag,
+                            ID = b.ID,
                             Title = a.Title,
-                            Username = b.Username
+                            KPIName = a.KPIName,
+                            Period = a.Period,
+                            CreateTime = b.CreateTime,
+                            UserID = a.UserID,
+                            Username = c.Username,
+                            Link = a.Link,
+                            Seen = b.Seen,
+                            Tag = a.Tag,
+                            UsernameBy = d.Username,
+                            FullNameBy = d.FullName,
+                            FullName = c.FullName,
+
+                            Content = a.Content
                         };
-            return model.ToList();
+            var model1 = model.OrderByDescending(x => x.CreateTime).ToList();
+            return model1;
         }
 
     }

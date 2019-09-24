@@ -269,6 +269,7 @@ var adminCategoryController = {
                     var data = response.data;
                     var html = '';
                     var template = $('#tblkpi-template').html();
+                    console.log(template);
                     $.each(data, function (i, item) {
                         html += Mustache.render(template, {
                             No: count,

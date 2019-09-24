@@ -20,5 +20,7 @@ namespace KPI.Model.ViewModel
 
         public string Deadline { get; set; }
         public string SubmitDate { get; set; }
+        public string Subject { get; set; }
+        public string Link { get; set; }
     }
 }

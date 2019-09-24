@@ -22,5 +22,7 @@ namespace KPI.Model.ViewModel
         public string FullNameBy { get; set; }
         public string FullName { get; set; }
         public string Content { get; set; }
+        public string DueDate { get; set; }
+
     }
 }

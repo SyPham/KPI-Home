@@ -10,6 +10,7 @@ using KPI.Model.ViewModel;
 using System.Threading.Tasks;
 using System.Configuration;
 using System.Net.Mail;
+using KPI.Model.EF;
 
 namespace KPI.Web.Controllers
 {
@@ -38,7 +39,7 @@ namespace KPI.Web.Controllers
                 string from = ConfigurationManager.AppSettings["FromEmailAddress"].ToSafetyString();
                 string password = ConfigurationManager.AppSettings["FromEmailPassword"].ToSafetyString();
                 string to = item.Email.ToSafetyString();
-
+                string clientHost = ConfigurationManager.AppSettings["ClientHost"].ToSafetyString();
                 string subject = ConfigurationManager.AppSettings["FromEmailDisplayName"].ToSafetyString();
                 MailMessage mail = new MailMessage();
                 mail.To.Add(to.ToString());
@@ -54,13 +55,16 @@ namespace KPI.Web.Controllers
                     using (var smtp = new SmtpClient())
                     {
                         smtp.UseDefaultCredentials = true;
+                        smtp.Host = clientHost;
                         smtp.Send(mail);
                     }
                     return Json(new { status = true, isSendmail = true }, JsonRequestBehavior.AllowGet);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex);
+                    var a = new ErrorMessage();
+                    a.Name = ex.Message;
+                    new ErrorMessageDAO().Add(a);
                     return Json(new { status = true, isSendmail = false }, JsonRequestBehavior.AllowGet);
 
                 }

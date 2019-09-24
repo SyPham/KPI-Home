@@ -81,12 +81,15 @@
     <Compile Include="Abstract\Link.cs" />
     <Compile Include="DAO\ActionPlanDAO.cs" />
     <Compile Include="DAO\AdminCategoryDAO.cs" />
+    <Compile Include="DAO\ErrorMessageDAO.cs" />
     <Compile Include="DAO\NotificationDAO.cs" />
     <Compile Include="DbContextExtensions.cs" />
     <Compile Include="EF\ActionPlanDetail.cs" />
     <Compile Include="EF\ActionPlan.cs" />
     <Compile Include="EF\CommentChart.cs" />
     <Compile Include="EF\CommentChartDetail.cs" />
+    <Compile Include="EF\ErrorMessage.cs" />
+    <Compile Include="EF\Language.cs" />
     <Compile Include="EF\NotificationDetail.cs" />
     <Compile Include="EF\Notification.cs" />
     <Compile Include="EF\Revise.cs" />
@@ -190,6 +193,14 @@
     <Compile Include="Migrations\201909180925537_EditNoitification.Designer.cs">
       <DependentUpon>201909180925537_EditNoitification.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201909230315011_version.cs" />
+    <Compile Include="Migrations\201909230315011_version.Designer.cs">
+      <DependentUpon>201909230315011_version.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909230904071_version1.cs" />
+    <Compile Include="Migrations\201909230904071_version1.Designer.cs">
+      <DependentUpon>201909230904071_version1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="ObjectQueryExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -198,7 +209,6 @@
     <Compile Include="SqlServerNotifier\PushSqlDependency.cs" />
     <Compile Include="SqlServerNotifier\SqlDependencyRegister.cs" />
     <Compile Include="SqlServerNotifier\SqlNotificationEventHandler.cs" />
-    <Compile Include="ViewModel\ActionPlanViewModel.cs" />
     <Compile Include="ViewModel\ActionPlanGetAllViewModel.cs" />
     <Compile Include="ViewModel\ActionPlanViewModel2.cs" />
     <Compile Include="ViewModel\ActionPlanVM.cs" />
@@ -280,6 +290,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201909180925537_EditNoitification.resx">
       <DependentUpon>201909180925537_EditNoitification.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909230315011_version.resx">
+      <DependentUpon>201909230315011_version.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909230904071_version1.resx">
+      <DependentUpon>201909230904071_version1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
