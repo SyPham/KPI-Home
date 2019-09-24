@@ -8,19 +8,13 @@ using System.Threading.Tasks;
 
 namespace KPI.Model.EF
 {
-    [Serializable]
-    [DataContract(IsReference = true)]
-    public class NotificationDetail :EntityBase
+    public class NotificationDetail
     {
-        [DataMember]
         public int ID { get; set; }
-        [DataMember]
         public int UserID { get; set; }
-        [DataMember]
         public int NotificationID { get; set; }
-        [DataMember]
         public bool Seen { get; set; }
-        [DataMember]
+
         private DateTime? createTime = null;
         public DateTime CreateTime
         {

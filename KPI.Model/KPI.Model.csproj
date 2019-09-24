@@ -201,6 +201,10 @@
     <Compile Include="Migrations\201909230904071_version1.Designer.cs">
       <DependentUpon>201909230904071_version1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201909241400596_version2.cs" />
+    <Compile Include="Migrations\201909241400596_version2.Designer.cs">
+      <DependentUpon>201909241400596_version2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="ObjectQueryExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -296,6 +300,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201909230904071_version1.resx">
       <DependentUpon>201909230904071_version1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909241400596_version2.resx">
+      <DependentUpon>201909241400596_version2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

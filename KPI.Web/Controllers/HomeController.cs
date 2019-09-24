@@ -20,7 +20,7 @@ namespace KPI.Web.Controllers
         [BreadCrumb(Clear = true)]
         public ActionResult Index()
         {
-            
+
             BreadCrumb.Add("/", "Home");
             BreadCrumb.SetLabel("Dashboard");
             ViewBag.TotalUser = new UserAdminDAO().Total().ToInt();
@@ -28,46 +28,54 @@ namespace KPI.Web.Controllers
             ViewBag.TotalLevel = new LevelDAO().Total().ToInt();
             ViewBag.TotalKPILevel = new KPILevelDAO().Total().ToInt();
             ViewBag.TotalCategory = new AdminCategoryDAO().Total().ToInt();
+            var model = new ActionPlanDAO().CheckDeadline();
+            var userprofile = Session["UserProfile"] as UserProfileVM;
 
-
-           var model= new ActionPlanDAO().CheckDeadline();
             foreach (var item in model)
             {
-                string content = "Please note that the action plan we going to deadline on "+item.Deadline;
-                var html = string.Empty;
-             
-                string from = ConfigurationManager.AppSettings["FromEmailAddress"].ToSafetyString();
-                string password = ConfigurationManager.AppSettings["FromEmailPassword"].ToSafetyString();
-                string to = item.Email.ToSafetyString();
-                string clientHost = ConfigurationManager.AppSettings["ClientHost"].ToSafetyString();
-                string subject = ConfigurationManager.AppSettings["FromEmailDisplayName"].ToSafetyString();
-                MailMessage mail = new MailMessage();
-                mail.To.Add(to.ToString());
-                mail.From = new MailAddress(from, "KPI.App");
-                mail.Subject = subject;
-                mail.Body = content;
-                mail.IsBodyHtml = false;
-                mail.BodyEncoding = System.Text.Encoding.UTF8;
-                mail.Priority = MailPriority.High;
-
-                try
+                if(!new ActionPlanDAO().IsSentMailActionPlan(userprofile.User.ID, item.ActionplanID))
                 {
-                    using (var smtp = new SmtpClient())
+                    string content = "Please note that the action plan we going to deadline on " + item.Deadline;
+                    var html = string.Empty;
+                    string from = ConfigurationManager.AppSettings["FromEmailAddress"].ToSafetyString();
+                    string password = ConfigurationManager.AppSettings["FromEmailPassword"].ToSafetyString();
+                    string to = item.Email.ToSafetyString();
+                    string clientHost = ConfigurationManager.AppSettings["ClientHost"].ToSafetyString();
+                    string subject = ConfigurationManager.AppSettings["FromEmailDisplayName"].ToSafetyString();
+                    MailMessage mail = new MailMessage();
+                    mail.To.Add(to.ToString());
+                    mail.From = new MailAddress(from, "KPI.App");
+                    mail.Subject = subject;
+                    mail.Body = content;
+                    mail.IsBodyHtml = false;
+                    mail.BodyEncoding = System.Text.Encoding.UTF8;
+                    mail.Priority = MailPriority.High;
+
+                    try
                     {
-                        smtp.UseDefaultCredentials = true;
-                        smtp.Host = clientHost;
-                        smtp.Send(mail);
+                        using (var smtp = new SmtpClient())
+                        {
+                            smtp.UseDefaultCredentials = true;
+                            smtp.Host = clientHost;
+                            smtp.Send(mail);
+                        }
+                        var itemND = new ActionPlanDetail();
+                        itemND.ActionPlanID = item.ActionplanID;
+                        itemND.UserID = userprofile.User.ID;
+                        itemND.Sent = true;
+                        new ActionPlanDAO().AddActionDetail(itemND);
+                        return Json(new { status = true, isSendmail = true }, JsonRequestBehavior.AllowGet);
                     }
-                    return Json(new { status = true, isSendmail = true }, JsonRequestBehavior.AllowGet);
-                }
-                catch (Exception ex)
-                {
-                    var a = new ErrorMessage();
-                    a.Name = ex.Message;
-                    new ErrorMessageDAO().Add(a);
-                    return Json(new { status = true, isSendmail = false }, JsonRequestBehavior.AllowGet);
+                    catch (Exception ex)
+                    {
+                        var a = new ErrorMessage();
+                        a.Name = ex.Message;
+                        new ErrorMessageDAO().Add(a);
+                        return Json(new { status = true, isSendmail = false }, JsonRequestBehavior.AllowGet);
 
+                    }
                 }
+
             }
             return View();
         }
@@ -94,7 +102,7 @@ namespace KPI.Web.Controllers
         public JsonResult GetNotifications(int? userID)
         {
             var userprofile = Session["UserProfile"] as UserProfileVM;
-            if(userID == null)
+            if (userID == null)
                 return Json("", JsonRequestBehavior.AllowGet);
             var listNotifications = new NotificationDAO().ListNotifications(userID.Value);
             var total = 0;
@@ -108,9 +116,9 @@ namespace KPI.Web.Controllers
                 }
 
             }
-            return Json( new {arrayID = listID.ToArray(), total = total, data = listNotifications }, JsonRequestBehavior.AllowGet);
+            return Json(new { arrayID = listID.ToArray(), total = total, data = listNotifications }, JsonRequestBehavior.AllowGet);
         }
-       public ActionResult ListHistoryNotification()
+        public ActionResult ListHistoryNotification()
         {
             var userprofile = Session["UserProfile"] as UserProfileVM;
             if (userprofile == null)

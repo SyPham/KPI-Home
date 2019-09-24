@@ -36,7 +36,7 @@ namespace KPI.Model.DAO
                 if (!entity.Tag.IsNullOrEmpty())
                 {
                     string[] arrayString = new string[5];
-                  
+
 
                     if (entity.Tag.IndexOf(",") == -1)
                     {
@@ -288,6 +288,25 @@ namespace KPI.Model.DAO
                 }
             }
             return listAc;
+        }
+        public bool IsSentMailActionPlan(int userID,int actionPhanID)
+        {
+            return _dbContext.ActionPlanDetails.FirstOrDefault(x=>x.UserID==userID&&x.ActionPlanID==actionPhanID).Sent;
+
+        }
+        public bool AddActionDetail(ActionPlanDetail entity)
+        {
+            try
+            {
+                _dbContext.ActionPlanDetails.Add(entity);
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+
+                return false;
+            }
         }
     }
 }

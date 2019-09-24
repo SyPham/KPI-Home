@@ -11,7 +11,8 @@ namespace KPI.Model.EF
     {
         public int ID { get; set; }
         public int ActionPlanID { get; set; }
-        public int USerID { get; set; }
+        [Column("UserID")]
+        public int UserID { get; set; }
         public bool Sent { get; set; }
         public bool Seen { get; set; }
         private DateTime? createTime = null;

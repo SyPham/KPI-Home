@@ -21,7 +21,7 @@ namespace KPI.Web
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             //here in Application Start we will start Sql Dependency
-            SqlDependency.Start(con);
+            //SqlDependency.Start(con);
         }
 
         //protected void Session_Start(object sender, EventArgs e)
@@ -32,7 +32,7 @@ namespace KPI.Web
         protected void Application_End()
         {
             //here we will stop Sql Dependency
-            SqlDependency.Stop(con);
+            //SqlDependency.Stop(con);
         }
     }
 
