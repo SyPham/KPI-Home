@@ -721,7 +721,38 @@ var chartperiodController = {
                 chartperiodController.registerEvent();
 
             },
-            registerEvent() {
+    registerEvent() {
+
+        $('#modal-group-comment-data2 .Description').unbind('blur').on('blur', function () {
+            var ID = $(this).parent().parent().data('id');
+             $(this).each(function () {
+                    $(this).find('li').each(function () {
+                        var current = $(this);
+                        if (current.children().length > 0) { return true; }
+                        phrases.push($(this).text().trim());
+                    });
+
+                });
+                var Description = phrases.join(';');
+            chartperiodController.updateActinPlane(ID, "", "", Description, "");
+        });
+
+
+        $("#modal-group-comment-data2 .datepickerEdit ").datepicker({
+            onSelect: function(dateText) {
+                 var ID = $(this).parent().parent().data('id');
+
+                var DeadLine = dateText;
+            chartperiodController.updateActinPlane(ID, "",DeadLine, "", "");
+            }
+        });
+
+         $('#modal-group-comment-data2 .Title').unbind('blur').on('blur', function () {
+            var ID = $(this).parent().parent().data('id');
+
+                var Title = $(this).val();
+            chartperiodController.updateActinPlane(ID, Title, "", "", "");
+        });
                 $('.btnTask').unbind('click').on('click', function () {
                     var commentid = $(this).data('commentid');
                     $(".commentid").text(commentid)
@@ -734,7 +765,7 @@ var chartperiodController = {
 
                     chartperiodController.LoadDataActionPlan(dataid, commentid);
                 });
-
+                 $(".datepickerEdit").datepicker({ dateFormat: 'mm-dd-yy' });
                 $('.btnSaveActionPlan').unbind('click').on('click', function () {
                     chartperiodController.addActionPlan();
                     //chartperiodController.addNotification();
@@ -1044,11 +1075,11 @@ var chartperiodController = {
                             $.each(data, function (i, item) {
                                 $('.listTask .Approval').hide();
                                 $('.listTask .Option').hide();
-                                html += '<tr>';
+                                html += '<tr data-id="'+item.ID+'">';
                                 html += '<td>' + (i + 1) + '</td>';
-                                html += '<td class="text-bold" style="padding-left:15px;">' + item.Title + '</td>';
-                                html += '<td>';
-                                if (item.Description !== null) {
+                                html += '<td class="text-bold" style="padding-left:15px;"><input type="text" class="form-control Title" value="' + item.Title + '" /></td>';
+                                html += '<td> <div class="editable Description" style="border:1px solid #d2d6de" contenteditable="true">';
+                                     if (item.Description !== null) {
                                     var array = item.Description.trim(';').split(';');
                                     html += '<ul>';
                                     $.each(array, function (i, item) {
@@ -1058,18 +1089,20 @@ var chartperiodController = {
                                     })
                                     html += '</ul>';
                                 }
+                                  html += '</div>';
+
                                 html += '</td>';
                                 html += '<td>';
                                 if (item.Tag !== null) {
                                     var array2 = item.Tag.split(',');
                                     $.each(array2, function (i, item2) {
                                         if (item2.length > 1) {
-                                            html += '<span class="badge bg-default text-bold">' + item2 + '</span> ';
+                                            html += '<span class="badge bg-default text-bold ">' + item2 + '</span> ';
                                         }
                                     })
                                 }
                                 html += '</td>';
-                                html += '<td>' + item.Deadline + '</td>';
+                                html += '<td><input type="text" class="form-control datepickerEdit DeadLine" value="' + item.Deadline.replace('/','-').replace('/','-') + '" /></td>';
                                 html += '<td > ';
                                 html += '<div class="pretty p-icon p-round p-pulse">';
                                 if (item.Status) {
@@ -1086,37 +1119,36 @@ var chartperiodController = {
                                 }
                                 html += '</div>';
                                 html += '</div>';
-
                                 html += '</td > ';
-                                if (item.IsBoss) {
+                                if (item.CreatedBy===$('#user').data('userid')) {
                                     $('.listTask .Approval').show();
                                     $('.listTask .Option').show();
-                                    html += '<td> <div class="pretty p-icon p-round p-jelly">';
+                                    html += '<td> ';
                                     if (item.ApprovedStatus) {
-                                        html += '<input type="checkbox" checked  onclick="chartperiodController.approval(' + item.ID + ')" class="btnApproveActionPlan" />';
+                                        html += '<div class="pretty p-icon p-round p-jelly">';
+                                        html += '<input type="checkbox" checked onclick="chartperiodController.approval(' + item.ID + ')" class="btnApproveActionPlan" />';
                                         html += '<div class="state p-success">';
                                         html += '<i class="icon fa fa-check"></i>';
                                         html += '<label class="black">Approved</label>';
+                                        html += '</div>';
+                                        html += '</div >';
                                     }
                                     else {
+                                        html += '<div class="pretty p-icon p-round p-jelly">';
                                         html += '<input type="checkbox" onclick="chartperiodController.approval(' + item.ID + ')" class="btnApproveActionPlan" />';
                                         html += '<div class="state p-danger">';
                                         html += '<i class="icon fa fa-check"></i>';
                                         html += '<label class="black">Not approved</label>';
+                                        html += '</div>';
+                                        html += '</div >';
                                     }
-
-                                    html += '</div>';
-                                    html += '</div >';
                                     html += '</td > ';
-
                                     html += '<td>';
                                     html += '<div class="btn-group">';
                                     html += '<button type="button" onclick="chartperiodController.getByID(' + item.ID + ')" class="btn btn-success btn-sm btnEditActionPlan"><i class="fa fa-edit"></i></button>';
-                                    html += '<button type="button"  onclick="chartperiodController.getByID(' + item.ID + ')" class="btn btn-warning btn-sm btnDeleteActionPlan"><i class="fa fa-remove"></i></button>';
-                                    //html +='<button type="button" class="btn btn-info">1</button>';
+                                    html += '<button type="button"  onclick="chartperiodController.deleteActionPlan(' + item.ID + ')" class="btn btn-warning btn-sm btnDeleteActionPlan"><i class="fa fa-remove"></i></button>';
                                     html += '</div>';
                                     html += '</div>';
-
                                     html += '</td>';
                                 }
 
@@ -1228,6 +1260,20 @@ var chartperiodController = {
 
                 }
             },
+             updateActinPlane(ID,Title,DeadLine,Description,Tag) {
+                if (Number(ID) > 0) {
+                    $.post('updateActinPlane', { ID: ID, Title:Title,DeadLine:DeadLine, Description:Description,Tag:Tag}, function (res) {
+                        console.log(res);
+                        if (res) {
+                            var commentid = Number($('.commentid').text());
+                            var dataid = Number($('.dataid').text());
+                            chartperiodController.LoadDataActionPlan(dataid, commentid);
+                            chartperiodController.resetForm();
+                        }
+                    });
+
+                }
+            },
             done(id) {
                 if (Number(id) > 0) {
                     $.post('Done', { id: id }, function (res) {
@@ -1237,6 +1283,19 @@ var chartperiodController = {
                             var dataid = Number($('.dataid').text());
                             chartperiodController.LoadDataActionPlan(dataid, commentid);
                             chartperiodController.resetForm();
+                        }
+                    });
+
+                }
+            },
+            deleteActionPlan(id) {
+                if (Number(id) > 0) {
+                    $.post('Delete', { id: id }, function (res) {
+                        if (res) {
+                            var commentid = Number($('.commentid').text());
+                            var dataid = Number($('.dataid').text());
+                            chartperiodController.LoadDataActionPlan(dataid, commentid);
+
                         }
                     });
 
@@ -1648,7 +1707,7 @@ var chartperiodController = {
                     }
                 });
             },
-    addNotification() {
+            addNotification() {
                  var phrases = new Array();
                 //Dung de tham khao
                 //$('.Description').each(function(){

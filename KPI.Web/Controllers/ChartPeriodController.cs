@@ -152,18 +152,6 @@ namespace KPI.Web.Controllers
         {
             return Json(new DataChartDAO().UpdateRemark(dataid, remark), JsonRequestBehavior.AllowGet);
         }
-        public ActionResult Compare()
-        {
-            return View();
-        }
-        public JsonResult UserSendMail(int userid)
-        {
-            return Json("", JsonRequestBehavior.AllowGet);
-        }
-        public JsonResult LoadToDo()
-        {
-            return Json("", JsonRequestBehavior.AllowGet);
-        }
         public JsonResult Update(ActionPlan item)
         {
             return Json(new ActionPlanDAO().Update(item), JsonRequestBehavior.AllowGet);
@@ -251,18 +239,16 @@ namespace KPI.Web.Controllers
         {
             return Json(new ActionPlanDAO().Done(id), JsonRequestBehavior.AllowGet);
         }
-
         public JsonResult AddNotification(Notification notification)
         {
             var status = new NotificationDAO().Add(notification);
             NotificationHub.SendNotifications();
             return Json(status, JsonRequestBehavior.AllowGet);
         }
-
-        //public JsonResult Notification(int userid)
-        //{
-        //    return Json(new NotificationDAO().Notification(userid), JsonRequestBehavior.AllowGet);
-        //}
+        public JsonResult UpdateActionPlan(UpdateActionPlanVM actionPlan)
+        {
+            return Json(new ActionPlanDAO().UpdateActionPlan(actionPlan), JsonRequestBehavior.AllowGet);
+        }
 
     }
 }

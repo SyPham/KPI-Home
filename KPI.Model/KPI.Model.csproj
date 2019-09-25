@@ -223,6 +223,7 @@
     <Compile Include="ViewModel\NotificationViewModel.cs" />
     <Compile Include="ViewModel\QuarterVM.cs" />
     <Compile Include="ViewModel\ToDoList.cs" />
+    <Compile Include="ViewModel\UpdateActionPlanVM.cs" />
     <Compile Include="ViewModel\UploadKPIVM.cs" />
     <Compile Include="ViewModel\WorkplaceVM.cs" />
     <Compile Include="ViewModel\DataCompareVM.cs" />

@@ -1,6 +1,5 @@
 ﻿$(document).ready(function () {
-    $(".datepicker").datepicker({ dateFormat: 'mm-dd-yy' });
-
+   
     $('.tooltip-ui').tooltip();
 
    function getDateOfWeekInYear(dt)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KPI.Model.EF;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,5 +17,7 @@ namespace KPI.Model.ViewModel
         public bool ApprovedStatus { get; set; }
         public bool Status { get; set; }
         public bool IsBoss { get; set; }
+        public int CreatedBy { get; set; }
+        public IEnumerable<Tag> Tags { get; set; }
     }
 }

@@ -15,6 +15,5 @@ namespace KPI.Model.EF
         public int CommentID { get; set; }
         public int ActionPlanID { get; set; }
         public int NotificationID { get; set; }
-       
     }
 }

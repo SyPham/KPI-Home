@@ -165,12 +165,14 @@ namespace KPI.Model.DAO
         }
         public bool Delete(int id)
         {
-
             try
             {
                 var category = _dbContext.ActionPlans.Find(id);
                 _dbContext.ActionPlans.Remove(category);
                 _dbContext.SaveChanges();
+
+                var notifications = _dbContext.Notifications.FirstOrDefault(x => x.ActionplanID == category.ID);
+
                 return true;
             }
             catch (Exception ex)
@@ -178,7 +180,6 @@ namespace KPI.Model.DAO
                 var message = ex.Message;
                 return false;
             }
-
         }
         public ActionPlanViewModel2 GetByID(int id)
         {
@@ -197,17 +198,17 @@ namespace KPI.Model.DAO
             var model = _dbContext.ActionPlans.FirstOrDefault(x => x.ID == id);
             model.ApprovedBy = aproveBy;
             model.ApprovedStatus = !model.ApprovedStatus;
+            model.Status = !model.Status;
             try
             {
                 _dbContext.SaveChanges();
+                
                 return true;
             }
             catch (Exception)
             {
                 return false;
             }
-
-
         }
         public bool Done(int id)
         {
@@ -239,9 +240,10 @@ namespace KPI.Model.DAO
                     Description = x.Description,
                     Tag = x.Tag,
                     ApprovedStatus = x.ApprovedStatus,
-                    Deadline = x.Deadline.ToString("dd/MM/yyyy"),
+                    Deadline = x.Deadline.ToString("MM/dd/yyyy"),
                     Status = x.Status,
-                    IsBoss = (int?)permission.FirstOrDefault(a => a.ID == userModel.Permission).ID < 3 ? true : false
+                    IsBoss = (int?)permission.FirstOrDefault(a => a.ID == userModel.Permission).ID < 3 ? true : false,
+                    CreatedBy = x.UserID,
                 }).ToList();
             return new
             {
@@ -289,9 +291,9 @@ namespace KPI.Model.DAO
             }
             return listAc;
         }
-        public bool IsSentMailActionPlan(int userID,int actionPhanID)
+        public bool IsSentMailActionPlan(int userID, int actionPhanID)
         {
-            return _dbContext.ActionPlanDetails.FirstOrDefault(x=>x.UserID==userID&&x.ActionPlanID==actionPhanID).Sent;
+            return _dbContext.ActionPlanDetails.FirstOrDefault(x => x.UserID == userID && x.ActionPlanID == actionPhanID).Sent;
 
         }
         public bool AddActionDetail(ActionPlanDetail entity)
@@ -305,6 +307,37 @@ namespace KPI.Model.DAO
             catch (Exception)
             {
 
+                return false;
+            }
+        }
+
+        public bool UpdateActionPlan(UpdateActionPlanVM actionPlan)
+        {
+            try
+            {
+                var item = _dbContext.ActionPlans.Find(actionPlan.ID);
+                if (actionPlan.Title.IsNullOrEmpty())
+                {
+                    item.Title = actionPlan.Title;
+                }
+                if (actionPlan.Description.IsNullOrEmpty())
+                {
+                    item.Description = actionPlan.Description;
+                }
+                if (actionPlan.Tag.IsNullOrEmpty())
+                {
+                    item.Tag = actionPlan.Tag;
+                }
+                if (actionPlan.DeadLine.IsNullOrEmpty())
+                {
+                    item.Deadline = Convert.ToDateTime(actionPlan.DeadLine);
+                }
+                
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
                 return false;
             }
         }

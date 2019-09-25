@@ -43,6 +43,5 @@ namespace KPI.Model.EF
 
         public bool Status { get; set; }
         public bool ApprovedStatus { get; set; }
-
     }
 }

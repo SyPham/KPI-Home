@@ -32,6 +32,28 @@
 
         }
     </div>
+
+    <div class="row animatedParent" id="home-client">
+        @foreach (var item in userProfile.Menus)
+        {
+            if (item.Permission != 1)
+            {
+                <a href="@item.Link" class="col-md-3 col-sm-6 col-xs-12 animated swing">
+                    <div class="info-box">
+                        <span class="info-box-icon @item.BackgroudColor"><i class="@item.FontAwesome"></i></span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text">@item.Name</span>
+                            @*<span class="info-box-number">@ViewBag.TotalLevel<small></small></span>*@
+                        </div>
+                        <!-- /.info-box-content -->
+                    </div>
+                    <!-- /.info-box -->
+                </a>
+            }
+
+        }
+    </div>
 }
 else
 {
@@ -59,5 +81,5 @@ else
 }
 
 @section Scripts{
-    
+
 }

@@ -209,7 +209,6 @@ namespace KPI.Model.DAO
                             UsernameBy = d.Username,
                             FullNameBy = d.FullName,
                             FullName = c.FullName,
-
                             Content = a.Content
                         };
             var model1 = model.OrderByDescending(x=>x.CreateTime).ToList();
@@ -304,6 +303,7 @@ namespace KPI.Model.DAO
 
             var user = _dbContext.Users;
             var tag = _dbContext.Tags;
+            var actionPlan = _dbContext.ActionPlans;
             var model = from a in _dbContext.Notifications
                         join b in _dbContext.NotificationDetails on a.ID equals b.NotificationID
                         where b.UserID == userid
@@ -321,10 +321,10 @@ namespace KPI.Model.DAO
                             Link = a.Link,
                             Seen = b.Seen,
                             Tag = a.Tag,
+                            Deadline = (DateTime?)actionPlan.FirstOrDefault(x=>x.ID==a.ActionplanID).Deadline?? new DateTime(2001,1,1),
                             UsernameBy = d.Username,
                             FullNameBy = d.FullName,
                             FullName = c.FullName,
-
                             Content = a.Content
                         };
             var model1 = model.OrderByDescending(x => x.CreateTime).ToList();

@@ -158,15 +158,46 @@ namespace KPI.Model.DAO
 
             var listLevels = _dbContext.Levels.OrderBy(x => x.LevelNumber).ToList();
 
-            var user = _dbContext.Users.FirstOrDefault(x=>x.ID==userid);
+            var user = _dbContext.Users.FirstOrDefault(x => x.ID == userid);
 
-
-            var levelNumber = _dbContext.Levels.FirstOrDefault(x => x.ID == user.LevelID);
-
-            if (levelNumber == null)
+            if (user.Permission == 1)
             {
-                return new List<KPITreeViewModel>();
+                listLevels = listLevels.OrderBy(x => x.LevelNumber).ToList();
+                foreach (var item in listLevels)
+                {
+                    var levelItem = new KPITreeViewModel();
+                    levelItem.key = item.ID;
+                    levelItem.title = item.Name;
+                    levelItem.code = item.Code;
+                    levelItem.state = item.State;
+                    levelItem.levelnumber = item.LevelNumber;
+                    levelItem.parentid = item.ParentID;
+                    levels.Add(levelItem);
+                }
+
+                hierarchy = levels.Where(c => c.parentid == 0)
+                           .Select(c => new KPITreeViewModel()
+                           {
+                               key = c.key,
+                               title = c.title,
+                               code = c.code,
+                               levelnumber = c.levelnumber,
+                               parentid = c.parentid,
+                               children = GetChildren(levels, c.key)
+                           })
+                           .ToList();
+
+                HieararchyWalk(hierarchy);
+                return hierarchy;
             }
+            else
+            {
+                var levelNumber = _dbContext.Levels.FirstOrDefault(x => x.ID == user.LevelID);
+
+                if (levelNumber == null)
+                {
+                    return new List<KPITreeViewModel>();
+                }
 
                 listLevels = listLevels.Where(x => x.LevelNumber >= levelNumber.LevelNumber).OrderBy(x => x.LevelNumber).ToList();
                 foreach (var item in listLevels)
@@ -205,6 +236,9 @@ namespace KPI.Model.DAO
                 }
                 var model = hierarchy.Where(x => x.key == itemLevel.ID).ToList();
                 return model;
+            }
+
+
         }
         public List<ViewModel.KPITreeViewModel> GetListTree()
         {
@@ -274,8 +308,8 @@ namespace KPI.Model.DAO
         public bool Update(int key, string title, string code)
         {
             var item = _dbContext.Levels.FirstOrDefault(x => x.ID == key);
-            if(item==null)
-            return false;
+            if (item == null)
+                return false;
             else
             {
                 item.Code = code;

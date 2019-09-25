@@ -28,53 +28,64 @@
                 @if (userProfile != null)
                 {
 
-                    <ul class="sidebar-menu" data-widget="tree">
-                        <li style="height: auto;">
-                            <a href="/">
-                                <i class="fa fa-dashboard"></i> <span>Home</span>
-                            </a>
-                        </li>
-                        @if (userProfile.User.Permission != 1)
+                <ul class="sidebar-menu" data-widget="tree">
+                    <li style="height: auto;">
+                        <a href="/">
+                            <i class="fa fa-dashboard"></i> <span>Home</span>
+                        </a>
+                    </li>
+                    @if (userProfile.User.Permission != 1)
+                    {
+                        foreach (var item in userProfile.Menus)
                         {
-                            foreach (var item in userProfile.Menus)
+                            if (item.Permission != 1)
                             {
-                                if (item.Permission != 1)
-                                {
-                                    <li>
-                                        <a href="@item.Link">
-                                            <i class="@item.FontAwesome"></i> <span>@item.Name</span>
-                                        </a>
-                                    </li>
-                                }
+                                <li>
+                                    <a href="@item.Link">
+                                        <i class="@item.FontAwesome"></i> <span>@item.Name</span>
+                                    </a>
+                                </li>
                             }
                         }
-                        @if (userProfile.User.Permission == 1)
+                    }
+                    @if (userProfile.User.Permission == 1)
+                    {
+                        foreach (var item in userProfile.Menus)
                         {
-                            <li class="treeview">
-                                <a href="#">
-                                    <i class="fa fa-table"></i> <span>Admin</span>
-                                    <span class="pull-right-container">
-                                        <i class="fa fa-angle-left pull-right"></i>
-                                    </span>
-                                </a>
-                                <ul class="treeview-menu">
-
-                                    @foreach (var item in userProfile.Menus)
-                                    {
-                                        if (item.Permission == 1)
-                                        {
-                                            <li>
-                                                <a href="@item.Link">
-                                                    <i class="@item.FontAwesome"></i> <span>@item.Name</span>
-                                                </a>
-                                            </li>
-                                        }
-                                    }
-                                </ul>
-                            </li>
+                            if (item.Permission != 1)
+                            {
+                                <li>
+                                    <a href="@item.Link">
+                                        <i class="@item.FontAwesome"></i> <span>@item.Name</span>
+                                    </a>
+                                </li>
+                            }
                         }
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-table"></i> <span>Admin</span>
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
 
-                    </ul>
+                                @foreach (var item in userProfile.Menus)
+                                {
+                                    if (item.Permission == 1)
+                                    {
+                                        <li>
+                                            <a href="@item.Link">
+                                                <i class="@item.FontAwesome"></i> <span>@item.Name</span>
+                                            </a>
+                                        </li>
+                                    }
+                                }
+                            </ul>
+                        </li>
+                    }
+
+                </ul>
                 }
 
             </section>
@@ -180,6 +191,8 @@
     <script>
 
         $(function () {
+            $(".datepicker").datepicker({ dateFormat: 'mm-dd-yy' });
+             //$( "input[name^=datepicker]" ).datepicker({ dateFormat: "mm-dd-yy" });
             // Declare a proxy to reference the hub.
             var notifications = $.connection.notificationHub;
 
@@ -224,16 +237,18 @@
                             case "Y": period = "Yearly"; break;
                             default: period = "Not found"; break;
                         }
-                        if (item.Seen) {
-                            if (item.userID === sessionUserID) {
+                        if (item.Seen)
+                        {
+                            if (item.UserID === sessionUserID) {
                                 htmlNotification += `<li data-toggle="modal" data-target="#modal-group-notify"style="cursor:pointer;" >
                                                                   <a data-id="${item.ID}" class="itemNotify">
                                                                      <i class="fa fa-user text-success"></i>
-                                                                    You mentioned ${item.Tag} in ${item.Title}
+                                                                   <b style="background-color:#0068ff;color:#fff;border-radius:5px;padding:0 5px 0 5px">You</b> mentioned ${item.Tag} in ${item.Title}
                                                                   </a>
                                                             </li>`
                             }
-                            else {
+                            else
+                            {
                                 htmlNotification += `<li data-toggle="modal" data-target="#modal-group-notify"style="cursor:pointer;" >
                                                                   <a data-id="${item.ID}" class="itemNotify">
                                                                      <i class="fa fa-user text-success"></i>
@@ -244,13 +259,25 @@
                             }
 
                         }
-                        else {
-                            htmlNotification += `<li data-toggle="modal" data-target="#modal-group-notify" style="background: #88c3ff;cursor:pointer;">
+                        else
+                        {
+                            if (item.UserID === sessionUserID) {
+                                htmlNotification += `<li data-toggle="modal" data-target="#modal-group-notify" style="background: #88c3ff;cursor:pointer;">
+                                                                  <a data-id="${item.ID}" class="itemNotify">
+                                                                     <i class="fa fa-user text-success"></i><b style="background-color:#0068ff;color:#fff;border-radius:5px;padding:0 5px 0 5px">you</b> mentioned ${item.Tag} in ${item.Title}
+                                                                        "${item.Content}"
+                                                                  </a>
+                                                            </li>`
+                            }
+                            else
+                            {
+                                  htmlNotification += `<li data-toggle="modal" data-target="#modal-group-notify" style="background: #88c3ff;cursor:pointer;">
                                                                   <a data-id="${item.ID}" class="itemNotify">
                                                                      <i class="fa fa-user text-success"></i><b style="background-color:#0068ff;color:#fff;border-radius:5px;padding:0 5px 0 5px">${item.FullNameBy}</b> mentioned ${item.Tag} in ${item.Title}
                                                                         "${item.Content}"
                                                                   </a>
                                                             </li>`
+                            }
                         }
                     })
 

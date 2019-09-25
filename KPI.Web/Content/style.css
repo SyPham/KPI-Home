@@ -12,7 +12,8 @@
 .unselectable {
     cursor: not-allowed !important;
 }
-
+.datepicker {
+}
 #ListKPI .henry {
     margin-top: 10px;
     margin-bottom: 10px;
