@@ -8241,6 +8241,13 @@
     <Content Include="Scripts\moment-with-locales.min.js" />
     <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\moment.min.js" />
+    <Content Include="Scripts\plugins\bootstrap3-editable\css\bootstrap-editable.css" />
+    <Content Include="Scripts\plugins\bootstrap3-editable\img\clear.png" />
+    <Content Include="Scripts\plugins\bootstrap3-editable\img\loading.gif" />
+    <Content Include="Scripts\plugins\bootstrap3-editable\js\bootstrap-editable.js" />
+    <Content Include="Scripts\plugins\bootstrap3-editable\js\bootstrap-editable.min.js" />
+    <Content Include="Scripts\plugins\bootstrap3-editable\PluginEditable\bootstrap-datetimepicker.css" />
+    <Content Include="Scripts\plugins\bootstrap3-editable\PluginEditable\bootstrap-datetimepicker.js" />
     <Content Include="Scripts\plugins\css.css" />
     <Content Include="Scripts\plugins\css3-animate-it.js" />
     <Content Include="Scripts\plugins\dataBinder.js" />

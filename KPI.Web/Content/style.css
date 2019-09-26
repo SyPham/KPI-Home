@@ -61,7 +61,9 @@ thead tr th {
     #table-group table thead tr th:nth-child(4) {
         width: 5%;
     }
-
+    .disbaletbl{
+        pointer-events:none;
+    }
 
 #ListKPILevel table thead tr th, #ListKPILevel table tbody tr td, #ListKPILevel table tbody tr th {
     text-align: center !important;

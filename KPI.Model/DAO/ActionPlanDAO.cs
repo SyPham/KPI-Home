@@ -29,6 +29,21 @@ namespace KPI.Model.DAO
 
             try
             {
+
+                if (entity.Description.IndexOf(";") == -1)
+                {
+                    entity.Description = entity.Description;
+
+                }
+                else
+                {
+                    var des = string.Empty;
+                    entity.Description.Split(';').ToList().ForEach(line =>
+                    {
+                        des += line + "&#13;&#10;";
+                    });
+                    entity.Description = des;
+                }
                 _dbContext.ActionPlans.Add(entity);
                 _dbContext.SaveChanges();
 
@@ -310,7 +325,6 @@ namespace KPI.Model.DAO
                 return false;
             }
         }
-
         public bool UpdateActionPlan(UpdateActionPlanVM actionPlan)
         {
             try
@@ -333,6 +347,52 @@ namespace KPI.Model.DAO
                     item.Deadline = Convert.ToDateTime(actionPlan.DeadLine);
                 }
                 
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public bool Update(string name, string value, string pk)
+        {
+            try
+            {
+                var id = pk.ToSafetyString().ToInt();
+                var item = _dbContext.ActionPlans.Find(id);
+                if (name == "Title")
+                {
+                    item.Title = value;
+                }
+                if (name == "Description")
+                {
+                    
+                    if (value.IndexOf("/n") == -1)
+                    {
+                        item.Description = value;
+                    }
+                    else
+                    {
+                        var des = string.Empty;
+                        value.Split('\n').ToList().ForEach(line =>
+                        {
+                            des += line + "&#13;&#10;";
+                        });
+                        item.Description = des;
+                    }
+                   
+                }
+                if (name == "Tag")
+                {
+                    item.Tag = value;
+                }
+                if (name == "Deadline")
+                {
+                    item.Deadline = Convert.ToDateTime(value);
+                }
+
                 _dbContext.SaveChanges();
                 return true;
             }

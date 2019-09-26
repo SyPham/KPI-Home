@@ -249,6 +249,11 @@ namespace KPI.Web.Controllers
         {
             return Json(new ActionPlanDAO().UpdateActionPlan(actionPlan), JsonRequestBehavior.AllowGet);
         }
+        [HttpPost]
+        public JsonResult Update(string name,string value, string pk)
+        {
+            return Json(new ActionPlanDAO().Update(name,value,pk), JsonRequestBehavior.AllowGet);
+        }
 
     }
 }

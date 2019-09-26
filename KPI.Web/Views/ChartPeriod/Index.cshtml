@@ -339,7 +339,6 @@
                 pointHitRadius: 10,
 
             };
-
             var listTargets = {
                 label: "Target",
                 //spanGaps: false, //data=undefined thi k draw line
@@ -351,8 +350,7 @@
                     anchor: 'center'
                 }
             };
-
-               var listStandards = {
+            var listStandards = {
                 label: "Target",
                 //spanGaps: false, //data=undefined thi k draw line
                 backgroundColor: "#3c8d8a",
@@ -363,7 +361,7 @@
                     anchor: 'center'
                 }
             };
-             var hiddenPluginDataLabels = {
+            var hiddenPluginDataLabels = {
                  datalabels: {
                             backgroundColor: function (context) {
                                 return context.dataset.backgroundColor;
@@ -384,7 +382,7 @@
                       id:'p1'
                 }
             }
-              var pluginDataLabels = {
+            var pluginDataLabels = {
                  datalabels: {
                             backgroundColor: function (context) {
                                 return context.dataset.backgroundColor;
@@ -405,9 +403,6 @@
                       id:'p1'
                 }
             }
-
-
-
             var options = {
                 plugins: pluginDataLabels,
                     title: {
@@ -472,17 +467,14 @@
                     datasets: [listStandards, listData]
                 }
             }
-
-
             var chart = new Chart('lineChart', {
 
                 type: 'line',
                 data: dataChart,
                 options: options
                  });
-
             var chartdatasets = chart.data.datasets[1].data
-              if (chartdatasets.length > 0) borderWith = 3;
+             if (chartdatasets.length > 0) borderWith = 3;
             var m,target;
             for (var i = chartdatasets.length; i > 0; i--) {
                 if (chartdatasets[i] > 0) {
@@ -538,13 +530,10 @@
                     chart.update();
                 }
             }
-
-            console.log(chart.options.scales)
             $('#stepChart').val(chart.options.scales.yAxes[0].ticks.major.stepSize)
             $('#minChart').val(chart.options.scales.yAxes[0].ticks.major.min)
-
             $('.btnShowData').hide();
-              $('.btnHiddenData').show();
+            $('.btnHiddenData').show();
             chartperiodController.init();
             $('.btnHiddenData').off('click').on('click', function () {
                 chart.options.plugins = hiddenPluginDataLabels;
@@ -552,13 +541,12 @@
                 $('.btnHiddenData').hide();
                   $('.btnShowData').show();
             })
-             $('.btnShowData').off('click').on('click', function () {
+            $('.btnShowData').off('click').on('click', function () {
                 chart.options.plugins = pluginDataLabels;
                  chart.update();
                 $('.btnShowData').hide();
                   $('.btnHiddenData').show();
              })
-
 
             //////////////////////////////////////////////////////////Step inuput, minInput
             if (unit === "Numeric") {
@@ -572,7 +560,7 @@
                   $('#stepChart').attr("step", 1);
             }
 
-             $('#minChart').off('keyup change').on('keyup change', function () {
+            $('#minChart').off('keyup change').on('keyup change', function () {
                var min = 0,stepSize;
                  if (unit === "Numeric") {
 
@@ -721,38 +709,16 @@ var chartperiodController = {
                 chartperiodController.registerEvent();
 
             },
-    registerEvent() {
-
-        $('#modal-group-comment-data2 .Description').unbind('blur').on('blur', function () {
-            var ID = $(this).parent().parent().data('id');
-             $(this).each(function () {
-                    $(this).find('li').each(function () {
-                        var current = $(this);
-                        if (current.children().length > 0) { return true; }
-                        phrases.push($(this).text().trim());
-                    });
-
-                });
-                var Description = phrases.join(';');
-            chartperiodController.updateActinPlane(ID, "", "", Description, "");
-        });
+            registerEvent() {
 
 
-        $("#modal-group-comment-data2 .datepickerEdit ").datepicker({
-            onSelect: function(dateText) {
-                 var ID = $(this).parent().parent().data('id');
 
-                var DeadLine = dateText;
-            chartperiodController.updateActinPlane(ID, "",DeadLine, "", "");
-            }
-        });
+        // $('#modal-group-comment-data2 .Titles').unbind('blur').on('blur', function () {
+        //    var ID = $(this).parent().parent().data('id');
 
-         $('#modal-group-comment-data2 .Title').unbind('blur').on('blur', function () {
-            var ID = $(this).parent().parent().data('id');
-
-                var Title = $(this).val();
-            chartperiodController.updateActinPlane(ID, Title, "", "", "");
-        });
+        //        var Title = $(this).val();
+        //    chartperiodController.updateActionPlan(ID, Title, "", "", "");
+        //});
                 $('.btnTask').unbind('click').on('click', function () {
                     var commentid = $(this).data('commentid');
                     $(".commentid").text(commentid)
@@ -837,7 +803,6 @@ var chartperiodController = {
                     $("#endYear").val(end);
 
                 }
-
                 if (Number($('#weekOfYear').val()) !== 0) {
                     var year = year;
                     var startWeek = start;
@@ -890,7 +855,6 @@ var chartperiodController = {
                     $("#fromDateEndDateM .fromDayOfMonth").text('Month ' + start + ' ( from ' + formatDate(prevMonthFirstDate) + ' to ' + formatDate(prevMonthLastDate) + ' )');
                     $("#fromDateEndDateM .endDayOfMonth").text(' -> Month ' + end + ' ( from ' + formatDate(prevMonthFirstDate2) + ' to ' + formatDate(prevMonthLastDate2) + ' )');
                 }
-
                 if (Number($('#quarterOfYear').val()) !== 0) {
                     var startQ = new Date(year, start * 3 - 3, 1);
                     var endQ = new Date(year, start * 3, 0);
@@ -928,7 +892,6 @@ var chartperiodController = {
 
                     }
                 })
-
                 $('#btnLike').off('click').on('click', function (e) {
 
                     chartperiodController.addFavourite();
@@ -948,8 +911,6 @@ var chartperiodController = {
                 $('#endYear').off('change').on('change', function (e) {
                     chartperiodController.search();
                 });
-
-
                 $('#startWeek').off('change').on('change', function (e) {
                     chartperiodController.search();
                 });
@@ -967,8 +928,6 @@ var chartperiodController = {
                 $('#btnCompare').off('click').on('click', function (e) {
                     chartperiodController.loadDataProvide();
                 });
-
-
                 $("#tblDataChart tr:nth-child(2) td").off('click').on('click', function () {
                     var number = Number($(this).text());
                     var index = Number($(this).index());
@@ -1000,12 +959,71 @@ var chartperiodController = {
                     chartperiodController.addCommentHistory(userid, dataid);
                     // do something…
                 })
-
                 $('.btnComment').off('click').on('click', function () {
                     chartperiodController.addData();
                     //chartperiodController.addNotificationComment();
                 });
+                $.fn.editable.defaults.mode = 'inline';
+                $('#modal-group-comment-data2 .DescriptionEdit').editable({
+                      placement: "right",
+                    type: "text",
+                    //pk: $(this).data("item-id"),
+                    url: '/ChartPeriod/Update/'+$(this).params,
+                    params: function(params) {
+                        params.item = { value: params.value,}
+                        return params;
+                      },
+                    display: function (value, response) {
+                        if (response) {
+                             var commentid = Number($('.commentid').text());
+                            var dataid = Number($('.dataid').text());
+                            chartperiodController.LoadDataActionPlan(dataid, commentid);
+                              $(this).attr("data-value", value);
+                        }
+                      },
+                    ajaxOptions: {
+                        type: "POST",
+                        dataType: "json"
+                      }
+                    });
+                $('#modal-group-comment-data2 .TitleEdit').editable({
+                    placement: "right",
+                    type: "text",
+                    pk: $(this).data("item-id"),
+                    url: '/ChartPeriod/Update/'+$(this).params,
+                    params: function(params) {
+                        params.item = { value: params.value,}
+                        return params;
+                      },
+                    display: function (value, response) {
+                        if (response) {
+                             var commentid = Number($('.commentid').text());
+                            var dataid = Number($('.dataid').text());
+                            chartperiodController.LoadDataActionPlan(dataid, commentid);
+                              $(this).attr("data-value", value);
+                        }
 
+
+
+                      },
+                    ajaxOptions: {
+                        type: "POST",
+                        dataType: "json"
+                      }
+                });
+
+                 $("#modal-group-comment-data2 .DeadLine ").datepicker();
+                 $('#modal-group-comment-data2 .DeadLine').editable({
+
+                 });
+
+                 $('#modal-group-comment-data2 .DeadLine').editable({
+                    format: 'yyyy-mm-dd',
+                    viewformat: 'dd/mm/yyyy',
+                    datepicker: {
+                            firstDay: 1
+                       }
+                });
             },
             search() {
                 if ("@period" === "W")
@@ -1077,20 +1095,8 @@ var chartperiodController = {
                                 $('.listTask .Option').hide();
                                 html += '<tr data-id="'+item.ID+'">';
                                 html += '<td>' + (i + 1) + '</td>';
-                                html += '<td class="text-bold" style="padding-left:15px;"><input type="text" class="form-control Title" value="' + item.Title + '" /></td>';
-                                html += '<td> <div class="editable Description" style="border:1px solid #d2d6de" contenteditable="true">';
-                                     if (item.Description !== null) {
-                                    var array = item.Description.trim(';').split(';');
-                                    html += '<ul>';
-                                    $.each(array, function (i, item) {
-                                        if (item.trim().length > 0) {
-                                            html += '<li>' + item + '</li>';
-                                        }
-                                    })
-                                    html += '</ul>';
-                                }
-                                  html += '</div>';
-
+                                html += '<td class="text-bold" style="padding-left:15px;"><a href="#" class="TitleEdit" data-url="/ChartPeriod/Update" data-type="text" data-name="Title" data-pk="'+item.ID+'" data-value="' + item.Title + '" data-title="Enter your title">' + item.Title + '</a></td>';
+                                html += '<td><div class="DescriptionEdit" data-type="textarea"  data-name="Description" data-value="' + item.Description + '" data-pk="'+item.ID+'"> ' + item.Description + '</div> ';
                                 html += '</td>';
                                 html += '<td>';
                                 if (item.Tag !== null) {
@@ -1102,7 +1108,7 @@ var chartperiodController = {
                                     })
                                 }
                                 html += '</td>';
-                                html += '<td><input type="text" class="form-control datepickerEdit DeadLine" value="' + item.Deadline.replace('/','-').replace('/','-') + '" /></td>';
+                                html += '<td><a href="#" class="DeadLine" data-name="DeadLine" data-value="' + item.Deadline.replace('/','-').replace('/','-') + '" data-type="datetime" data-pk="' + item.ID + '"  title="Select date & time">' + item.Deadline.replace('/','-').replace('/','-') + '</a></td>';
                                 html += '<td > ';
                                 html += '<div class="pretty p-icon p-round p-pulse">';
                                 if (item.Status) {
@@ -1163,23 +1169,13 @@ var chartperiodController = {
             //add-task
             addActionPlan() {
                 var id = $('.addTask .ID').val();
-                console.log(id);
                 var res = chartperiodController.validate();
                 if (res === false) {
                     return false;
                 }
                 var KPILevelCodeAndPeriod = getUrlParameter('kpilevelcode') + getUrlParameter('period');
                 var phrases = new Array();
-                //Dung de tham khao
-                //$('.Description').each(function(){
-                //    var phrase = '';
-                //    $(this).find('li').each(function(){
-                //        var current = $(this);
-                //        if(current.children().length > 0) {return true;}
-                //        phrase += $(this).text();
-                //    });
-                //    phrases.push(phrase);
-                //});
+
                 $('.Description').each(function () {
                     $(this).find('li').each(function () {
                         var current = $(this);
@@ -1206,9 +1202,9 @@ var chartperiodController = {
                     Link: window.location.href,
                     Subject: $('.ActionPlanChart').text()
                 };
-                if (id === "") {
 
-                    $.post('Add', { obj: obj }, function (res) {
+
+                    $.post('/ChartPeriod/Add', { obj: obj }, function (res) {
                         console.log(res);
                         if (res.status === true && res.isSendmail === true) {
                             var commentid = Number($('.commentid').text());
@@ -1229,21 +1225,20 @@ var chartperiodController = {
                         }
                     });
 
-                }
-                if (Number(id) > 0) {
-                    $.post('Update', { obj: obj }, function (res) {
-                        console.log(res);
-                        if (res) {
-                            var commentid = Number($('.commentid').text());
-                            var dataid = Number($('.dataid').text());
-                            chartperiodController.LoadDataActionPlan(dataid, commentid);
-                            chartperiodController.resetForm();
-                        }
-                        activaTab('pills-home');
-                    });
 
-                }
+                //if (Number(id) > 0) {
+                //    $.post('Update', { obj: obj }, function (res) {
+                //        console.log(res);
+                //        if (res) {
+                //            var commentid = Number($('.commentid').text());
+                //            var dataid = Number($('.dataid').text());
+                //            chartperiodController.LoadDataActionPlan(dataid, commentid);
+                //            chartperiodController.resetForm();
+                //        }
+                //        activaTab('pills-home');
+                //    });
 
+                //}
 
             },
             approval(id) {
@@ -1260,9 +1255,9 @@ var chartperiodController = {
 
                 }
             },
-             updateActinPlane(ID,Title,DeadLine,Description,Tag) {
+            updateActionPlan(ID,Title,DeadLine,Description,Tag) {
                 if (Number(ID) > 0) {
-                    $.post('updateActinPlane', { ID: ID, Title:Title,DeadLine:DeadLine, Description:Description,Tag:Tag}, function (res) {
+                    $.post('UpdateActionPlan', { ID: ID, Title:Title,DeadLine:DeadLine, Description:Description,Tag:Tag}, function (res) {
                         console.log(res);
                         if (res) {
                             var commentid = Number($('.commentid').text());
