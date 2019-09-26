@@ -731,7 +731,12 @@ var chartperiodController = {
 
                     chartperiodController.LoadDataActionPlan(dataid, commentid);
                 });
-                 $(".datepickerEdit").datepicker({ dateFormat: 'mm-dd-yy' });
+
+                //$("#dob").datepicker({ dateFormat: 'mm-dd-yy' });
+
+
+
+
                 $('.btnSaveActionPlan').unbind('click').on('click', function () {
                     chartperiodController.addActionPlan();
                     //chartperiodController.addNotification();
@@ -963,9 +968,29 @@ var chartperiodController = {
                     chartperiodController.addData();
                     //chartperiodController.addNotificationComment();
                 });
+                 $('#modal-group-comment-data2 .datepickerEdit').datepicker({
+                            dateFormat: "dd-mm-yy"
+                    });
                 $.fn.editable.defaults.mode = 'inline';
+                $('#modal-group-comment-data2 .datepickerEdit').off('change').on('change', function () {
+
+                     var id = $(this).data('id');
+                    var value = $(this).val();
+                    $.ajax({
+                                type: "Post",
+                                url: "/ChartPeriod/Update/",
+                                data: {name:"DeadLine",value:value,pk:id},
+                                success: function(res)
+                                {
+                                     var commentid = Number($('.commentid').text());
+                                      var dataid = Number($('.dataid').text());
+                                      chartperiodController.LoadDataActionPlan(dataid, commentid);
+                                }
+                             });
+
+                })
+
                 $('#modal-group-comment-data2 .DescriptionEdit').editable({
-                      placement: "right",
                     type: "text",
                     //pk: $(this).data("item-id"),
                     url: '/ChartPeriod/Update/'+$(this).params,
@@ -1002,9 +1027,6 @@ var chartperiodController = {
                             chartperiodController.LoadDataActionPlan(dataid, commentid);
                               $(this).attr("data-value", value);
                         }
-
-
-
                       },
                     ajaxOptions: {
                         type: "POST",
@@ -1012,10 +1034,7 @@ var chartperiodController = {
                       }
                 });
 
-                 $("#modal-group-comment-data2 .DeadLine ").datepicker();
-                 $('#modal-group-comment-data2 .DeadLine').editable({
 
-                 });
 
                  $('#modal-group-comment-data2 .DeadLine').editable({
                     format: 'yyyy-mm-dd',
@@ -1093,10 +1112,11 @@ var chartperiodController = {
                             $.each(data, function (i, item) {
                                 $('.listTask .Approval').hide();
                                 $('.listTask .Option').hide();
-                                html += '<tr data-id="'+item.ID+'">';
+                                 html += '<tr data-id="' + item.ID + '">';
+
                                 html += '<td>' + (i + 1) + '</td>';
-                                html += '<td class="text-bold" style="padding-left:15px;"><a href="#" class="TitleEdit" data-url="/ChartPeriod/Update" data-type="text" data-name="Title" data-pk="'+item.ID+'" data-value="' + item.Title + '" data-title="Enter your title">' + item.Title + '</a></td>';
-                                html += '<td><div class="DescriptionEdit" data-type="textarea"  data-name="Description" data-value="' + item.Description + '" data-pk="'+item.ID+'"> ' + item.Description + '</div> ';
+                                html += '<td class="text-bold" style="padding-left:15px;"><span style="font-weight: 700;cursor: pointer;"  class="TitleEdit" data-url="/ChartPeriod/Update" data-type="text" data-name="Title" data-pk="'+item.ID+'" data-value="' + item.Title + '" data-title="Enter your title">' + item.Title + '</span></td>';
+                                html += '<td><div class="DescriptionEdit" style="font-weight: 700;cursor: pointer;"  data-type="textarea"  data-name="Description" data-value="' + item.Description + '" data-pk="'+item.ID+'"> ' + item.Description + '</div> ';
                                 html += '</td>';
                                 html += '<td>';
                                 if (item.Tag !== null) {
@@ -1107,8 +1127,9 @@ var chartperiodController = {
                                         }
                                     })
                                 }
+                                //<a href="#" class="DeadLine" data-name="DeadLine" data-value="' + item.Deadline.replace('/','-').replace('/','-') + '" data-type="datetime" data-pk="' + item.ID + '"  title="Select date & time">' + item.Deadline.replace('/','-').replace('/','-') + '</a>
                                 html += '</td>';
-                                html += '<td><a href="#" class="DeadLine" data-name="DeadLine" data-value="' + item.Deadline.replace('/','-').replace('/','-') + '" data-type="datetime" data-pk="' + item.ID + '"  title="Select date & time">' + item.Deadline.replace('/','-').replace('/','-') + '</a></td>';
+                                html += '<td><input  data-id="'+item.ID+'" type="text" class="datepickerEdit" style="border: none;font-weight: 700;cursor: pointer;" value="' + item.Deadline.replace('/','-').replace('/','-') + '"></td>';
                                 html += '<td > ';
                                 html += '<div class="pretty p-icon p-round p-pulse">';
                                 if (item.Status) {
@@ -1434,6 +1455,7 @@ var chartperiodController = {
                 });
             },
             remark(id) {
+
 
                 $.post("/ChartPeriod/Remark", { dataid: id }, function (data) {
                     var result = data.model;

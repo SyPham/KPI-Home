@@ -217,7 +217,7 @@ namespace KPI.Model.DAO
             try
             {
                 _dbContext.SaveChanges();
-                
+
                 return true;
             }
             catch (Exception)
@@ -259,6 +259,7 @@ namespace KPI.Model.DAO
                     Status = x.Status,
                     IsBoss = (int?)permission.FirstOrDefault(a => a.ID == userModel.Permission).ID < 3 ? true : false,
                     CreatedBy = x.UserID,
+
                 }).ToList();
             return new
             {
@@ -346,7 +347,7 @@ namespace KPI.Model.DAO
                 {
                     item.Deadline = Convert.ToDateTime(actionPlan.DeadLine);
                 }
-                
+
                 _dbContext.SaveChanges();
                 return true;
             }
@@ -362,13 +363,13 @@ namespace KPI.Model.DAO
             {
                 var id = pk.ToSafetyString().ToInt();
                 var item = _dbContext.ActionPlans.Find(id);
-                if (name == "Title")
+                if (name.ToLower() == "title")
                 {
                     item.Title = value;
                 }
-                if (name == "Description")
+                if (name.ToLower() == "description")
                 {
-                    
+
                     if (value.IndexOf("/n") == -1)
                     {
                         item.Description = value;
@@ -382,13 +383,13 @@ namespace KPI.Model.DAO
                         });
                         item.Description = des;
                     }
-                   
+
                 }
-                if (name == "Tag")
+                if (name.ToLower() == "tag")
                 {
                     item.Tag = value;
                 }
-                if (name == "Deadline")
+                if (name.ToLower() == "deadline")
                 {
                     item.Deadline = Convert.ToDateTime(value);
                 }
